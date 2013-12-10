@@ -28,9 +28,8 @@ public class RunningDinnerService {
 		List<TeamMember> teamMembersToAssign = teamMembers;
 		int teamOffset = numParticipants % teamSize;
 		if (teamOffset > 0) {
-			teamMembersToAssign = teamMembers.subList(0, teamMembers.size() - teamOffset); // TODO Noch -1 oder? Ne stimmt so glaube ich
-																							// sogar!
-			List<TeamMember> notAssignedMembers = new ArrayList<TeamMember>(teamMembers.subList(teamMembers.size() - 1 - teamOffset,
+			teamMembersToAssign = teamMembers.subList(0, teamMembers.size() - teamOffset);
+			List<TeamMember> notAssignedMembers = new ArrayList<TeamMember>(teamMembers.subList(teamMembers.size() - teamOffset,
 					teamMembers.size()));
 			result.setNotAssignedMembers(notAssignedMembers);
 		}
@@ -52,15 +51,30 @@ public class RunningDinnerService {
 					+ numMealClasses + " x N)");
 		}
 
+		if (numMealClasses == 0) {
+			throw new NoPossibleRunningDinnerException("Need at least one mealClass for assigning mealClasses to teams");
+		}
+
+		int segmentionSize = numTeams / numMealClasses;
+
 		Collections.shuffle(regularTeams); // Randomize List
 
-		int offsetCounter = 0;
+		// Now, with the randomized list, we iterate this list, and assign one mealClass to the current iterating list-segment (e.g.:
+		// [0..5] => APPETIZER, [6..11] => MAINCOURSE, [12..17] => DESSERT) for 18 teams and a segmentionSize of 3:
+		int startIndex = 0;
+		int endIndex = segmentionSize;
 		for (MealClass mealClassToAssign : mealClasses) {
-
-			for (int i = 0; i < regularTeams.size(); i++) {
-
+			for (int teamIndex = startIndex; teamIndex < endIndex; teamIndex++) {
+				Team team = regularTeams.get(teamIndex);
+				team.setMealClass(mealClassToAssign);
 			}
+
+			startIndex = endIndex;
+			endIndex = endIndex + segmentionSize;
 		}
+
+		// Sort list by teamNumber as the list is currently passed in already sorted by teamNumber
+		Collections.sort(regularTeams);
 	}
 
 	private List<Team> buildRegularTeams(final RunningDinnerConfig runningDinnerConfig, final List<TeamMember> teamMembersToAssign,
@@ -162,20 +176,29 @@ public class RunningDinnerService {
 		private List<TeamMember> notAssignedMembers;
 
 		public List<Team> getRegularTeams() {
+			if (regularTeams == null) {
+				return Collections.emptyList();
+			}
 			return regularTeams;
+		}
+
+		public List<TeamMember> getNotAssignedMembers() {
+			if (notAssignedMembers == null) {
+				return Collections.emptyList();
+			}
+			return notAssignedMembers;
+		}
+
+		public boolean hasNotAssignedMembers() {
+			return notAssignedMembers != null && notAssignedMembers.size() > 0;
 		}
 
 		void setRegularTeams(List<Team> regularTeams) {
 			this.regularTeams = regularTeams;
 		}
 
-		public List<TeamMember> getNotAssignedMembers() {
-			return notAssignedMembers;
-		}
-
 		void setNotAssignedMembers(List<TeamMember> notAssignedMembers) {
 			this.notAssignedMembers = notAssignedMembers;
 		}
-
 	}
 }

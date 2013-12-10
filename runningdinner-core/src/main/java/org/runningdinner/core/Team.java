@@ -2,7 +2,10 @@ package org.runningdinner.core;
 
 import java.util.Set;
 
-public class Team {
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+public class Team implements Comparable<Team> {
 
 	private Set<TeamMember> teamMembers;
 	private MealClass mealClass;
@@ -28,26 +31,44 @@ public class Team {
 		this.mealClass = mealClass;
 	}
 
+	public int getTeamNumber() {
+		return teamNumber;
+	}
+
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + teamNumber;
-		return result;
+		return new HashCodeBuilder(31, 7).append(getTeamNumber()).hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
 			return true;
-		if (obj == null)
+		}
+		if (obj.getClass() != getClass()) {
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		}
+
 		Team other = (Team)obj;
-		if (teamNumber != other.teamNumber)
-			return false;
-		return true;
+		return new EqualsBuilder().append(getTeamNumber(), other.getTeamNumber()).isEquals();
 	}
 
+	@Override
+	public String toString() {
+		return teamNumber + ": " + teamMembers;
+	}
+
+	@Override
+	public int compareTo(Team o) {
+		if (this.getTeamNumber() < o.getTeamNumber()) {
+			return -1;
+		}
+		if (this.getTeamNumber() > o.getTeamNumber()) {
+			return 1;
+		}
+		return 0;
+	}
 }
