@@ -36,8 +36,31 @@ public class RunningDinnerService {
 		}
 
 		List<Team> regularTeams = buildRegularTeams(runningDinnerConfig, teamMembersToAssign, numTeams);
+		result.setRegularTeams(regularTeams);
 
-		return null;
+		return result;
+	}
+
+	public void assignRandomMealClasses(final List<Team> regularTeams, final Set<MealClass> mealClasses)
+			throws NoPossibleRunningDinnerException {
+
+		int numTeams = regularTeams.size();
+		int numMealClasses = mealClasses.size();
+
+		if (numTeams % numMealClasses != 0) {
+			throw new NoPossibleRunningDinnerException("Size of passed teams (" + numTeams + ") doesn't match expted size ("
+					+ numMealClasses + " x N)");
+		}
+
+		Collections.shuffle(regularTeams); // Randomize List
+
+		int offsetCounter = 0;
+		for (MealClass mealClassToAssign : mealClasses) {
+
+			for (int i = 0; i < regularTeams.size(); i++) {
+
+			}
+		}
 	}
 
 	private List<Team> buildRegularTeams(final RunningDinnerConfig runningDinnerConfig, final List<TeamMember> teamMembersToAssign,
@@ -82,8 +105,7 @@ public class RunningDinnerService {
 
 		// Build teams based upon the previously created category-queues:
 		for (int i = 0; i < numTeamsToBuild; i++) {
-
-			Set<TeamMember> teamMembers = new HashSet<TeamMember>();
+			Set<TeamMember> teamMembersForOneTeam = new HashSet<TeamMember>();
 
 			Queue<TeamMember> currentQueueToPoll = categoryOneList;
 
@@ -93,7 +115,7 @@ public class RunningDinnerService {
 				TeamMember teamMember = currentQueueToPoll.poll();
 
 				if (teamMember != null) {
-					teamMembers.add(teamMember);
+					teamMembersForOneTeam.add(teamMember);
 				}
 
 				// Swap polling queue:
@@ -104,15 +126,19 @@ public class RunningDinnerService {
 					currentQueueToPoll = categoryOneList;
 				}
 
-				// If previous queue could not return a member try it now with the
+				// If previous queue could not return a member try it now again, because queues have been swapped:
 				if (teamMember == null) {
 					teamMember = currentQueueToPoll.poll();
-					teamMembers.add(teamMember);
+					if (teamMember == null) {
+						// TODO: Strange state, we have to abort loop, maybe throw exception?
+						break;
+					}
+					teamMembersForOneTeam.add(teamMember);
 				}
 			}
 
 			Team team = new Team(i + 1);
-			team.setTeamMembers(teamMembers);
+			team.setTeamMembers(teamMembersForOneTeam);
 			result.add(team);
 		}
 
@@ -133,7 +159,6 @@ public class RunningDinnerService {
 	public static class BuildTeamsResult {
 
 		private List<Team> regularTeams;
-
 		private List<TeamMember> notAssignedMembers;
 
 		public List<Team> getRegularTeams() {
