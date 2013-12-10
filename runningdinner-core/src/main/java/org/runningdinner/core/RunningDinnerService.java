@@ -94,12 +94,14 @@ public class RunningDinnerService {
 		if (runningDinnerConfig.isForceEqualDistributedCapacityTeams()) {
 			// Distribute team-members based on whether they have enough seats or not:
 			for (TeamMember teamMember : teamMembersToAssign) {
-				int numSeats = teamMember.getNumSeats();
-				if (numSeats != TeamMember.UNDEFINED_SEATS && numSeats >= numNeededSeats) {
+
+				FuzzyBoolean canHouse = teamMember.canHouse(runningDinnerConfig);
+
+				if (FuzzyBoolean.TRUE == canHouse) {
 					// Enough space
 					categoryOneList.offer(teamMember);
 				}
-				else if (numSeats == TeamMember.UNDEFINED_SEATS) {
+				else if (FuzzyBoolean.UNKNOWN == canHouse) {
 					// We don't know...
 					uncategeorizedList.offer(teamMember);
 				}

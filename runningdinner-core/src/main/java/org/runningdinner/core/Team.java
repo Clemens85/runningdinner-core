@@ -1,5 +1,7 @@
 package org.runningdinner.core;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -33,6 +35,14 @@ public class Team implements Comparable<Team> {
 
 	public int getTeamNumber() {
 		return teamNumber;
+	}
+
+	public List<FuzzyBoolean> getHousingDump(final RunningDinnerConfig runningDinnerConfig) {
+		ArrayList<FuzzyBoolean> result = new ArrayList<FuzzyBoolean>(teamMembers.size());
+		for (TeamMember member : teamMembers) {
+			result.add(member.canHouse(runningDinnerConfig));
+		}
+		return result;
 	}
 
 	@Override
