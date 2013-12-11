@@ -3,16 +3,16 @@ package org.runningdinner.core;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class TeamMember implements Comparable<TeamMember> {
+public class Participant implements Comparable<Participant> {
 
 	public static final int UNDEFINED_SEATS = -1;
 	public static final int UNDEFINED_AGE = -1;
 
-	private int memberNumber;
+	private int participantNumber;
 
-	private MemberName name;
+	private ParticipantName name;
 
-	private Object address;
+	private ParticipantAddress address;
 
 	private Gender gender;
 
@@ -20,24 +20,24 @@ public class TeamMember implements Comparable<TeamMember> {
 
 	private int numSeats;
 
-	public TeamMember(int memberNr) {
-		this.memberNumber = memberNr;
+	public Participant(final int participantNumber) {
+		this.participantNumber = participantNumber;
 		this.numSeats = UNDEFINED_SEATS;
 	}
 
-	public MemberName getName() {
+	public ParticipantName getName() {
 		return name;
 	}
 
-	public void setName(MemberName name) {
+	public void setName(ParticipantName name) {
 		this.name = name;
 	}
 
-	public Object getAddress() {
+	public ParticipantAddress getAddress() {
 		return address;
 	}
 
-	public void setAddress(Object address) {
+	public void setAddress(ParticipantAddress address) {
 		this.address = address;
 	}
 
@@ -65,8 +65,8 @@ public class TeamMember implements Comparable<TeamMember> {
 		this.numSeats = numSeats;
 	}
 
-	public int getMemberNumber() {
-		return memberNumber;
+	public int getParticipantNumber() {
+		return participantNumber;
 	}
 
 	public FuzzyBoolean canHouse(final RunningDinnerConfig runningDinnerConfig) {
@@ -79,7 +79,7 @@ public class TeamMember implements Comparable<TeamMember> {
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(17, 7).append(getMemberNumber()).hashCode();
+		return new HashCodeBuilder(17, 7).append(getParticipantNumber()).hashCode();
 	}
 
 	@Override
@@ -93,16 +93,16 @@ public class TeamMember implements Comparable<TeamMember> {
 		if (obj.getClass() != getClass()) {
 			return false;
 		}
-		TeamMember other = (TeamMember)obj;
-		return new EqualsBuilder().append(getMemberNumber(), other.getMemberNumber()).isEquals();
+		Participant other = (Participant)obj;
+		return new EqualsBuilder().append(getParticipantNumber(), other.getParticipantNumber()).isEquals();
 	}
 
 	@Override
-	public int compareTo(TeamMember o) {
-		if (this.getMemberNumber() < o.getMemberNumber()) {
+	public int compareTo(Participant o) {
+		if (this.getParticipantNumber() < o.getParticipantNumber()) {
 			return -1;
 		}
-		if (this.getMemberNumber() > o.getMemberNumber()) {
+		if (this.getParticipantNumber() > o.getParticipantNumber()) {
 			return 1;
 		}
 		return 0;
@@ -110,7 +110,7 @@ public class TeamMember implements Comparable<TeamMember> {
 
 	@Override
 	public String toString() {
-		return memberNumber + " (" + name + ")";
+		return participantNumber + " (" + name + ")";
 	}
 
 }

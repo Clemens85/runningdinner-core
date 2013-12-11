@@ -9,19 +9,23 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class Team implements Comparable<Team> {
 
-	private Set<TeamMember> teamMembers;
-	private MealClass mealClass;
 	private int teamNumber;
+
+	private Set<Participant> teamMembers;
+
+	private MealClass mealClass;
+
+	private VisitationPlan visitationPlan;
 
 	public Team(int teamNumber) {
 		this.teamNumber = teamNumber;
 	}
 
-	public Set<TeamMember> getTeamMembers() {
+	public Set<Participant> getTeamMembers() {
 		return teamMembers;
 	}
 
-	public void setTeamMembers(Set<TeamMember> teamMembers) {
+	public void setTeamMembers(Set<Participant> teamMembers) {
 		this.teamMembers = teamMembers;
 	}
 
@@ -37,9 +41,20 @@ public class Team implements Comparable<Team> {
 		return teamNumber;
 	}
 
+	public VisitationPlan getVisitationPlan() {
+		if (this.visitationPlan == null) {
+			this.visitationPlan = new VisitationPlan(this);
+		}
+		return visitationPlan;
+	}
+
+	void setVisitationPlan(VisitationPlan visitationPlan) {
+		this.visitationPlan = visitationPlan;
+	}
+
 	public List<FuzzyBoolean> getHousingDump(final RunningDinnerConfig runningDinnerConfig) {
 		ArrayList<FuzzyBoolean> result = new ArrayList<FuzzyBoolean>(teamMembers.size());
-		for (TeamMember member : teamMembers) {
+		for (Participant member : teamMembers) {
 			result.add(member.canHouse(runningDinnerConfig));
 		}
 		return result;

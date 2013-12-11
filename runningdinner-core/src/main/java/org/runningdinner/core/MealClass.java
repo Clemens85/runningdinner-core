@@ -1,5 +1,7 @@
 package org.runningdinner.core;
 
+// TODO: Klasse muss trotzdem immer mit equals verglichen werden!
+
 public final class MealClass {
 
 	public static MealClass APPETIZER = new MealClass("Vorspeise");

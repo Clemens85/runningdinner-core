@@ -2,12 +2,12 @@ package org.runningdinner.core;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class MemberName {
+public class ParticipantName {
 
 	private String firstname;
 	private String surname;
 
-	protected MemberName(MemberNameBuilder builder) {
+	protected ParticipantName(MemberNameBuilder builder) {
 		this.firstname = builder.firstname;
 		this.surname = builder.surname;
 	}
@@ -75,8 +75,8 @@ public class MemberName {
 			return this;
 		}
 
-		public MemberName build() {
-			return new MemberName(this);
+		public ParticipantName build() {
+			return new ParticipantName(this);
 		}
 	}
 }

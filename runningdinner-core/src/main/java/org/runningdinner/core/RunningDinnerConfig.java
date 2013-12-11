@@ -10,9 +10,11 @@ public class RunningDinnerConfig implements Serializable {
 
 	private GenderAspects genderAspects;
 	private boolean forceEqualDistributedCapacityTeams;
-	private boolean considerShortestPaths;
 	private Set<MealClass> mealClasses;
+
 	private int teamSize;
+
+	private boolean considerShortestPaths;
 
 	protected RunningDinnerConfig(ConfigBuilder builder) {
 		this.considerShortestPaths = builder.considerShortestPaths;
@@ -42,6 +44,17 @@ public class RunningDinnerConfig implements Serializable {
 		return teamSize;
 	}
 
+	public TeamCombinationInfo generateTeamCombinationInfo(final int numberOfTeams) {
+		Set<MealClass> mealClasses = getMealClasses();
+		int numMeals = mealClasses.size();
+
+		int teamSegmentSize = numMeals * 2; // I needs this number of teams to get a valid running dinner team-combination
+		int numTeamSegments = numberOfTeams / teamSegmentSize;
+		int numRemaindingTeams = numberOfTeams % teamSegmentSize;
+
+		return new TeamCombinationInfo(teamSegmentSize, numTeamSegments, numRemaindingTeams);
+	}
+
 	public static ConfigBuilder newConfigurer() {
 		return new ConfigBuilder();
 	}
@@ -63,6 +76,7 @@ public class RunningDinnerConfig implements Serializable {
 			return this;
 		}
 
+		// TODO: das geht noch besser, mit neuem verschachteltem builder (-> arne limburg vortrag -> DDD)
 		public ConfigBuilder havingMeal(final MealClass mealClass) {
 			if (mealClasses == null) {
 				mealClasses = new HashSet<MealClass>(3);
