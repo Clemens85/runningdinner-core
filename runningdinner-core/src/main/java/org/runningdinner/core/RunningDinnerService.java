@@ -168,7 +168,7 @@ public class RunningDinnerService {
 		return result;
 	}
 
-	public Object buildDinnerExecutionPlan(final GeneratedTeamsResult generatedTeams, final RunningDinnerConfig runningDinnerConfig)
+	public void generateDinnerExecutionPlan(final GeneratedTeamsResult generatedTeams, final RunningDinnerConfig runningDinnerConfig)
 			throws NoPossibleRunningDinnerException {
 		List<Team> regularTeams = generatedTeams.getRegularTeams();
 
@@ -182,7 +182,7 @@ public class RunningDinnerService {
 		}
 
 		int usedTeamCounter = 0;
-		Map<MealClass, Collection<Team>> segmentedMealTeamMapping = new HashMap<MealClass, Collection<Team>>();
+		Map<MealClass, Queue<Team>> segmentedMealTeamMapping = new HashMap<MealClass, Queue<Team>>();
 		for (MealClass mealClass : completeMealTeamMapping.keySet()) {
 
 			Queue<Team> mappedTeamList = completeMealTeamMapping.get(mealClass);
@@ -196,11 +196,10 @@ public class RunningDinnerService {
 			}
 		}
 
-		throw new UnsupportedOperationException("nyi");
 	}
 
-	private void buildVisitationPlans(final Map<MealClass, Collection<Team>> teamMealMapping, final RunningDinnerConfig runningDinnerConfig)
-			throws NoPossibleRunningDinnerException {
+	private <T extends Collection<Team>> void buildVisitationPlans(final Map<MealClass, ? extends Collection<Team>> teamMealMapping,
+			final RunningDinnerConfig runningDinnerConfig) throws NoPossibleRunningDinnerException {
 
 		// Algorithm:
 		// Iterate through all teams:
@@ -218,7 +217,7 @@ public class RunningDinnerService {
 		}
 
 		// Iterate thorough all teams by meal-class
-		for (Entry<MealClass, Collection<Team>> entry : teamMealMapping.entrySet()) {
+		for (Entry<MealClass, ? extends Collection<Team>> entry : teamMealMapping.entrySet()) {
 			MealClass mealClass = entry.getKey();
 			Collection<Team> teams = entry.getValue();
 
@@ -259,9 +258,9 @@ public class RunningDinnerService {
 		}
 	}
 
-	private void addTeamToMealMapping(final Team team, final Map<MealClass, Collection<Team>> teamMealMapping) {
+	private void addTeamToMealMapping(final Team team, final Map<MealClass, Queue<Team>> teamMealMapping) {
 		MealClass mealClass = team.getMealClass();
-		Collection<Team> mappedTeamList = teamMealMapping.get(mealClass);
+		Queue<Team> mappedTeamList = teamMealMapping.get(mealClass);
 		if (mappedTeamList == null) {
 			mappedTeamList = new ArrayDeque<Team>();
 			teamMealMapping.put(mealClass, mappedTeamList);
