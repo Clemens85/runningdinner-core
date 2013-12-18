@@ -44,15 +44,27 @@ public class RunningDinnerConfig implements Serializable {
 		return teamSize;
 	}
 
-	public TeamCombinationInfo generateTeamCombinationInfo(final int numberOfTeams) {
+	/**
+	 * Generates the TeamCombinationInfo object for the passed number of teams.
+	 * 
+	 * @param numberOfTeams
+	 * @return
+	 * @throws NoPossibleRunningDinnerException
+	 */
+	public TeamCombinationInfo generateTeamCombinationInfo(final int numberOfTeams) throws NoPossibleRunningDinnerException {
 		Set<MealClass> mealClasses = getMealClasses();
 		int numMeals = mealClasses.size();
 
 		int teamSegmentSize = numMeals * 2; // I needs this number of teams to get a valid running dinner team-combination
-		int numTeamSegments = numberOfTeams / teamSegmentSize;
+
+		if (teamSegmentSize > numberOfTeams) {
+			throw new NoPossibleRunningDinnerException("Too few number of teams (" + numberOfTeams
+					+ ") for performing a running dinner without violating the rules!");
+		}
+
 		int numRemaindingTeams = numberOfTeams % teamSegmentSize;
 
-		return new TeamCombinationInfo(teamSegmentSize, numTeamSegments, numRemaindingTeams);
+		return new TeamCombinationInfo(teamSegmentSize, numRemaindingTeams);
 	}
 
 	public static ConfigBuilder newConfigurer() {

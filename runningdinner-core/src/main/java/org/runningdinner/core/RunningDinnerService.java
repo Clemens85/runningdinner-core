@@ -17,11 +17,11 @@ import org.apache.commons.collections.Predicate;
 
 public class RunningDinnerService {
 
-	public GeneratedTeamsResult generateTeams(final RunningDinnerConfig runningDinnerConfig, final List<Participant> teamMembers)
+	public GeneratedTeamsResult generateTeams(final RunningDinnerConfig runningDinnerConfig, final List<Participant> participants)
 			throws NoPossibleRunningDinnerException {
 
 		int teamSize = runningDinnerConfig.getTeamSize();
-		int numParticipants = teamMembers.size();
+		int numParticipants = participants.size();
 
 		if (teamSize >= numParticipants) {
 			throw new NoPossibleRunningDinnerException("There must be more participants than a team's size");
@@ -29,21 +29,78 @@ public class RunningDinnerService {
 
 		GeneratedTeamsResult result = new GeneratedTeamsResult();
 
-		int numTeams = numParticipants / teamSize;
+		List<Participant> participantsToAssign = splitRegularAndIrregularParticipants(participants, result, runningDinnerConfig);
 
-		List<Participant> teamMembersToAssign = teamMembers;
-		int teamOffset = numParticipants % teamSize;
-		if (teamOffset > 0) {
-			teamMembersToAssign = teamMembers.subList(0, teamMembers.size() - teamOffset);
-			List<Participant> notAssignedMembers = new ArrayList<Participant>(teamMembers.subList(teamMembers.size() - teamOffset,
-					teamMembers.size()));
-			result.setNotAssignedParticipants(notAssignedMembers);
-		}
-
-		List<Team> regularTeams = buildRegularTeams(runningDinnerConfig, teamMembersToAssign, numTeams);
+		List<Team> regularTeams = buildRegularTeams(runningDinnerConfig, participantsToAssign);
 		result.setRegularTeams(regularTeams);
 
 		return result;
+	}
+
+	/**
+	 * Takes all participants and splits them (only if necessary) so that e.g. for an odd participant-list the last participant is excluded
+	 * (if teamSize is e.g. 2).<br>
+	 * Furthermore it is computed how many teams are needed for building a valid dinner execution plan that satifies all rules for a running
+	 * dinner. It may happen that this also results in splitting some
+	 * participants, so that the correct number of participants is returned for building the needed number of teams.
+	 * 
+	 * @param allParticipants All participants that were given in for building a running dinner
+	 * @param generatedTeamsResult Is enriched with all participants that cannot be assigend to teams (if any).
+	 * @param runningDinnerConfig
+	 * @return
+	 * @throws NoPossibleRunningDinnerException If there are too few participants
+	 * @throws IllegalArgumentException If there occurs computation errors when splitting the list (should never happen actually)
+	 */
+	private List<Participant> splitRegularAndIrregularParticipants(final List<Participant> allParticipants,
+			final GeneratedTeamsResult generatedTeamsResult, final RunningDinnerConfig runningDinnerConfig)
+			throws NoPossibleRunningDinnerException {
+
+		int numberOfTeams = allParticipants.size() / runningDinnerConfig.getTeamSize();
+
+		TeamCombinationInfo teamCombinationInfo = null;
+		try {
+			teamCombinationInfo = runningDinnerConfig.generateTeamCombinationInfo(numberOfTeams);
+			generatedTeamsResult.setTeamCombinationInfo(teamCombinationInfo);
+		}
+		catch (NoPossibleRunningDinnerException ex) {
+			generatedTeamsResult.setNotAssignedParticipants(allParticipants);
+			return new ArrayList<Participant>(0);
+		}
+
+		// This will be the count of participants that cannot be assigned and must therefore be substracted from the participant-list before
+		// building teams:
+		int numIrregularParticipants = 0;
+
+		// This is the number of teams that cannot be correctly assigned to a dinner execution plan without violating the rules:
+		int numRemaindingTeams = teamCombinationInfo.getNumRemaindingTeams();
+		if (numRemaindingTeams > 0) {
+			int numRemaindingParticipants = numRemaindingTeams * runningDinnerConfig.getTeamSize();
+			numIrregularParticipants = numRemaindingParticipants;
+		}
+
+		// This will typically be 0 (= all participants can put into teams => even number of participants) or 1 (odd number of
+		// participants), or any other number for any teamSize != 2:
+		int numParticipantOffset = allParticipants.size() % runningDinnerConfig.getTeamSize();
+		if (numParticipantOffset > 0) {
+			numIrregularParticipants += numParticipantOffset;
+		}
+
+		if (numIrregularParticipants > 0) {
+			// Split participant list in participants that can be assigned to teams and those who must be excluded:
+			List<Participant> participantsToAssign = allParticipants;
+			int splitIndex = allParticipants.size() - numIrregularParticipants;
+			assertNotNegative(splitIndex, "SplitIndex may never be negative, but was " + splitIndex);
+			participantsToAssign = allParticipants.subList(0, splitIndex);
+			assertSmaller(splitIndex, allParticipants.size(), "SplitIndex (" + splitIndex
+					+ ") must be smaller as complete participant list-size (" + allParticipants.size() + ")");
+			List<Participant> notAssignedParticipants = new ArrayList<Participant>(allParticipants.subList(splitIndex,
+					allParticipants.size()));
+			generatedTeamsResult.setNotAssignedParticipants(notAssignedParticipants);
+			return participantsToAssign;
+		}
+		else {
+			return allParticipants;
+		}
 	}
 
 	public void assignRandomMealClasses(final GeneratedTeamsResult generatedTeams, final Set<MealClass> mealClasses)
@@ -55,7 +112,7 @@ public class RunningDinnerService {
 		int numMealClasses = mealClasses.size();
 
 		if (numTeams % numMealClasses != 0) {
-			throw new NoPossibleRunningDinnerException("Size of passed teams (" + numTeams + ") doesn't match expted size ("
+			throw new NoPossibleRunningDinnerException("Size of passed teams (" + numTeams + ") doesn't match expected size ("
 					+ numMealClasses + " x N)");
 		}
 
@@ -85,14 +142,18 @@ public class RunningDinnerService {
 		Collections.sort(regularTeams);
 	}
 
-	private List<Team> buildRegularTeams(final RunningDinnerConfig runningDinnerConfig, final List<Participant> teamMembersToAssign,
-			final int numTeamsToBuild) {
+	private List<Team> buildRegularTeams(final RunningDinnerConfig runningDinnerConfig, final List<Participant> participantsToAssign) {
+
+		if (CoreUtil.isEmpty(participantsToAssign)) {
+			return new ArrayList<Team>(0);
+		}
+
+		int teamSize = runningDinnerConfig.getTeamSize();
+		int numTeamsToBuild = participantsToAssign.size() / teamSize;
 
 		List<Team> result = new ArrayList<Team>(numTeamsToBuild);
 
-		int teamSize = runningDinnerConfig.getTeamSize();
-
-		Collections.shuffle(teamMembersToAssign); // Sort list randomly!
+		Collections.shuffle(participantsToAssign); // Sort list randomly!
 
 		Queue<Participant> categoryOneList = new ArrayDeque<Participant>();
 		Queue<Participant> categoryTwoList = new ArrayDeque<Participant>();
@@ -100,7 +161,7 @@ public class RunningDinnerService {
 
 		if (runningDinnerConfig.isForceEqualDistributedCapacityTeams()) {
 			// Distribute team-members based on whether they have enough seats or not:
-			for (Participant teamMember : teamMembersToAssign) {
+			for (Participant teamMember : participantsToAssign) {
 
 				FuzzyBoolean canHouse = teamMember.canHouse(runningDinnerConfig);
 
@@ -123,7 +184,7 @@ public class RunningDinnerService {
 		}
 		else {
 			// Equally distribute all team-members over the two category-lists:
-			distributeEqually(categoryOneList, teamMembersToAssign, categoryTwoList);
+			distributeEqually(categoryOneList, participantsToAssign, categoryTwoList);
 		}
 
 		// Build teams based upon the previously created category-queues:
@@ -185,6 +246,7 @@ public class RunningDinnerService {
 		Map<MealClass, Queue<Team>> segmentedMealTeamMapping = new HashMap<MealClass, Queue<Team>>();
 		for (MealClass mealClass : completeMealTeamMapping.keySet()) {
 
+			// TODO: Actually we don't need a queue in here...
 			Queue<Team> mappedTeamList = completeMealTeamMapping.get(mealClass);
 			Team team = mappedTeamList.poll();
 
@@ -292,6 +354,18 @@ public class RunningDinnerService {
 			else {
 				right.add(m);
 			}
+		}
+	}
+
+	private static void assertSmaller(int testNumber, int comparingValue, String message) {
+		if (!(testNumber < comparingValue)) {
+			throw new IllegalArgumentException(message);
+		}
+	}
+
+	private static void assertNotNegative(int a, String message) {
+		if (a < 0) {
+			throw new IllegalArgumentException(message);
 		}
 	}
 }
