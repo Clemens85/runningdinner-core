@@ -89,9 +89,9 @@ public class RunningDinnerService {
 			// Split participant list in participants that can be assigned to teams and those who must be excluded:
 			List<Participant> participantsToAssign = allParticipants;
 			int splitIndex = allParticipants.size() - numIrregularParticipants;
-			assertNotNegative(splitIndex, "SplitIndex may never be negative, but was " + splitIndex);
+			CoreUtil.assertNotNegative(splitIndex, "SplitIndex may never be negative, but was " + splitIndex);
 			participantsToAssign = allParticipants.subList(0, splitIndex);
-			assertSmaller(splitIndex, allParticipants.size(), "SplitIndex (" + splitIndex
+			CoreUtil.assertSmaller(splitIndex, allParticipants.size(), "SplitIndex (" + splitIndex
 					+ ") must be smaller as complete participant list-size (" + allParticipants.size() + ")");
 			List<Participant> notAssignedParticipants = new ArrayList<Participant>(allParticipants.subList(splitIndex,
 					allParticipants.size()));
@@ -354,18 +354,6 @@ public class RunningDinnerService {
 			else {
 				right.add(m);
 			}
-		}
-	}
-
-	private static void assertSmaller(int testNumber, int comparingValue, String message) {
-		if (!(testNumber < comparingValue)) {
-			throw new IllegalArgumentException(message);
-		}
-	}
-
-	private static void assertNotNegative(int a, String message) {
-		if (a < 0) {
-			throw new IllegalArgumentException(message);
 		}
 	}
 }
