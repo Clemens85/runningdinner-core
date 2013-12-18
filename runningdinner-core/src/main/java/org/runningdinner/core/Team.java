@@ -83,7 +83,8 @@ public class Team implements Comparable<Team> {
 
 	@Override
 	public String toString() {
-		return teamNumber + ": " + teamMembers;
+		String mealClassStr = mealClass != null ? " - " + mealClass.toString() : "";
+		return teamNumber + mealClassStr + " (" + teamMembers + ")";
 	}
 
 	@Override

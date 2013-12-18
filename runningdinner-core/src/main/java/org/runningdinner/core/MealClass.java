@@ -1,5 +1,8 @@
 package org.runningdinner.core;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 // TODO: Klasse muss trotzdem immer mit equals verglichen werden!
 
 public final class MealClass {
@@ -21,33 +24,28 @@ public final class MealClass {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((label == null) ? 0 : label.hashCode());
-		return result;
+		return new HashCodeBuilder(13, 11).append(getLabel()).hashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		MealClass other = (MealClass)obj;
-		if (label == null) {
-			if (other.label != null)
-				return false;
 		}
-		else if (!label.equals(other.label))
+		if (obj == this) {
+			return true;
+		}
+		if (obj.getClass() != getClass()) {
 			return false;
-		return true;
+		}
+
+		MealClass other = (MealClass)obj;
+		return new EqualsBuilder().append(getLabel(), other.getLabel()).isEquals();
 	}
 
 	@Override
 	public String toString() {
-		return "MealClass [label=" + label + "]";
+		return label;
 	}
 
 }

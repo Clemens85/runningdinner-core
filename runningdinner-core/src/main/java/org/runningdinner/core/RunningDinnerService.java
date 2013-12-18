@@ -12,9 +12,6 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-
 public class RunningDinnerService {
 
 	public GeneratedTeamsResult generateTeams(final RunningDinnerConfig runningDinnerConfig, final List<Participant> participants)
@@ -179,12 +176,12 @@ public class RunningDinnerService {
 				}
 			}
 
-			distributeEqually(categoryOneList, uncategeorizedList, categoryTwoList);
+			CoreUtil.distributeEqually(categoryOneList, uncategeorizedList, categoryTwoList);
 			uncategeorizedList.clear();
 		}
 		else {
 			// Equally distribute all team-members over the two category-lists:
-			distributeEqually(categoryOneList, participantsToAssign, categoryTwoList);
+			CoreUtil.distributeEqually(categoryOneList, participantsToAssign, categoryTwoList);
 		}
 
 		// Build teams based upon the previously created category-queues:
@@ -234,7 +231,7 @@ public class RunningDinnerService {
 		List<Team> regularTeams = generatedTeams.getRegularTeams();
 
 		TeamCombinationInfo teamCombinationInfo = generatedTeams.getTeamCombinationInfo();
-		int teamSegmentSize = teamCombinationInfo.getTeamSegmentSize();
+		final int teamSegmentSize = teamCombinationInfo.getTeamSegmentSize();
 
 		// Segment teams by meal to cook:
 		Map<MealClass, Queue<Team>> completeMealTeamMapping = new HashMap<MealClass, Queue<Team>>();
@@ -242,22 +239,48 @@ public class RunningDinnerService {
 			addTeamToMealMapping(team, completeMealTeamMapping);
 		}
 
-		int usedTeamCounter = 0;
-		Map<MealClass, Queue<Team>> segmentedMealTeamMapping = new HashMap<MealClass, Queue<Team>>();
-		for (MealClass mealClass : completeMealTeamMapping.keySet()) {
+		// completeTealMapping contains now MealClass A, MealClass B, MealClass C, ... as keys.
+		// For every key there is mapped the list with teams that are assigned to the MealClass which is backed by the key.
 
-			// TODO: Actually we don't need a queue in here...
-			Queue<Team> mappedTeamList = completeMealTeamMapping.get(mealClass);
-			Team team = mappedTeamList.poll();
+		final int numMealClasses = runningDinnerConfig.getMealClasses().size();
+		CoreUtil.assertSmaller(0, numMealClasses, "There must exist more than zero MealClasses");
 
-			addTeamToMealMapping(team, segmentedMealTeamMapping);
+		// This should always equal to 2:
+		final int numTeamsNeededPerMealClass = teamSegmentSize / numMealClasses;
 
-			if (usedTeamCounter++ > teamSegmentSize) {
-				buildVisitationPlans(segmentedMealTeamMapping, runningDinnerConfig);
-				usedTeamCounter = 0;
+		// Ensure that all teams are run through:
+		for (int totalUsedTeamCounter = 0; totalUsedTeamCounter < regularTeams.size();) {
+
+			// Take teams per meal-class, so that we reach #teamSegmentSize teams:
+			int usedTeamCounterPerSegment = 0;
+			Map<MealClass, Queue<Team>> segmentedMealTeamMapping = new HashMap<MealClass, Queue<Team>>(); // TODO: Actually we don't need a
+																											// queue in here...
+			for (MealClass mealClass : completeMealTeamMapping.keySet()) {
+
+				Queue<Team> mappedTeamList = completeMealTeamMapping.get(mealClass);
+
+				// This a very small loop, as we have typically a very small numnber (in almost any case it should be 2)
+				for (int i = 0; i < numTeamsNeededPerMealClass; i++) {
+					// remove() throws exception if queue is empty, which should however not occur. Nevertheless we prevent endless loops by
+					// using this method:
+					Team team = mappedTeamList.remove();
+					addTeamToMealMapping(team, segmentedMealTeamMapping);
+					totalUsedTeamCounter++;
+					usedTeamCounterPerSegment++;
+				}
+
+				CoreUtil.assertSmallerOrEq(usedTeamCounterPerSegment, teamSegmentSize, "Number of used teams (" + usedTeamCounterPerSegment
+						+ ") may never exceed the teamSegmentSize which is " + teamSegmentSize);
+
+				if (usedTeamCounterPerSegment == teamSegmentSize) {
+					buildVisitationPlans(segmentedMealTeamMapping, runningDinnerConfig);
+					usedTeamCounterPerSegment = 0;
+				}
+
 			}
 		}
 
+		validateAllTeamsAreConsumed(completeMealTeamMapping);
 	}
 
 	private <T extends Collection<Team>> void buildVisitationPlans(final Map<MealClass, ? extends Collection<Team>> teamMealMapping,
@@ -280,14 +303,14 @@ public class RunningDinnerService {
 
 		// Iterate thorough all teams by meal-class
 		for (Entry<MealClass, ? extends Collection<Team>> entry : teamMealMapping.entrySet()) {
-			MealClass mealClass = entry.getKey();
-			Collection<Team> teams = entry.getValue();
+			MealClass currentMealClass = entry.getKey();
+			Collection<Team> teamsOfCurrentMealClass = entry.getValue();
 
-			Set<MealClass> otherMealClasses = getFilteredMealClasses(mealClass, allMealClasses); // for rule #2
+			Set<MealClass> otherMealClasses = getFilteredMealClasses(currentMealClass, allMealClasses); // for rule #2
 
 			// Iterate through all teams of current meal-class
-			for (Team team : teams) {
-				VisitationPlan currentTeamVisitationPlan = team.getVisitationPlan();
+			for (Team teamOfCurrentMealClass : teamsOfCurrentMealClass) {
+				VisitationPlan currentTeamVisitationPlan = teamOfCurrentMealClass.getVisitationPlan();
 
 				// Rule #3 is satisfied for this team:
 				if (numReferencesNeeded == currentTeamVisitationPlan.getNumberOfGuests()
@@ -299,18 +322,40 @@ public class RunningDinnerService {
 				// Iterate through all teams of other meal-classes:
 				for (MealClass otherMealClass : otherMealClasses) {
 
-					Collection<Team> otherClassifiedTeams = teamMealMapping.get(otherMealClass);
-					for (Team otherClassifiedTeam : otherClassifiedTeams) {
-						VisitationPlan otherClassifiedTeamVisitationPlan = otherClassifiedTeam.getVisitationPlan();
-						if (otherClassifiedTeamVisitationPlan.containsGuestOrHostReference(team)) {
+					boolean hasOneGuestReference = false;
+					boolean hasOneHostReference = false;
+
+					Collection<Team> teamsOfOtherMealClass = teamMealMapping.get(otherMealClass);
+					for (Team teamOfOtherMealClass : teamsOfOtherMealClass) {
+
+						VisitationPlan otherClassifiedTeamVisitationPlan = teamOfOtherMealClass.getVisitationPlan();
+						if (otherClassifiedTeamVisitationPlan.containsGuestOrHostReference(teamOfCurrentMealClass)) {
 							continue; // Rule #1
 						}
 
 						// for rule #3
 						if (currentTeamVisitationPlan.getNumberOfHosts() != numReferencesNeeded
 								&& otherClassifiedTeamVisitationPlan.getNumberOfGuests() != numReferencesNeeded) {
-							currentTeamVisitationPlan.addHostTeam(otherClassifiedTeam);
-							break;
+							currentTeamVisitationPlan.addHostTeam(teamOfOtherMealClass);
+							hasOneHostReference = true;
+							if (hasOneGuestReference) {
+								break;
+							}
+							else {
+								continue;
+							}
+						}
+
+						if (currentTeamVisitationPlan.getNumberOfGuests() != numReferencesNeeded
+								&& otherClassifiedTeamVisitationPlan.getNumberOfHosts() != numReferencesNeeded) {
+							otherClassifiedTeamVisitationPlan.addHostTeam(teamOfCurrentMealClass);
+							hasOneGuestReference = true;
+							if (hasOneHostReference) {
+								break;
+							}
+							else {
+								continue;
+							}
 						}
 					}
 
@@ -322,6 +367,7 @@ public class RunningDinnerService {
 
 	private void addTeamToMealMapping(final Team team, final Map<MealClass, Queue<Team>> teamMealMapping) {
 		MealClass mealClass = team.getMealClass();
+		CoreUtil.assertNotNull(mealClass, "Team must have an assigned MealClass, but was null");
 		Queue<Team> mappedTeamList = teamMealMapping.get(mealClass);
 		if (mappedTeamList == null) {
 			mappedTeamList = new ArrayDeque<Team>();
@@ -330,29 +376,32 @@ public class RunningDinnerService {
 		mappedTeamList.add(team);
 	}
 
+	/**
+	 * Returns a new collection with all MealClass objects that were passed by the allMealClasses collection except the mealClassToExclude.<br>
+	 * In other words: Result = allMealClasses - mealClassToExclude
+	 * 
+	 * @param mealClassToExclude
+	 * @param allMealClasses
+	 * @return
+	 */
 	private Set<MealClass> getFilteredMealClasses(final MealClass mealClassToExclude, final Set<MealClass> allMealClasses) {
 		Set<MealClass> result = new HashSet<MealClass>();
 
-		CollectionUtils.filter(result, new Predicate() {
-			@Override
-			public boolean evaluate(Object obj) {
-				MealClass mealClass = (MealClass)obj;
-				if (mealClass.equals(mealClassToExclude)) {
-					return false;
-				}
-				return true;
+		for (MealClass mealClass : allMealClasses) {
+			if (!mealClass.equals(mealClassToExclude)) {
+				result.add(mealClass);
 			}
-		});
+		}
+
 		return result;
 	}
 
-	private <T> void distributeEqually(final Collection<T> left, final Collection<T> middle, final Collection<T> right) {
-		for (T m : middle) {
-			if (left.size() < right.size()) {
-				left.add(m);
-			}
-			else {
-				right.add(m);
+	private static void validateAllTeamsAreConsumed(final Map<MealClass, Queue<Team>> completeMealTeamMapping) {
+		for (Entry<MealClass, Queue<Team>> entry : completeMealTeamMapping.entrySet()) {
+			Queue<Team> teamList = entry.getValue();
+			if (teamList.size() > 0) {
+				throw new RuntimeException("All teams must be consume when building dinner visitation plans, but there still exist "
+						+ teamList.size() + " teams for MealClass " + entry.getKey());
 			}
 		}
 	}

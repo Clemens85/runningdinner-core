@@ -54,6 +54,30 @@ public class VisitationPlan {
 		this.guestTeams.add(guestTeam);
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder result = new StringBuilder();
+
+		result.append("-> ");
+		writeTeams(result, hostTeams);
+
+		result.append(CoreUtil.NEWLINE);
+		result.append("<- ");
+		writeTeams(result, guestTeams);
+
+		return result.toString();
+	}
+
+	private void writeTeams(final StringBuilder buffer, final Set<Team> teams) {
+		int cnt = 0;
+		for (Team team : teams) {
+			if (cnt++ > 0) {
+				buffer.append(", ");
+			}
+			buffer.append(team.toString());
+		}
+	}
+
 	// /**
 	// * Special method for internal usage only. Used for preventing endless recursions when managing host/guest relationships
 	// *

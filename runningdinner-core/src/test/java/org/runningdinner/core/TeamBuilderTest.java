@@ -142,6 +142,7 @@ public class TeamBuilderTest {
 	public void testTooFewParticipants() throws NoPossibleRunningDinnerException {
 		List<Participant> teamMembers = generateTeamMembers(5);
 		GeneratedTeamsResult result = runningDinnerSvc.generateTeams(standardConfig, teamMembers);
+		runningDinnerSvc.assignRandomMealClasses(result, standardConfig.getMealClasses());
 		assertEquals(true, result.hasNotAssignedParticipants());
 		assertEquals(5, result.getNotAssignedParticipants().size());
 		assertEquals(0, result.getRegularTeams().size());
@@ -235,8 +236,11 @@ public class TeamBuilderTest {
 
 		List<Participant> participants = generateEqualBalancedParticipants();
 		GeneratedTeamsResult teamsResult = runningDinnerSvc.generateTeams(standardConfig, participants);
+
 		assertEquals(false, teamsResult.hasNotAssignedParticipants());
 		assertEquals(6, teamsResult.getRegularTeams().size());
+
+		runningDinnerSvc.assignRandomMealClasses(teamsResult, standardConfig.getMealClasses());
 
 		runningDinnerSvc.generateDinnerExecutionPlan(teamsResult, standardConfig);
 

@@ -8,16 +8,16 @@ public class NoPossibleRunningDinnerException extends Exception {
 		super();
 	}
 
-	public NoPossibleRunningDinnerException(String arg0, Throwable arg1) {
-		super(arg0, arg1);
+	public NoPossibleRunningDinnerException(String message, Throwable arg1) {
+		super(message, arg1);
 	}
 
-	public NoPossibleRunningDinnerException(String arg0) {
-		super(arg0);
+	public NoPossibleRunningDinnerException(String message) {
+		super(message);
 	}
 
-	public NoPossibleRunningDinnerException(Throwable arg0) {
-		super(arg0);
+	public NoPossibleRunningDinnerException(Throwable t) {
+		super(t);
 	}
 
 }
