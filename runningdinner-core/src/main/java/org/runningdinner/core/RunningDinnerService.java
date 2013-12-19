@@ -306,7 +306,7 @@ public class RunningDinnerService {
 			MealClass currentMealClass = entry.getKey();
 			Collection<Team> teamsOfCurrentMealClass = entry.getValue();
 
-			Set<MealClass> otherMealClasses = getFilteredMealClasses(currentMealClass, allMealClasses); // for rule #2
+			Set<MealClass> otherMealClasses = CoreUtil.excludeFromSet(currentMealClass, allMealClasses); // for rule #2
 
 			// Iterate through all teams of current meal-class
 			for (Team teamOfCurrentMealClass : teamsOfCurrentMealClass) {
@@ -374,26 +374,6 @@ public class RunningDinnerService {
 			teamMealMapping.put(mealClass, mappedTeamList);
 		}
 		mappedTeamList.add(team);
-	}
-
-	/**
-	 * Returns a new collection with all MealClass objects that were passed by the allMealClasses collection except the mealClassToExclude.<br>
-	 * In other words: Result = allMealClasses - mealClassToExclude
-	 * 
-	 * @param mealClassToExclude
-	 * @param allMealClasses
-	 * @return
-	 */
-	private Set<MealClass> getFilteredMealClasses(final MealClass mealClassToExclude, final Set<MealClass> allMealClasses) {
-		Set<MealClass> result = new HashSet<MealClass>();
-
-		for (MealClass mealClass : allMealClasses) {
-			if (!mealClass.equals(mealClassToExclude)) {
-				result.add(mealClass);
-			}
-		}
-
-		return result;
 	}
 
 	private static void validateAllTeamsAreConsumed(final Map<MealClass, Queue<Team>> completeMealTeamMapping) {

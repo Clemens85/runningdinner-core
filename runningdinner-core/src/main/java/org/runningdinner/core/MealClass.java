@@ -13,6 +13,8 @@ public final class MealClass {
 
 	private String label;
 
+	private int order; // TODO: Implement this for having appetizer -> MainCourse -> Dessert
+
 	public MealClass(String label) {
 		super();
 		this.label = label;

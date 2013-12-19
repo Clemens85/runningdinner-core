@@ -1,6 +1,8 @@
 package org.runningdinner.core;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class CoreUtil {
 
@@ -19,6 +21,26 @@ public class CoreUtil {
 				right.add(m);
 			}
 		}
+	}
+
+	/**
+	 * Returns a new set with all objects that were passed by theSet except the object exclude.<br>
+	 * In other words: Result = theSet - exclude
+	 * 
+	 * @param exclude
+	 * @param theSet Original Set that contains all objects. This set will not be modified.
+	 * @return New constructed set with the result of the subtraction
+	 */
+	public static <T> Set<T> excludeFromSet(final T exclude, final Set<T> theSet) {
+		Set<T> result = new HashSet<T>();
+
+		for (T obj : theSet) {
+			if (!obj.equals(exclude)) {
+				result.add(obj);
+			}
+		}
+
+		return result;
 	}
 
 	public static void assertSmaller(int testNumber, int comparingValue, String message) {

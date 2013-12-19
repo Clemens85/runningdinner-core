@@ -1,6 +1,7 @@
 package org.runningdinner.core;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -24,7 +25,7 @@ public class TeamBuilderTest {
 
 	@Test
 	public void testInvalidConditionWithDefaults() {
-		List<Participant> teamMembers = generateTeamMembers(2);
+		List<Participant> teamMembers = generateParticipants(2);
 		try {
 			runningDinnerSvc.generateTeams(standardConfig, teamMembers);
 			fail("Should never reach here, because Exception should be thrown!");
@@ -36,7 +37,7 @@ public class TeamBuilderTest {
 
 	@Test
 	public void testTeamsWithoutDistributing() throws NoPossibleRunningDinnerException {
-		List<Participant> teamMembers = generateTeamMembers(12);
+		List<Participant> teamMembers = generateParticipants(12);
 
 		GeneratedTeamsResult teamsResult = runningDinnerSvc.generateTeams(standardConfigWithoutDistributing, teamMembers);
 		assertEquals(false, teamsResult.hasNotAssignedParticipants());
@@ -51,7 +52,7 @@ public class TeamBuilderTest {
 
 	@Test
 	public void testTeamsWithBalancedDistributing() throws NoPossibleRunningDinnerException {
-		List<Participant> participants = generateEqualBalancedParticipants();
+		List<Participant> participants = generateEqualBalancedParticipants(0);
 
 		GeneratedTeamsResult teamsResult = runningDinnerSvc.generateTeams(standardConfig, participants);
 		assertEquals(false, teamsResult.hasNotAssignedParticipants());
@@ -66,8 +67,8 @@ public class TeamBuilderTest {
 		}
 	}
 
-	private List<Participant> generateEqualBalancedParticipants() {
-		List<Participant> result = generateTeamMembers(12);
+	private List<Participant> generateEqualBalancedParticipants(int participantNrOffset) {
+		List<Participant> result = generateParticipants(12, participantNrOffset);
 		result.get(0).setNumSeats(6);
 		result.get(1).setNumSeats(3);
 		result.get(2).setNumSeats(4);
@@ -86,7 +87,7 @@ public class TeamBuilderTest {
 
 	@Test
 	public void testTeamsWithUnbalancedDistributing() throws NoPossibleRunningDinnerException {
-		List<Participant> particiapnts = generateTeamMembers(12);
+		List<Participant> particiapnts = generateParticipants(12);
 		particiapnts.get(0).setNumSeats(6);
 		particiapnts.get(1).setNumSeats(6);
 		particiapnts.get(2).setNumSeats(6);
@@ -125,7 +126,7 @@ public class TeamBuilderTest {
 
 	@Test
 	public void testNotAssignedTeamMembers() throws NoPossibleRunningDinnerException {
-		List<Participant> teamMembers = generateTeamMembers(13);
+		List<Participant> teamMembers = generateParticipants(13);
 		GeneratedTeamsResult result = runningDinnerSvc.generateTeams(standardConfig, teamMembers);
 		assertEquals(true, result.hasNotAssignedParticipants());
 		assertEquals(1, result.getNotAssignedParticipants().size());
@@ -140,7 +141,7 @@ public class TeamBuilderTest {
 
 	@Test
 	public void testTooFewParticipants() throws NoPossibleRunningDinnerException {
-		List<Participant> teamMembers = generateTeamMembers(5);
+		List<Participant> teamMembers = generateParticipants(5);
 		GeneratedTeamsResult result = runningDinnerSvc.generateTeams(standardConfig, teamMembers);
 		runningDinnerSvc.assignRandomMealClasses(result, standardConfig.getMealClasses());
 		assertEquals(true, result.hasNotAssignedParticipants());
@@ -150,7 +151,7 @@ public class TeamBuilderTest {
 
 	@Test
 	public void testCustomConfigTeamBuilding() throws NoPossibleRunningDinnerException {
-		List<Participant> teamMembers = generateTeamMembers(9);
+		List<Participant> teamMembers = generateParticipants(9);
 		GeneratedTeamsResult teamsResult = runningDinnerSvc.generateTeams(customConfig, teamMembers);
 		assertEquals(true, teamsResult.hasNotAssignedParticipants());
 		assertEquals(1, teamsResult.getNotAssignedParticipants().size());
@@ -167,7 +168,7 @@ public class TeamBuilderTest {
 
 	@Test
 	public void testRandomMealClasses() throws NoPossibleRunningDinnerException {
-		List<Participant> particiapnts = generateTeamMembers(12);
+		List<Participant> particiapnts = generateParticipants(12);
 		GeneratedTeamsResult teamsResult = runningDinnerSvc.generateTeams(standardConfig, particiapnts);
 		List<Team> teams = teamsResult.getRegularTeams();
 		assertEquals(6, teams.size());
@@ -232,9 +233,8 @@ public class TeamBuilderTest {
 	}
 
 	@Test
-	public void testBuildVisitationPlan() throws NoPossibleRunningDinnerException {
-
-		List<Participant> participants = generateEqualBalancedParticipants();
+	public void testBuildSingleVisitationPlan() throws NoPossibleRunningDinnerException {
+		List<Participant> participants = generateEqualBalancedParticipants(0);
 		GeneratedTeamsResult teamsResult = runningDinnerSvc.generateTeams(standardConfig, participants);
 
 		assertEquals(false, teamsResult.hasNotAssignedParticipants());
@@ -248,9 +248,57 @@ public class TeamBuilderTest {
 		for (Team team : teams) {
 			assertEquals(2, team.getVisitationPlan().getNumberOfGuests());
 			assertEquals(2, team.getVisitationPlan().getNumberOfHosts());
-			assertEquals(team, team.getVisitationPlan().getForTeam());
+			assertEquals(team, team.getVisitationPlan().getTeam());
 			assertEquals(false, team.getVisitationPlan().getGuestTeams().contains(team));
 			assertEquals(false, team.getVisitationPlan().getHostTeams().contains(team));
+
+			Set<Team> guestTeams = team.getVisitationPlan().getGuestTeams();
+			checkMealClassNotContained(team, guestTeams);
+			Set<Team> hostTeams = team.getVisitationPlan().getHostTeams();
+			checkMealClassNotContained(team, hostTeams);
+		}
+	}
+
+	@Test
+	public void testBuildMultipleVisitationPlans() throws NoPossibleRunningDinnerException {
+		List<Participant> participants = generateEqualBalancedParticipants(0);
+		participants.addAll(generateEqualBalancedParticipants(12));
+		participants.addAll(generateEqualBalancedParticipants(24));
+		assertEquals(36, participants.size());
+
+		GeneratedTeamsResult teamsResult = runningDinnerSvc.generateTeams(standardConfig, participants);
+		assertEquals(false, teamsResult.hasNotAssignedParticipants());
+		assertEquals(18, teamsResult.getRegularTeams().size());
+
+		runningDinnerSvc.assignRandomMealClasses(teamsResult, standardConfig.getMealClasses());
+		runningDinnerSvc.generateDinnerExecutionPlan(teamsResult, standardConfig);
+
+		List<Team> teams = teamsResult.getRegularTeams();
+		for (Team team : teams) {
+			assertEquals(2, team.getVisitationPlan().getNumberOfGuests());
+			assertEquals(2, team.getVisitationPlan().getNumberOfHosts());
+			assertEquals(team, team.getVisitationPlan().getTeam());
+			assertEquals(false, team.getVisitationPlan().getGuestTeams().contains(team));
+			assertEquals(false, team.getVisitationPlan().getHostTeams().contains(team));
+
+			Set<Team> guestTeams = team.getVisitationPlan().getGuestTeams();
+			checkMealClassNotContained(team, guestTeams);
+			Set<Team> hostTeams = team.getVisitationPlan().getHostTeams();
+			checkMealClassNotContained(team, hostTeams);
+		}
+	}
+
+	/**
+	 * Asserts that the mealclass of the passed team is not contained in the mealclasses of the passed teamsToCheck
+	 * 
+	 * @param team
+	 * @param teamsToCheck
+	 */
+	protected void checkMealClassNotContained(Team team, Set<Team> teamsToCheck) {
+		MealClass referenceMealClass = team.getMealClass();
+
+		for (Team teamToCheck : teamsToCheck) {
+			assertFalse(referenceMealClass.equals(teamToCheck.getMealClass()));
 		}
 	}
 
@@ -294,16 +342,21 @@ public class TeamBuilderTest {
 	/**
 	 * Helper method for quickly generating some arbitrary participants
 	 * 
-	 * @param numMembers
+	 * @param numParticipants
 	 * @return
 	 */
-	protected List<Participant> generateTeamMembers(int numMembers) {
-		List<Participant> result = new ArrayList<Participant>(numMembers);
-		for (int i = 1; i <= numMembers; i++) {
-			Participant member = new Participant(i);
-			member.setName(ParticipantName.newBuilder().withSurname("name" + i).build());
+	protected List<Participant> generateParticipants(int numParticipants, int participantNrOffset) {
+		List<Participant> result = new ArrayList<Participant>(numParticipants);
+		for (int i = 1; i <= numParticipants; i++) {
+			int participantNr = i + participantNrOffset;
+			Participant member = new Participant(participantNr);
+			member.setName(ParticipantName.newBuilder().withSurname("name" + participantNr).build());
 			result.add(member);
 		}
 		return result;
+	}
+
+	protected List<Participant> generateParticipants(int numParticipants) {
+		return generateParticipants(numParticipants, 0);
 	}
 }

@@ -5,19 +5,19 @@ import java.util.Set;
 
 public class VisitationPlan {
 
-	private Team currentTeam;
+	private Team team;
 
 	private Set<Team> hostTeams = new HashSet<Team>(2); // heuristic assumption, will apply in nearly any case
 
 	private Set<Team> guestTeams = new HashSet<Team>(2); // heuristic assumption, will apply in nearly any case
 
 	public VisitationPlan(final Team currentTeam) {
-		this.currentTeam = currentTeam;
+		this.team = currentTeam;
 		currentTeam.setVisitationPlan(this);
 	}
 
-	public Team getForTeam() {
-		return currentTeam;
+	public Team getTeam() {
+		return team;
 	}
 
 	public Set<Team> getHostTeams() {
@@ -42,7 +42,7 @@ public class VisitationPlan {
 
 	public void addHostTeam(final Team hostTeam) {
 		this.hostTeams.add(hostTeam);
-		hostTeam.getVisitationPlan().addGuestTeam(currentTeam);
+		hostTeam.getVisitationPlan().addGuestTeam(team);
 	}
 
 	/**
@@ -78,12 +78,4 @@ public class VisitationPlan {
 		}
 	}
 
-	// /**
-	// * Special method for internal usage only. Used for preventing endless recursions when managing host/guest relationships
-	// *
-	// * @param guestTeam
-	// */
-	// private void addGuestTeamOneSide(final Team guestTeam) {
-	// this.guestTeams.add(guestTeam);
-	// }
 }
