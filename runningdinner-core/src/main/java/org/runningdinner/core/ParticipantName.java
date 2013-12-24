@@ -4,35 +4,44 @@ import org.apache.commons.lang3.StringUtils;
 
 public class ParticipantName {
 
-	private String firstname;
-	private String surname;
+	private String firstnamePart;
+	private String lastname;
 
-	protected ParticipantName(MemberNameBuilder builder) {
-		this.firstname = builder.firstname;
-		this.surname = builder.surname;
+	protected ParticipantName() {
 	}
 
-	public String getFirstname() {
-		return firstname;
+	/**
+	 * Contains typically the firstname of a person, but for persons that have several names (e.g. middlename) these name parts are also
+	 * contained.
+	 * 
+	 * @return
+	 */
+	public String getFirstnamePart() {
+		return firstnamePart;
 	}
 
-	public String getSurname() {
-		return surname;
+	/**
+	 * Contains always the surname of a person
+	 * 
+	 * @return
+	 */
+	public String getLastname() {
+		return lastname;
 	}
 
 	public String getFullnameFirstnameFirst() {
-		String result = firstname;
-		if (StringUtils.isEmpty(firstname)) {
+		String result = firstnamePart;
+		if (StringUtils.isEmpty(firstnamePart)) {
 			result = StringUtils.EMPTY;
 		}
 		else {
-			if (!StringUtils.isEmpty(surname)) {
-				result += ", ";
+			if (!StringUtils.isEmpty(lastname)) {
+				result += " ";
 			}
 		}
 
-		if (!StringUtils.isEmpty(surname)) {
-			result += surname;
+		if (!StringUtils.isEmpty(lastname)) {
+			result += lastname;
 		}
 
 		return result;
@@ -43,40 +52,59 @@ public class ParticipantName {
 		return getFullnameFirstnameFirst();
 	}
 
-	public static MemberNameBuilder newBuilder() {
-		return new MemberNameBuilder();
+	public static NameBuilder newName() {
+		return new NameBuilder();
 	}
 
-	public static class MemberNameBuilder {
+	public static class NameBuilder {
+
+		protected NameBuilder() {
+		}
+
+		public FirstLastNameBuilder withFirstname(final String firstname) {
+			CoreUtil.assertNotEmpty(firstname, "Firstname must not be empty!");
+			return new FirstLastNameBuilder(firstname);
+		}
+
+		public ParticipantName withCompleteNameString(final String completeName) {
+			ParticipantName result = new ParticipantName();
+
+			String[] nameParts = completeName.trim().split("\\s+");
+			if (nameParts.length <= 1) {
+				throw new IllegalArgumentException("Complete Name must be in a format like 'Max Mustermann'");
+			}
+
+			result.lastname = nameParts[nameParts.length - 1];
+
+			StringBuilder firstnamesBuilder = new StringBuilder();
+			int cnt = 0;
+			for (int i = 0; i < nameParts.length - 1; i++) {
+				if (cnt++ > 0) {
+					firstnamesBuilder.append(" ");
+				}
+				firstnamesBuilder.append(nameParts[i]);
+			}
+			result.firstnamePart = firstnamesBuilder.toString();
+
+			return result;
+		}
+
+	}
+
+	public static class FirstLastNameBuilder {
 
 		private String firstname;
-		private String surname;
 
-		private String nameSplitPattern;
-
-		public MemberNameBuilder() {
-		}
-
-		public MemberNameBuilder(final String fullnamePattern) {
-		}
-
-		public MemberNameBuilder withFirstname(final String firstname) {
+		protected FirstLastNameBuilder(String firstname) {
 			this.firstname = firstname;
-			return this;
 		}
 
-		public MemberNameBuilder withSurname(final String surname) {
-			this.surname = surname;
-			return this;
-		}
-
-		public MemberNameBuilder withCompleteNameString(final String completeName) {
-			// TODO: Split name according to standard or passed pattern!
-			return this;
-		}
-
-		public ParticipantName build() {
-			return new ParticipantName(this);
+		public ParticipantName andLastname(String lastname) {
+			CoreUtil.assertNotEmpty(lastname, "Lastname must not be empty!");
+			ParticipantName result = new ParticipantName();
+			result.firstnamePart = firstname;
+			result.lastname = lastname;
+			return result;
 		}
 	}
 }

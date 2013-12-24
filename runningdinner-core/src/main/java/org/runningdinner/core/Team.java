@@ -55,7 +55,7 @@ public class Team implements Comparable<Team> {
 	public List<FuzzyBoolean> getHousingDump(final RunningDinnerConfig runningDinnerConfig) {
 		ArrayList<FuzzyBoolean> result = new ArrayList<FuzzyBoolean>(teamMembers.size());
 		for (Participant member : teamMembers) {
-			result.add(member.canHouse(runningDinnerConfig));
+			result.add(member.canHost(runningDinnerConfig));
 		}
 		return result;
 	}

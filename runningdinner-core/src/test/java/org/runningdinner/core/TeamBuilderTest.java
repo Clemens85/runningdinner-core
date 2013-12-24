@@ -315,8 +315,8 @@ public class TeamBuilderTest {
 		}
 		Participant[] teamMemberArr = teamMembers.toArray(new Participant[2]);
 
-		FuzzyBoolean canHouse1 = teamMemberArr[0].canHouse(runningDinnerConfig);
-		FuzzyBoolean canHouse2 = teamMemberArr[1].canHouse(runningDinnerConfig);
+		FuzzyBoolean canHouse1 = teamMemberArr[0].canHost(runningDinnerConfig);
+		FuzzyBoolean canHouse2 = teamMemberArr[1].canHost(runningDinnerConfig);
 
 		if (canHouse1 == FuzzyBoolean.UNKNOWN && canHouse2 == FuzzyBoolean.UNKNOWN) {
 			return false;
@@ -349,9 +349,9 @@ public class TeamBuilderTest {
 		List<Participant> result = new ArrayList<Participant>(numParticipants);
 		for (int i = 1; i <= numParticipants; i++) {
 			int participantNr = i + participantNrOffset;
-			Participant member = new Participant(participantNr);
-			member.setName(ParticipantName.newBuilder().withSurname("name" + participantNr).build());
-			result.add(member);
+			Participant participant = new Participant(participantNr);
+			participant.setName(ParticipantName.newName().withFirstname("first" + participantNr).andLastname("last" + participantNr));
+			result.add(participant);
 		}
 		return result;
 	}

@@ -8,14 +8,19 @@
   <packaging>jar</packaging>
 
   <name>runningdinner-core</name>
-  <url>http://maven.apache.org</url>
+  <url>https://github.com/Clemens85/runningdinner-core</url>
+  <developers>
+  	<developer>
+  		<name>Clemens Stich</name>
+  		<email>ClemensStich@web.de</email>
+  	</developer>
+  </developers>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <dependencies>
-  
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -58,8 +63,19 @@
 		<groupId>org.apache.poi</groupId>
 		<artifactId>openxml4j</artifactId>
 		<version>1.0-beta</version>
+		<exclusions>
+			<exclusion>
+				<groupId>log4j</groupId>
+				<artifactId>log4j</artifactId>
+			</exclusion>
+		</exclusions>
 	</dependency>
     
+   	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-api</artifactId>
+		<version>1.7.5</version>
+	</dependency>
     
   </dependencies>
 </project>

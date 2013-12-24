@@ -42,6 +42,9 @@ public class Participant implements Comparable<Participant> {
 	}
 
 	public Gender getGender() {
+		if (gender == null) {
+			return Gender.UNDEFINED;
+		}
 		return gender;
 	}
 
@@ -69,7 +72,7 @@ public class Participant implements Comparable<Participant> {
 		return participantNumber;
 	}
 
-	public FuzzyBoolean canHouse(final RunningDinnerConfig runningDinnerConfig) {
+	public FuzzyBoolean canHost(final RunningDinnerConfig runningDinnerConfig) {
 		if (getNumSeats() == UNDEFINED_SEATS) {
 			return FuzzyBoolean.UNKNOWN;
 		}

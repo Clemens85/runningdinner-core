@@ -1,12 +1,20 @@
 package org.runningdinner.core;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class CoreUtil {
 
 	public static String NEWLINE = System.getProperty("line.separator");
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(CoreUtil.class);
 
 	public static <T> boolean isEmpty(final Collection<T> collection) {
 		return (collection == null || collection.isEmpty());
@@ -43,6 +51,23 @@ public class CoreUtil {
 		return result;
 	}
 
+	/**
+	 * Closes the passed stream safely.<br>
+	 * If the stream is null or an exception occurs the method gracefully returns without an error.
+	 * 
+	 * @param stream
+	 */
+	public static void closeStream(Closeable stream) {
+		if (stream != null) {
+			try {
+				stream.close();
+			}
+			catch (IOException e) {
+				LOGGER.error("Failed to close stream", e);
+			}
+		}
+	}
+
 	public static void assertSmaller(int testNumber, int comparingValue, String message) {
 		if (!(testNumber < comparingValue)) {
 			throw new IllegalArgumentException(message);
@@ -55,8 +80,14 @@ public class CoreUtil {
 		}
 	}
 
-	public static void assertNotNull(MealClass mealClass, String message) {
-		if (null == mealClass) {
+	public static void assertNotNull(Object obj, String message) {
+		if (null == obj) {
+			throw new IllegalArgumentException(message);
+		}
+	}
+
+	public static void assertNotEmpty(final String s, String message) {
+		if (StringUtils.isEmpty(s)) {
 			throw new IllegalArgumentException(message);
 		}
 	}
@@ -65,5 +96,35 @@ public class CoreUtil {
 		if (!(testNumber <= comparingValue)) {
 			throw new IllegalArgumentException(message);
 		}
+	}
+
+	public static int convertToNumber(String str, int fallback) {
+		try {
+			if (StringUtils.isEmpty(str)) {
+				return fallback;
+			}
+			return Integer.valueOf(str.trim());
+		}
+		catch (NumberFormatException ex) {
+			LOGGER.error("Could not parse string {} as number", str, ex);
+			return fallback;
+		}
+	}
+
+	public static FuzzyBoolean convertToBoolean(String str, FuzzyBoolean fallback) {
+		if (StringUtils.isEmpty(str)) {
+			return fallback;
+		}
+		String boolStr = str.trim();
+		if ("true".equalsIgnoreCase(boolStr) || "x".equalsIgnoreCase(boolStr) || "ja".equalsIgnoreCase(boolStr)
+				|| "yes".equalsIgnoreCase(boolStr)) {
+			return FuzzyBoolean.TRUE;
+		}
+
+		if ("false".equalsIgnoreCase(boolStr) || "no".equalsIgnoreCase(boolStr) || "o".equalsIgnoreCase(boolStr)
+				|| "nein".equalsIgnoreCase(boolStr)) {
+			return FuzzyBoolean.FALSE;
+		}
+		return fallback;
 	}
 }
