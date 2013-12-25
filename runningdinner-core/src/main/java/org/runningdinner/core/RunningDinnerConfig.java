@@ -8,13 +8,13 @@ public class RunningDinnerConfig implements Serializable {
 
 	private static final long serialVersionUID = -1988234790887238219L;
 
-	private GenderAspects genderAspects;
-	private boolean forceEqualDistributedCapacityTeams;
 	private Set<MealClass> mealClasses;
 
 	private int teamSize;
 
 	private boolean considerShortestPaths;
+	private GenderAspects genderAspects;
+	private boolean forceEqualDistributedCapacityTeams;
 
 	protected RunningDinnerConfig(ConfigBuilder builder) {
 		this.considerShortestPaths = builder.considerShortestPaths;

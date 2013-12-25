@@ -24,8 +24,7 @@ public class ConverterFactory {
 			return new XssfConverter(parsingConfiguration);
 		}
 
-		String msg = "Unsupported input file type " + fileType;
-		throw new IllegalArgumentException(msg);
+		throw new IllegalArgumentException("Unsupported input file type " + fileType);
 	}
 
 	/**
