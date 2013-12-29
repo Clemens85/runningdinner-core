@@ -5,6 +5,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
@@ -17,6 +18,7 @@ import org.runningdinner.core.ParticipantAddress;
 import org.runningdinner.core.ParticipantName;
 import org.runningdinner.core.converter.ConversionException;
 import org.runningdinner.core.converter.ConversionException.CONVERSION_ERROR;
+import org.runningdinner.core.converter.config.AbstractColumnConfig;
 import org.runningdinner.core.converter.config.AddressColumnConfig;
 import org.runningdinner.core.converter.config.NameColumnConfig;
 import org.runningdinner.core.converter.config.NumberOfSeatsColumnConfig;
@@ -58,12 +60,22 @@ public class AbstractExcelConverterHighLevel {
 			participant.setName(participantName);
 			participant.setAddress(address);
 
+			participant.setEmail(getColumnString(row, parsingConfiguration.getEmailColumnConfig()));
+			participant.setMobileNumber(getColumnString(row, parsingConfiguration.getMobileNumberColumnConfig()));
+
 			if (!tmpResult.add(participant)) {
 				handleDuplicateError(participant, rowIndex);
 			}
 		}
 
 		return new ArrayList<Participant>(tmpResult);
+	}
+
+	private String getColumnString(final Row row, final AbstractColumnConfig columnConfig) {
+		if (columnConfig.isAvailable()) {
+			return getCellValueAsString(row, columnConfig.getColumnIndex());
+		}
+		return StringUtils.EMPTY;
 	}
 
 	private ParticipantName getName(Row row) throws ConversionException {

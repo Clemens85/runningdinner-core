@@ -14,6 +14,10 @@ public class Participant implements Comparable<Participant> {
 
 	private ParticipantAddress address;
 
+	private String email;
+
+	private String mobileNumber;
+
 	private Gender gender;
 
 	private int age;
@@ -66,6 +70,22 @@ public class Participant implements Comparable<Participant> {
 
 	public void setNumSeats(int numSeats) {
 		this.numSeats = numSeats;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getMobileNumber() {
+		return mobileNumber;
+	}
+
+	public void setMobileNumber(String mobileNumber) {
+		this.mobileNumber = mobileNumber;
 	}
 
 	public int getParticipantNumber() {

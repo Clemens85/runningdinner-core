@@ -6,10 +6,13 @@ public class ParsingConfiguration {
 
 	private int startRow = 1;
 
-	private SequenceColumnConfig sequenceColumn;
+	private SequenceColumnConfig sequenceColumnConfig;
 	private NameColumnConfig nameColumnConfig;
 	private AddressColumnConfig addressColumnConfig;
 	private NumberOfSeatsColumnConfig numSeatsColumnConfig;
+
+	private EmailColumnConfig emailColumnConfig;
+	private MobileNumberColumnConfig mobileNumberColumnConfig;
 
 	public ParsingConfiguration(NameColumnConfig nameColumnConfig, AddressColumnConfig addressColumnConfig,
 			NumberOfSeatsColumnConfig numSeatsColumnConfig) {
@@ -43,10 +46,10 @@ public class ParsingConfiguration {
 	}
 
 	public SequenceColumnConfig getSequenceColumn() {
-		if (this.sequenceColumn == null) {
+		if (this.sequenceColumnConfig == null) {
 			return SequenceColumnConfig.noSequenceColumn();
 		}
-		return sequenceColumn;
+		return sequenceColumnConfig;
 	}
 
 	public NumberOfSeatsColumnConfig getNumSeatsColumnConfig() {
@@ -54,6 +57,22 @@ public class ParsingConfiguration {
 			return NumberOfSeatsColumnConfig.noNumberOfSeatsColumn();
 		}
 		return numSeatsColumnConfig;
+	}
+
+	public EmailColumnConfig getEmailColumnConfig() {
+		return emailColumnConfig;
+	}
+
+	public void setEmailColumnConfig(EmailColumnConfig emailColumnConfig) {
+		this.emailColumnConfig = emailColumnConfig;
+	}
+
+	public MobileNumberColumnConfig getMobileNumberColumnConfig() {
+		return mobileNumberColumnConfig;
+	}
+
+	public void setMobileNumberColumnConfig(MobileNumberColumnConfig mobileNumberColumnConfig) {
+		this.mobileNumberColumnConfig = mobileNumberColumnConfig;
 	}
 
 	public static ParsingConfiguration newDefaultConfiguration() {
