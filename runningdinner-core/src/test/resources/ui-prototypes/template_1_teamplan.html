@@ -50,123 +50,130 @@
 	<div class="container" style="margin-top:30px">
 	
 
-	<ul class="nav nav-tabs">
-		<li><a href="#regular" data-toggle="tab">Regulaere Teams</a></li>
-		<li><a href="#remainder" data-toggle="tab">Uebrig gebliebene Teilnehmer</a></li>
-	</ul>
+	<div class="row">
+		<div class="col-xs-12">
+		
+			<ul class="nav nav-tabs">
+				<li><a href="#regular" data-toggle="tab">Regulaere Teams</a></li>
+				<li><a href="#remainder" data-toggle="tab">Uebrig gebliebene Teilnehmer</a></li>
+			</ul>
 
-
-	<!-- Tab panes -->
-	<div class="tab-content">
-		<div class="tab-pane active" id="regular">
-			<div class="row">
-				<h3>Regulaere Team-Einteilung</h3><hr/>
-			</div>
-			<div class="row">
-				<div class="btn-toolbar">
-					<button class="btn btn-primary btn-sm">Export...</button>
-				</div>
-				<table class="table table-hover">
-				<thead>
-				<tr>
-					<th>Team</th>
-					<th>Team-Mitglieder</th>
-					<th>Speise</th>
-					<th>Besucht</th>
-					<th>Empfaengt</th>
-					<th>Gastgeber</th>
-					<th> </th>
-				</tr>
-				</thead>
-					<tbody>
-						<tr>
-						  <td>1</td>
-						  <td>
-							<div>
-								<h5 class="media-heading"><a href="#">Clemens Stich</a></h5>
-								<h5 class="media-heading"><a href="#">Max Mustermann</a></h5>
-							</div>
-						  </td>
-						  <td><span class="text-success"><strong>Vorspeise</strong></span></td>
-						  <td>
-							<div>
-								<h5 class="media-heading"><a href="#">Team 2</a> - <span class="text-success"><strong>Hauptspeise</strong></span></h5>
-								<h5 class="media-heading"><a href="#">Team 3</a> - <span class="text-success"><strong>Dessert</strong></span></h5>
-							</div>
-						   </td>
-						  <td>
-							<div>
-								<h5 class="media-heading"><a href="#">Team 4</a></h5>
-								<h5 class="media-heading"><a href="#">Team 5</a></h5>
-							</div>
-						  </td>
-						  <td class="col-sm-2 col-md-2" style="text-align:center;"><input type="text" class="form-control" value="Clemens Stich" /></td>
-						  <td>
-							<div><a class='btn btn-info btn-sm' href="#"><span class="glyphicon glyphicon-eye-open"></span> Vorschau</a></div>
-							<div style="margin-top:3px;"><a class='btn btn-info btn-sm' href="#"><span class="glyphicon glyphicon-phone-alt"></span> Email</a></div>
-						  </td>
-						</tr>
+			<!-- Tab panes -->
+			<div class="tab-content">
+			
+				<div class="tab-pane active" id="regular">
+					<h3>Regulaere Team-Einteilung</h3>
+					
+					<div class="btn-toolbar">
+						<button class="btn btn-primary btn-sm">Export...</button>
+					</div>
 						
-						<tr>
-						  <td>2</td>
-						  <td>
-							<div>
-								<h5 class="media-heading"><a href="#">Manuela Musterfrau</a></h5>
-								<h5 class="media-heading"><a href="#">Biene Maja</a></h5>
-							</div>
-						  </td>
-						  <td><span class="text-success"><strong>Hauptspeise</strong></span></td>
-						  <td>
-							<div>
-								<h5 class="media-heading"><a href="#">Team 6</a> - <span class="text-success"><strong>Vorspeise</strong></span></h5>
-								<h5 class="media-heading"><a href="#">Team 7</a> - <span class="text-success"><strong>Dessert</strong></span></h5>
-							</div>
-						   </td>
-						  <td>
-							<div>
-								<h5 class="media-heading"><a href="#">Team 2</a></h5>
-								<h5 class="media-heading"><a href="#">Team 3</a></h5>
-							</div>
-						  </td>
-						  <td class="col-sm-2 col-md-2" style="text-align:center;"><input type="text" class="form-control" value="Biene Maja" /></td>
-						  <td>
-							<div><a class='btn btn-info btn-sm' href="#"><span class="glyphicon glyphicon-eye-open"></span> Vorschau</a></div>
-							<div style="margin-top:3px;"><a class='btn btn-info btn-sm' href="#"><span class="glyphicon glyphicon-phone-alt"></span> Email</a></div>
-						  </td>
-						</tr>
-						<tr>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td><button class="btn btn-sm"><span class="glyphicon glyphicon-phone-alt"></span> Rundmail</button></td>
-							<td><button class="btn btn-success btn-sm">Erstelle Dinnerplaene</button></td>
-						</tr>
-					</tbody>
-				</table>
-			   <hr>
-			</div>
+					<table class="table table-hover">
+					<thead>
+					<tr>
+						<th>Team</th>
+						<th>Team-Mitglieder</th>
+						<th>Speise</th>
+						<th>Besucht</th>
+						<th>Empfaengt</th>
+						<th>Gastgeber</th>
+						<th> </th>
+					</tr>
+					</thead>
+						<tbody>
+							<tr>
+							  <td>1</td>
+							  <td>
+								<div>
+									<h5 class="media-heading"><a href="#">Clemens Stich</a></h5>
+									<h5 class="media-heading"><a href="#">Max Mustermann</a></h5>
+								</div>
+							  </td>
+							  <td><span class="text-success"><strong>Vorspeise</strong></span></td>
+							  <td>
+								<div>
+									<h5 class="media-heading"><a href="#">Team 2</a> - <span class="text-success"><strong>Hauptspeise</strong></span></h5>
+									<h5 class="media-heading"><a href="#">Team 3</a> - <span class="text-success"><strong>Dessert</strong></span></h5>
+								</div>
+							   </td>
+							  <td>
+								<div>
+									<h5 class="media-heading"><a href="#">Team 4</a></h5>
+									<h5 class="media-heading"><a href="#">Team 5</a></h5>
+								</div>
+							  </td>
+							  <td class="col-sm-2 col-md-2" style="text-align:center;"><input type="text" class="form-control" value="Clemens Stich" /></td>
+							  <td>
+								<div><a class='btn btn-info btn-sm' href="#"><span class="glyphicon glyphicon-eye-open"></span> Vorschau</a></div>
+								<div style="margin-top:3px;"><a class='btn btn-info btn-sm' href="#"><span class="glyphicon glyphicon-phone-alt"></span> Email</a></div>
+							  </td>
+							</tr>
+							
+							<tr>
+							  <td>2</td>
+							  <td>
+								<div>
+									<h5 class="media-heading"><a href="#">Manuela Musterfrau</a></h5>
+									<h5 class="media-heading"><a href="#">Biene Maja</a></h5>
+								</div>
+							  </td>
+							  <td><span class="text-success"><strong>Hauptspeise</strong></span></td>
+							  <td>
+								<div>
+									<h5 class="media-heading"><a href="#">Team 6</a> - <span class="text-success"><strong>Vorspeise</strong></span></h5>
+									<h5 class="media-heading"><a href="#">Team 7</a> - <span class="text-success"><strong>Dessert</strong></span></h5>
+								</div>
+							   </td>
+							  <td>
+								<div>
+									<h5 class="media-heading"><a href="#">Team 2</a></h5>
+									<h5 class="media-heading"><a href="#">Team 3</a></h5>
+								</div>
+							  </td>
+							  <td class="col-sm-2 col-md-2" style="text-align:center;"><input type="text" class="form-control" value="Biene Maja" /></td>
+							  <td>
+								<div><a class='btn btn-info btn-sm' href="#"><span class="glyphicon glyphicon-eye-open"></span> Vorschau</a></div>
+								<div style="margin-top:3px;"><a class='btn btn-info btn-sm' href="#"><span class="glyphicon glyphicon-phone-alt"></span> Email</a></div>
+							  </td>
+							</tr>
+							<tr>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td></td>
+								<td><button class="btn btn-sm"><span class="glyphicon glyphicon-save"></span> Speichern</button></td>
+								<td><button class="btn btn-success btn-sm doTooltip" data-placement="bottom" data-toggle="tooltip" data-original-title="Legt die Teams endgueltig fest. Alle Teilnehmer bekommen eine Mail mit der Info ueber Ihren Team-Partner"><span class="glyphicon glyphicon-play"></span> Teameinteilung finalisieren...</button></td>
+							</tr>
+						</tbody>
+					</table>
+					
+					<hr>
+				
+				</div>
+				
+				<div class="tab-pane" id="remainder">
+				...
+				</div>
+				
+			</div> <!-- end tab-content -->
+			
 		</div>
-		
-		<div class="tab-pane" id="remainder">...</div>
-		
-		</div>
-	</div>
+	</div> <!-- end row -->
 	
-      <footer>
-		<div class="row">
-			<div class="col-xs-12">
-			<p>&copy; Company 2013</p>
-			<a href="http://bootsnipp.com/snippets/featured/google-maps-contact-info">http://bootsnipp.com/snippets/featured/google-maps-contact-info</a><br/>
-			<a href="http://bootsnipp.com/snippets/featured/google-maps-contact-info">http://bootsnipp.com/snippets/featured/shopping-cart-bs-3</a><br/>
-			<a href="http://bootsnipp.com/snippets/featured/google-maps-contact-info">http://bootsnipp.com/snippets/featured/recent-comments-admin-panel</a><br/>
-			<a href="http://bootsnipp.com/snippets/featured/google-maps-contact-info">http://bootsnipp.com/snippets/featured/faq-with-categories</a><br/>
-			</div>
+	<div class="row">
+		<div class="col-xs-12">
+		  <footer>
+				<p>&copy; Company 2013</p>
+				<a href="http://bootsnipp.com/snippets/featured/google-maps-contact-info">http://bootsnipp.com/snippets/featured/google-maps-contact-info</a><br/>
+				<a href="http://bootsnipp.com/snippets/featured/google-maps-contact-info">http://bootsnipp.com/snippets/featured/shopping-cart-bs-3</a><br/>
+				<a href="http://bootsnipp.com/snippets/featured/google-maps-contact-info">http://bootsnipp.com/snippets/featured/recent-comments-admin-panel</a><br/>
+				<a href="http://bootsnipp.com/snippets/featured/google-maps-contact-info">http://bootsnipp.com/snippets/featured/faq-with-categories</a><br/>
+		  </footer>
 		</div>
-      </footer>
-	  
-    </div> <!-- /container -->
+    </div>
+	
+	</div><!--  end container -->
 
 
     <!-- Bootstrap core JavaScript
@@ -176,6 +183,7 @@
     <script src="bootstrap/js/bootstrap.min.js"></script>
 	
 	<script>
+		$('.doTooltip').tooltip();
 	</script>
   </body>
 </html>

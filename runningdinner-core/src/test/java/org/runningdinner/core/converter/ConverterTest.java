@@ -216,10 +216,10 @@ public class ConverterTest {
 		assertEquals(1000, fourth.getNumSeats());
 
 		RunningDinnerConfig standardConfig = RunningDinnerConfig.newConfigurer().build();
-		assertEquals(FuzzyBoolean.FALSE, first.canHost(standardConfig));
-		assertEquals(FuzzyBoolean.TRUE, second.canHost(standardConfig));
-		assertEquals(FuzzyBoolean.FALSE, third.canHost(standardConfig));
-		assertEquals(FuzzyBoolean.TRUE, fourth.canHost(standardConfig));
+		assertEquals(FuzzyBoolean.FALSE, standardConfig.canHost(first));
+		assertEquals(FuzzyBoolean.TRUE, standardConfig.canHost(second));
+		assertEquals(FuzzyBoolean.FALSE, standardConfig.canHost(third));
+		assertEquals(FuzzyBoolean.TRUE, standardConfig.canHost(fourth));
 	}
 
 	@After

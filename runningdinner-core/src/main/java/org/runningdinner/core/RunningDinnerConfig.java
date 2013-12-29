@@ -67,6 +67,14 @@ public class RunningDinnerConfig implements Serializable {
 		return new TeamCombinationInfo(teamSegmentSize, numRemaindingTeams);
 	}
 
+	public FuzzyBoolean canHost(final Participant participant) {
+		if (participant.getNumSeats() == Participant.UNDEFINED_SEATS) {
+			return FuzzyBoolean.UNKNOWN;
+		}
+		int numSeatsNeeded = getTeamSize() * getMealClasses().size();
+		return participant.getNumSeats() >= numSeatsNeeded ? FuzzyBoolean.TRUE : FuzzyBoolean.FALSE;
+	}
+
 	public static ConfigBuilder newConfigurer() {
 		return new ConfigBuilder();
 	}

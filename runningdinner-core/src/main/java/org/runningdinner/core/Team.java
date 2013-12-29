@@ -52,10 +52,10 @@ public class Team implements Comparable<Team> {
 		this.visitationPlan = visitationPlan;
 	}
 
-	public List<FuzzyBoolean> getHousingDump(final RunningDinnerConfig runningDinnerConfig) {
+	public List<FuzzyBoolean> getHostingDump(final RunningDinnerConfig runningDinnerConfig) {
 		ArrayList<FuzzyBoolean> result = new ArrayList<FuzzyBoolean>(teamMembers.size());
 		for (Participant member : teamMembers) {
-			result.add(member.canHost(runningDinnerConfig));
+			result.add(runningDinnerConfig.canHost(member));
 		}
 		return result;
 	}

@@ -63,7 +63,7 @@ public class TeamBuilderTest {
 
 			assertEquals(true, isDistributionBalanced(team, standardConfig));
 
-			System.out.println(team + " - canHouse: " + team.getHousingDump(standardConfig));
+			System.out.println(team + " - canHost: " + team.getHostingDump(standardConfig));
 		}
 	}
 
@@ -117,7 +117,7 @@ public class TeamBuilderTest {
 				numUnbalancedTeams++;
 			}
 
-			System.out.println(team + " - canHouse :" + team.getHousingDump(standardConfig));
+			System.out.println(team + " - canHouse :" + team.getHostingDump(standardConfig));
 		}
 
 		assertEquals(4, numBalancedTeams);
@@ -315,8 +315,8 @@ public class TeamBuilderTest {
 		}
 		Participant[] teamMemberArr = teamMembers.toArray(new Participant[2]);
 
-		FuzzyBoolean canHouse1 = teamMemberArr[0].canHost(runningDinnerConfig);
-		FuzzyBoolean canHouse2 = teamMemberArr[1].canHost(runningDinnerConfig);
+		FuzzyBoolean canHouse1 = runningDinnerConfig.canHost(teamMemberArr[0]);
+		FuzzyBoolean canHouse2 = runningDinnerConfig.canHost(teamMemberArr[1]);
 
 		if (canHouse1 == FuzzyBoolean.UNKNOWN && canHouse2 == FuzzyBoolean.UNKNOWN) {
 			return false;

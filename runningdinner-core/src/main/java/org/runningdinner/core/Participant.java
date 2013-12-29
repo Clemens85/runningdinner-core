@@ -24,6 +24,8 @@ public class Participant implements Comparable<Participant> {
 
 	private int numSeats;
 
+	private boolean host;
+
 	public Participant(final int participantNumber) {
 		this.participantNumber = participantNumber;
 		this.numSeats = UNDEFINED_SEATS;
@@ -92,12 +94,12 @@ public class Participant implements Comparable<Participant> {
 		return participantNumber;
 	}
 
-	public FuzzyBoolean canHost(final RunningDinnerConfig runningDinnerConfig) {
-		if (getNumSeats() == UNDEFINED_SEATS) {
-			return FuzzyBoolean.UNKNOWN;
-		}
-		int numSeatsNeeded = runningDinnerConfig.getTeamSize() * runningDinnerConfig.getMealClasses().size();
-		return getNumSeats() >= numSeatsNeeded ? FuzzyBoolean.TRUE : FuzzyBoolean.FALSE;
+	public boolean isHost() {
+		return host;
+	}
+
+	public void setHost(boolean host) {
+		this.host = host;
 	}
 
 	@Override

@@ -160,13 +160,13 @@ public class RunningDinnerService {
 			// Distribute team-members based on whether they have enough seats or not:
 			for (Participant teamMember : participantsToAssign) {
 
-				FuzzyBoolean canHouse = teamMember.canHost(runningDinnerConfig);
+				FuzzyBoolean canHost = runningDinnerConfig.canHost(teamMember);
 
-				if (FuzzyBoolean.TRUE == canHouse) {
+				if (FuzzyBoolean.TRUE == canHost) {
 					// Enough space
 					categoryOneList.offer(teamMember);
 				}
-				else if (FuzzyBoolean.UNKNOWN == canHouse) {
+				else if (FuzzyBoolean.UNKNOWN == canHost) {
 					// We don't know...
 					uncategeorizedList.offer(teamMember);
 				}
