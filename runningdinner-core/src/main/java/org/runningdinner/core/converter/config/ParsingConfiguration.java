@@ -60,6 +60,9 @@ public class ParsingConfiguration {
 	}
 
 	public EmailColumnConfig getEmailColumnConfig() {
+		if (emailColumnConfig == null) {
+			return EmailColumnConfig.noEmailColumn();
+		}
 		return emailColumnConfig;
 	}
 
@@ -68,6 +71,9 @@ public class ParsingConfiguration {
 	}
 
 	public MobileNumberColumnConfig getMobileNumberColumnConfig() {
+		if (mobileNumberColumnConfig == null) {
+			return MobileNumberColumnConfig.noMobileNumberColumn();
+		}
 		return mobileNumberColumnConfig;
 	}
 

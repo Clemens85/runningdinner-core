@@ -1,5 +1,6 @@
 package org.runningdinner.core;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -75,6 +76,9 @@ public class Participant implements Comparable<Participant> {
 	}
 
 	public String getEmail() {
+		if (email == null) {
+			return StringUtils.EMPTY;
+		}
 		return email;
 	}
 
@@ -83,6 +87,9 @@ public class Participant implements Comparable<Participant> {
 	}
 
 	public String getMobileNumber() {
+		if (mobileNumber == null) {
+			return StringUtils.EMPTY;
+		}
 		return mobileNumber;
 	}
 

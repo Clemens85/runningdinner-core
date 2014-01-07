@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.runningdinner.core.CoreUtil;
@@ -19,11 +20,14 @@ import org.runningdinner.core.ParticipantName;
 import org.runningdinner.core.RunningDinnerConfig;
 import org.runningdinner.core.converter.ConversionException.CONVERSION_ERROR;
 import org.runningdinner.core.converter.ConverterFactory.INPUT_FILE_TYPE;
+import org.runningdinner.core.converter.config.EmailColumnConfig;
+import org.runningdinner.core.converter.config.MobileNumberColumnConfig;
 import org.runningdinner.core.converter.config.ParsingConfiguration;
 
 public class ConverterTest {
 
 	public static final String STANDARD_XLS_FILE = "/excelimport/standard.xls";
+	public static final String STANDARD_XLS_WITH_CONTACTINFO_FILE = "/excelimport/standard_with_contact.xls";
 	public static final String STANDARD_XLSX_FILE = "/excelimport/standard.xlsx";
 	public static final String EMPTY_XLS_FILE = "/excelimport/empty.xls";
 	public static final String INVALID_XLSX_FILE = "/excelimport/invalid.xlsx";
@@ -169,7 +173,7 @@ public class ConverterTest {
 		FileConverter excelConverter = ConverterFactory.newConverter(parsingConfiguration, fileType);
 		List<Participant> participants = excelConverter.parseParticipants(inputStream);
 
-		checkParsedParticipants(participants);
+		checkParsedParticipants(participants, false);
 	}
 
 	@Test
@@ -184,10 +188,27 @@ public class ConverterTest {
 		FileConverter excelConverter = ConverterFactory.newConverter(parsingConfiguration, fileType);
 		List<Participant> participants = excelConverter.parseParticipants(inputStream);
 
-		checkParsedParticipants(participants);
+		checkParsedParticipants(participants, false);
 	}
 
-	private void checkParsedParticipants(List<Participant> participants) {
+	@Test
+	public void testXlsWithContactInfo() throws IOException, ConversionException {
+
+		INPUT_FILE_TYPE fileType = ConverterFactory.determineFileType(STANDARD_XLS_WITH_CONTACTINFO_FILE);
+		assertEquals(INPUT_FILE_TYPE.HSSF, fileType);
+
+		ParsingConfiguration parsingConfiguration = ParsingConfiguration.newDefaultConfiguration();
+		parsingConfiguration.setEmailColumnConfig(EmailColumnConfig.createEmailColumnConfig(4));
+		parsingConfiguration.setMobileNumberColumnConfig(MobileNumberColumnConfig.createMobileNumberColumnConfig(5));
+
+		inputStream = getClass().getResourceAsStream(STANDARD_XLS_WITH_CONTACTINFO_FILE);
+		FileConverter excelConverter = ConverterFactory.newConverter(parsingConfiguration, fileType);
+		List<Participant> participants = excelConverter.parseParticipants(inputStream);
+
+		checkParsedParticipants(participants, true);
+	}
+
+	private void checkParsedParticipants(List<Participant> participants, boolean checkContactInfo) {
 		assertEquals(4, participants.size());
 
 		Participant first = participants.get(0);
@@ -195,6 +216,10 @@ public class ConverterTest {
 		assertEquals(Gender.UNDEFINED, first.getGender());
 		assertEquals(4, first.getNumSeats());
 		assertEquals("Clemens Stich", first.getName().getFullnameFirstnameFirst());
+		if (checkContactInfo) {
+			assertEquals("c.s@mail.de", first.getEmail());
+			assertEquals("0176 22", first.getMobileNumber());
+		}
 
 		Participant second = participants.get(1);
 		assertEquals(2, second.getParticipantNumber());
@@ -203,10 +228,18 @@ public class ConverterTest {
 		assertEquals("Max Mustermann", second.getName().getFullnameFirstnameFirst());
 		assertEquals("Musterstraße 12", second.getAddress().getStreetWithNr());
 		assertEquals("11111 Musterhausen", second.getAddress().getZipWithCity());
+		if (checkContactInfo) {
+			assertEquals("mm@mm.de", second.getEmail());
+			assertEquals(StringUtils.EMPTY, second.getMobileNumber());
+		}
 
 		Participant third = participants.get(2);
 		assertEquals("Michaela Musterfrau", third.getName().getFullnameFirstnameFirst());
 		assertEquals(3, third.getParticipantNumber());
+		assertEquals(StringUtils.EMPTY, third.getEmail());
+		if (checkContactInfo) {
+			assertEquals("123456", third.getMobileNumber());
+		}
 
 		Participant fourth = participants.get(3);
 		assertEquals("Biene Maja", fourth.getName().getFullnameFirstnameFirst());
@@ -214,6 +247,9 @@ public class ConverterTest {
 		assertEquals("Auf dem Bienenstock 1", fourth.getAddress().getStreetWithNr());
 		assertEquals("12345 Bienenstadt", fourth.getAddress().getZipWithCity());
 		assertEquals(1000, fourth.getNumSeats());
+		if (checkContactInfo) {
+			assertEquals("maja@biene.de", fourth.getEmail());
+		}
 
 		RunningDinnerConfig standardConfig = RunningDinnerConfig.newConfigurer().build();
 		assertEquals(FuzzyBoolean.FALSE, standardConfig.canHost(first));

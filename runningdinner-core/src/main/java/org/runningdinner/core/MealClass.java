@@ -1,5 +1,7 @@
 package org.runningdinner.core;
 
+import java.util.Date;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
@@ -13,7 +15,10 @@ public final class MealClass {
 
 	private String label;
 
-	private int order; // TODO: Implement this for having appetizer -> MainCourse -> Dessert
+	private Date time;
+
+	protected MealClass() {
+	}
 
 	public MealClass(String label) {
 		super();
@@ -22,6 +27,14 @@ public final class MealClass {
 
 	public String getLabel() {
 		return label;
+	}
+
+	public Date getTime() {
+		return time;
+	}
+
+	public void setTime(Date time) {
+		this.time = time;
 	}
 
 	@Override
