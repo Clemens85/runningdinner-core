@@ -1,6 +1,7 @@
 package org.runningdinner.core;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -13,7 +14,7 @@ public class RunningDinnerConfig implements Serializable {
 	private int teamSize;
 
 	private boolean considerShortestPaths;
-	private GenderAspects genderAspects;
+	private GenderAspect genderAspects;
 	private boolean forceEqualDistributedCapacityTeams;
 
 	protected RunningDinnerConfig(ConfigBuilder builder) {
@@ -24,7 +25,7 @@ public class RunningDinnerConfig implements Serializable {
 		this.genderAspects = builder.genderAspects;
 	}
 
-	public GenderAspects getGenderAspects() {
+	public GenderAspect getGenderAspects() {
 		return genderAspects;
 	}
 
@@ -82,7 +83,7 @@ public class RunningDinnerConfig implements Serializable {
 	public static class ConfigBuilder {
 
 		// Defaults:
-		private GenderAspects genderAspects = GenderAspects.IGNORE_GENDER;
+		private GenderAspect genderAspects = GenderAspect.IGNORE_GENDER;
 		private boolean forceEqualDistributedCapacityTeams = true;
 		private boolean considerShortestPaths = true;
 		private Set<MealClass> mealClasses = null;
@@ -96,12 +97,14 @@ public class RunningDinnerConfig implements Serializable {
 			return this;
 		}
 
-		// TODO: das geht noch besser, mit neuem verschachteltem builder (-> arne limburg vortrag -> DDD)
-		public ConfigBuilder havingMeal(final MealClass mealClass) {
-			if (mealClasses == null) {
-				mealClasses = new HashSet<MealClass>(3);
+		public ConfigBuilder havingMeals(final Collection<MealClass> meals) {
+			if (this.mealClasses == null) {
+				this.mealClasses = new HashSet<MealClass>(meals);
 			}
-			mealClasses.add(mealClass);
+			else {
+				this.mealClasses.clear();
+				this.mealClasses.addAll(meals);
+			}
 
 			return this;
 		}
@@ -111,7 +114,7 @@ public class RunningDinnerConfig implements Serializable {
 			return this;
 		}
 
-		public ConfigBuilder withGenderAspects(GenderAspects genderAspects) {
+		public ConfigBuilder withGenderAspects(GenderAspect genderAspects) {
 			this.genderAspects = genderAspects;
 			return this;
 		}

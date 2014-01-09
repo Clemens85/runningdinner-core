@@ -12,7 +12,7 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
-public class RunningDinnerService {
+public class RunningDinnerCalculator {
 
 	public GeneratedTeamsResult generateTeams(final RunningDinnerConfig runningDinnerConfig, final List<Participant> participants)
 			throws NoPossibleRunningDinnerException {
