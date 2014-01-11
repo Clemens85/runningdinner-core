@@ -50,7 +50,7 @@ public class ConverterTest {
 	public void testConfigurations() {
 		ParsingConfiguration parsingConfiguration = ParsingConfiguration.newDefaultConfiguration();
 
-		assertEquals(false, parsingConfiguration.getSequenceColumn().isAvailable());
+		assertEquals(false, parsingConfiguration.getSequenceColumnConfig().isAvailable());
 
 		assertEquals(true, parsingConfiguration.getNameColumnConfig().isAvailable());
 		assertEquals(true, parsingConfiguration.getNameColumnConfig().isComposite());

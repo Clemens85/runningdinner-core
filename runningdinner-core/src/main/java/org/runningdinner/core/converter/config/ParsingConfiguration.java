@@ -45,13 +45,6 @@ public class ParsingConfiguration {
 		return addressColumnConfig;
 	}
 
-	public SequenceColumnConfig getSequenceColumn() {
-		if (this.sequenceColumnConfig == null) {
-			return SequenceColumnConfig.noSequenceColumn();
-		}
-		return sequenceColumnConfig;
-	}
-
 	public NumberOfSeatsColumnConfig getNumSeatsColumnConfig() {
 		if (numSeatsColumnConfig == null) {
 			return NumberOfSeatsColumnConfig.noNumberOfSeatsColumn();
@@ -81,6 +74,17 @@ public class ParsingConfiguration {
 		this.mobileNumberColumnConfig = mobileNumberColumnConfig;
 	}
 
+	public SequenceColumnConfig getSequenceColumnConfig() {
+		if (sequenceColumnConfig == null) {
+			return SequenceColumnConfig.noSequenceColumn();
+		}
+		return sequenceColumnConfig;
+	}
+
+	public void setSequenceColumnConfig(SequenceColumnConfig sequenceColumnConfig) {
+		this.sequenceColumnConfig = sequenceColumnConfig;
+	}
+
 	public static ParsingConfiguration newDefaultConfiguration() {
 		NameColumnConfig nameColumnConfig = NameColumnConfig.createForOneColumn(0);
 		AddressColumnConfig addressColumnConfig = AddressColumnConfig.newBuilder().withStreetAndStreetNrColumn(1).buildWithZipAndCityColumn(
@@ -88,6 +92,7 @@ public class ParsingConfiguration {
 		NumberOfSeatsColumnConfig numberSeatsColumnConfig = NumberOfSeatsColumnConfig.newNumericSeatsColumnConfig(3);
 
 		ParsingConfiguration config = new ParsingConfiguration(nameColumnConfig, addressColumnConfig, numberSeatsColumnConfig);
+		config.setStartRow(1);
 		return config;
 	}
 }

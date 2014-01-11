@@ -3,6 +3,9 @@ package org.runningdinner.core;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.Embeddable;
+
+@Embeddable
 public class VisitationPlan {
 
 	private Team team;

@@ -193,7 +193,7 @@ public class AbstractExcelConverterHighLevel {
 	private int getSequenceNumberIfAvailable(final Row row, final int participantNr) {
 		int result = participantNr;
 
-		SequenceColumnConfig sequenceColumn = parsingConfiguration.getSequenceColumn();
+		SequenceColumnConfig sequenceColumn = parsingConfiguration.getSequenceColumnConfig();
 		if (sequenceColumn.isAvailable()) {
 			int sequenceNr = CoreUtil.convertToNumber(getCellValueAsString(row, sequenceColumn.getColumnIndex()), -1);
 			if (sequenceNr >= 0) {

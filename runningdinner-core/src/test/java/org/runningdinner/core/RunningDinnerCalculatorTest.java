@@ -184,7 +184,7 @@ public class RunningDinnerCalculatorTest {
 			@Override
 			public boolean evaluate(Object obj) {
 				Team team = (Team)obj;
-				return team.getMealClass() == MealClass.APPETIZER;
+				return team.getMealClass().equals(MealClass.APPETIZER);
 			}
 		}));
 
@@ -192,7 +192,7 @@ public class RunningDinnerCalculatorTest {
 			@Override
 			public boolean evaluate(Object obj) {
 				Team team = (Team)obj;
-				return team.getMealClass() == MealClass.MAINCOURSE;
+				return team.getMealClass().equals(MealClass.MAINCOURSE);
 			}
 		}));
 
@@ -200,7 +200,7 @@ public class RunningDinnerCalculatorTest {
 			@Override
 			public boolean evaluate(Object obj) {
 				Team team = (Team)obj;
-				return team.getMealClass() == MealClass.DESSERT;
+				return team.getMealClass().equals(MealClass.DESSERT);
 			}
 		}));
 

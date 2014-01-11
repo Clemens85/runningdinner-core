@@ -1,18 +1,27 @@
 package org.runningdinner.core;
 
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.runningdinner.core.model.AbstractEntity;
 
-public class Participant implements Comparable<Participant> {
+@Entity
+public class Participant extends AbstractEntity implements Comparable<Participant> {
+
+	private static final long serialVersionUID = -8062709434676386371L;
 
 	public static final int UNDEFINED_SEATS = -1;
 	public static final int UNDEFINED_AGE = -1;
 
 	private int participantNumber;
 
+	@Embedded
 	private ParticipantName name;
 
+	@Embedded
 	private ParticipantAddress address;
 
 	private String email;

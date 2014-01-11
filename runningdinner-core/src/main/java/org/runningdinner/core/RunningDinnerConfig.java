@@ -1,14 +1,17 @@
 package org.runningdinner.core;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class RunningDinnerConfig implements Serializable {
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToMany;
 
-	private static final long serialVersionUID = -1988234790887238219L;
+@Embeddable
+public class RunningDinnerConfig {
 
+	@OneToMany(cascade = CascadeType.REMOVE)
 	private Set<MealClass> mealClasses;
 
 	private int teamSize;
@@ -16,6 +19,10 @@ public class RunningDinnerConfig implements Serializable {
 	private boolean considerShortestPaths;
 	private GenderAspect genderAspects;
 	private boolean forceEqualDistributedCapacityTeams;
+
+	protected RunningDinnerConfig() {
+		// Needed for JPA
+	}
 
 	protected RunningDinnerConfig(ConfigBuilder builder) {
 		this.considerShortestPaths = builder.considerShortestPaths;

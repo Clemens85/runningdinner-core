@@ -1,7 +1,10 @@
 package org.runningdinner.core;
 
+import javax.persistence.Embeddable;
+
 import org.apache.commons.lang3.StringUtils;
 
+@Embeddable
 public class ParticipantName {
 
 	private String firstnamePart;

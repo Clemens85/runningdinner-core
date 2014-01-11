@@ -2,12 +2,18 @@ package org.runningdinner.core;
 
 import java.util.Date;
 
+import javax.persistence.Entity;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.runningdinner.core.model.AbstractEntity;
 
-// TODO: Klasse muss trotzdem immer mit equals verglichen werden!
+@Entity
+public final class MealClass extends AbstractEntity {
 
-public final class MealClass {
+	private static final long serialVersionUID = 8167694721190832584L;
 
 	public static MealClass APPETIZER = new MealClass("Vorspeise");
 	public static MealClass MAINCOURSE = new MealClass("Hauptgericht");
@@ -15,6 +21,7 @@ public final class MealClass {
 
 	private String label;
 
+	@Temporal(TemporalType.TIMESTAMP)
 	private Date time;
 
 	protected MealClass() {

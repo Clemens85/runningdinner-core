@@ -4,10 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Entity;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.runningdinner.core.model.AbstractEntity;
 
-public class Team implements Comparable<Team> {
+@Entity
+@Access(AccessType.FIELD)
+public class Team extends AbstractEntity implements Comparable<Team> {
+
+	private static final long serialVersionUID = -2808246041848437912L;
 
 	private int teamNumber;
 
