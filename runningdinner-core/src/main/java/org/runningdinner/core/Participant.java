@@ -1,5 +1,8 @@
 package org.runningdinner.core;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 
@@ -9,6 +12,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.runningdinner.core.model.AbstractEntity;
 
 @Entity
+@Access(AccessType.FIELD)
 public class Participant extends AbstractEntity implements Comparable<Participant> {
 
 	private static final long serialVersionUID = -8062709434676386371L;
@@ -16,6 +20,7 @@ public class Participant extends AbstractEntity implements Comparable<Participan
 	public static final int UNDEFINED_SEATS = -1;
 	public static final int UNDEFINED_AGE = -1;
 
+	@Column(nullable = false)
 	private int participantNumber;
 
 	@Embedded
@@ -35,6 +40,10 @@ public class Participant extends AbstractEntity implements Comparable<Participan
 	private int numSeats;
 
 	private boolean host;
+
+	protected Participant() {
+		// JPA
+	}
 
 	public Participant(final int participantNumber) {
 		this.participantNumber = participantNumber;

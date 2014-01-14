@@ -2,6 +2,8 @@ package org.runningdinner.core;
 
 import java.util.Date;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Entity;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -11,6 +13,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.runningdinner.core.model.AbstractEntity;
 
 @Entity
+@Access(AccessType.FIELD)
 public final class MealClass extends AbstractEntity {
 
 	private static final long serialVersionUID = 8167694721190832584L;

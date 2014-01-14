@@ -7,6 +7,8 @@ import java.util.Set;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -20,11 +22,18 @@ public class Team extends AbstractEntity implements Comparable<Team> {
 
 	private int teamNumber;
 
+	@OneToMany
 	private Set<Participant> teamMembers;
 
+	@OneToOne
 	private MealClass mealClass;
 
+	@OneToOne
 	private VisitationPlan visitationPlan;
+
+	protected Team() {
+		// JPA
+	}
 
 	public Team(int teamNumber) {
 		this.teamNumber = teamNumber;

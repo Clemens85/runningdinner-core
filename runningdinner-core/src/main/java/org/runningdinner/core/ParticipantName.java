@@ -11,6 +11,7 @@ public class ParticipantName {
 	private String lastname;
 
 	protected ParticipantName() {
+		// JPA
 	}
 
 	/**

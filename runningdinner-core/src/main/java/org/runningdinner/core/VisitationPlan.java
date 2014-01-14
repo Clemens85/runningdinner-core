@@ -3,16 +3,32 @@ package org.runningdinner.core;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Embeddable;
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
-@Embeddable
-public class VisitationPlan {
+import org.runningdinner.core.model.AbstractEntity;
 
+@Entity
+@Access(AccessType.FIELD)
+public class VisitationPlan extends AbstractEntity {
+
+	private static final long serialVersionUID = -3095367914360796585L;
+
+	@OneToOne
 	private Team team;
 
+	@OneToMany
 	private Set<Team> hostTeams = new HashSet<Team>(2); // heuristic assumption, will apply in nearly any case
 
+	@OneToMany
 	private Set<Team> guestTeams = new HashSet<Team>(2); // heuristic assumption, will apply in nearly any case
+
+	protected VisitationPlan() {
+		// JPA
+	}
 
 	public VisitationPlan(final Team currentTeam) {
 		this.team = currentTeam;

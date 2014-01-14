@@ -346,7 +346,7 @@ public class RunningDinnerCalculatorTest {
 	 * @param numParticipants
 	 * @return
 	 */
-	protected List<Participant> generateParticipants(int numParticipants, int participantNrOffset) {
+	public static List<Participant> generateParticipants(int numParticipants, int participantNrOffset) {
 		List<Participant> result = new ArrayList<Participant>(numParticipants);
 		for (int i = 1; i <= numParticipants; i++) {
 			int participantNr = i + participantNrOffset;

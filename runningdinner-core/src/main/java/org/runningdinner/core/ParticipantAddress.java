@@ -25,7 +25,7 @@ public class ParticipantAddress {
 	}
 
 	public ParticipantAddress() {
-
+		// JPA
 	}
 
 	public static ParticipantAddress parseFromString(String completeAddressString) {
