@@ -71,11 +71,18 @@
 		</exclusions>
 	</dependency>
     
+    <!-- Both JPA and Jackson are needed for annotating some core classes, but the dependencies must be provided by consumer-modules -->
     <dependency>
     	<groupId>org.hibernate.javax.persistence</groupId>
     	<artifactId>hibernate-jpa-2.0-api</artifactId>
     	<version>1.0.1.Final</version>
     	<scope>provided</scope>
+    	<optional>true</optional>
+	</dependency>
+	<dependency>
+    	<groupId>org.codehaus.jackson</groupId>
+    	<artifactId>jackson-mapper-asl</artifactId>
+    	<version>1.9.10</version>
     	<optional>true</optional>
 	</dependency>
     

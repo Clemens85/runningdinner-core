@@ -44,7 +44,7 @@ public class NameColumnConfig {
 	}
 
 	public static NameColumnConfig createForTwoColumns(final int firstnameColumn, final int lastnameColumn) {
-		return new NameColumnConfig(firstnameColumn, firstnameColumn);
+		return new NameColumnConfig(firstnameColumn, lastnameColumn);
 	}
 
 	public static NameColumnConfig createForOneColumn(final int column) {

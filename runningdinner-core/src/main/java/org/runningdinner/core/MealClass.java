@@ -10,10 +10,14 @@ import javax.persistence.TemporalType;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.runningdinner.core.model.AbstractEntity;
 
 @Entity
 @Access(AccessType.FIELD)
+// Ignore JPA basic entity attributes, as we don't need them currently
+// TODO: Currently this is sufficient, if we need different cases, then the JSON serializer/deserializer must be adapted
+@JsonIgnoreProperties(value = { "id", "naturalKey", "versionNo", "createdAt", "modifiedAt", "new" })
 public final class MealClass extends AbstractEntity {
 
 	private static final long serialVersionUID = 8167694721190832584L;
