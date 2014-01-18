@@ -6,9 +6,12 @@ import java.util.Set;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import org.hibernate.annotations.BatchSize;
 import org.runningdinner.core.model.AbstractEntity;
 
 @Entity
@@ -17,13 +20,17 @@ public class VisitationPlan extends AbstractEntity {
 
 	private static final long serialVersionUID = -3095367914360796585L;
 
-	@OneToOne
+	@OneToOne(fetch = FetchType.EAGER)
 	private Team team;
 
-	@OneToMany
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "visitation_hosts_fk")
+	@BatchSize(size = 30)
 	private Set<Team> hostTeams = new HashSet<Team>(2); // heuristic assumption, will apply in nearly any case
 
-	@OneToMany
+	@OneToMany(fetch = FetchType.LAZY)
+	@JoinColumn(name = "visitation_guests_fk")
+	@BatchSize(size = 30)
 	private Set<Team> guestTeams = new HashSet<Team>(2); // heuristic assumption, will apply in nearly any case
 
 	protected VisitationPlan() {

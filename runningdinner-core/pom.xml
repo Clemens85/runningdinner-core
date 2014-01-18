@@ -18,6 +18,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <hibernate.version>3.6.8.Final</hibernate.version>
   </properties>
 
   <dependencies>
@@ -71,13 +72,25 @@
 		</exclusions>
 	</dependency>
     
-    <!-- Both JPA and Jackson are needed for annotating some core classes, but the dependencies must be provided by consumer-modules -->
+    <!-- Both JPA/Hibernate and Jackson are needed for annotating some core classes, but the dependencies must be provided by consumer-modules -->
     <dependency>
     	<groupId>org.hibernate.javax.persistence</groupId>
     	<artifactId>hibernate-jpa-2.0-api</artifactId>
     	<version>1.0.1.Final</version>
     	<scope>provided</scope>
     	<optional>true</optional>
+	</dependency>
+	<dependency>
+		<groupId>org.hibernate</groupId>
+		<artifactId>hibernate-core</artifactId>
+	 	<version>${hibernate.version}</version>
+	 	 <exclusions>
+  			<exclusion>
+  				<groupId>org.slf4j</groupId>
+  				<artifactId>slf4j-api</artifactId>
+  			</exclusion>
+  		</exclusions>
+  		<optional>true</optional>
 	</dependency>
 	<dependency>
     	<groupId>org.codehaus.jackson</groupId>
