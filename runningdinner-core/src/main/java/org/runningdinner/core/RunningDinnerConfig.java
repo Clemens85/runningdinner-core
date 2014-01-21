@@ -14,7 +14,7 @@ import javax.persistence.OneToMany;
 public class RunningDinnerConfig {
 
 	@OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
-	@JoinColumn(name = "runningdinner_fk")
+	@JoinColumn(name = "dinner_id")
 	// Actually not needed as we look currently always at one dinner... maybe interesting for an global-admin-overview in some time
 	// @BatchSize(size = 30)
 	private Set<MealClass> mealClasses;

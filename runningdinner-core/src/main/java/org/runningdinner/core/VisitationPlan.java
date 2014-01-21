@@ -5,33 +5,37 @@ import java.util.Set;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
 
-import org.hibernate.annotations.BatchSize;
-import org.runningdinner.core.model.AbstractEntity;
-
-@Entity
+@Embeddable
 @Access(AccessType.FIELD)
-public class VisitationPlan extends AbstractEntity {
+public class VisitationPlan /* extends AbstractEntity */{
 
-	private static final long serialVersionUID = -3095367914360796585L;
+	/**
+	 * This is just used when populating the VisitationPlan. Later on this information isn't needed any longer
+	 */
+	@Transient
+	protected Team team;
 
-	@OneToOne(fetch = FetchType.EAGER)
-	private Team team;
+	/**
+	 * We have two associations to the same entity (Team) by using hostTeams and guestTeams. Therefore we must use ManyToMany association
+	 * for being able to get two disjunct join-tables.
+	 */
+	@ManyToMany
+	@JoinTable(name = "HostTeamMapping", joinColumns = @JoinColumn(name = "host_team_id"), inverseJoinColumns = @JoinColumn(name = "parent_team_id"))
+	protected Set<Team> hostTeams = new HashSet<Team>(2); // heuristic assumption, will apply in nearly any case
 
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "visitation_hosts_fk")
-	@BatchSize(size = 30)
-	private Set<Team> hostTeams = new HashSet<Team>(2); // heuristic assumption, will apply in nearly any case
-
-	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "visitation_guests_fk")
-	@BatchSize(size = 30)
-	private Set<Team> guestTeams = new HashSet<Team>(2); // heuristic assumption, will apply in nearly any case
+	/**
+	 * We have two associations to the same entity (Team) by using hostTeams and guestTeams. Therefore we must use ManyToMany association
+	 * for being able to get two disjunct join-tables.
+	 */
+	@ManyToMany
+	@JoinTable(name = "GuestTeamMapping", joinColumns = @JoinColumn(name = "guest_team_id"), inverseJoinColumns = @JoinColumn(name = "parent_team_id"))
+	protected Set<Team> guestTeams = new HashSet<Team>(2); // heuristic assumption, will apply in nearly any case
 
 	protected VisitationPlan() {
 		// JPA
@@ -42,14 +46,20 @@ public class VisitationPlan extends AbstractEntity {
 		currentTeam.setVisitationPlan(this);
 	}
 
-	public Team getTeam() {
-		return team;
-	}
-
+	/**
+	 * Returns the teams which are host for the current team (from the VisitationPlan)
+	 * 
+	 * @return
+	 */
 	public Set<Team> getHostTeams() {
 		return hostTeams;
 	}
 
+	/**
+	 * Returns the teams which are guest of the current team (from the VisitationPlan)
+	 * 
+	 * @return
+	 */
 	public Set<Team> getGuestTeams() {
 		return guestTeams;
 	}

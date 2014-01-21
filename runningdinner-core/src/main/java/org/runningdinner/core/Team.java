@@ -6,19 +6,17 @@ import java.util.Set;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.Transient;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.runningdinner.core.model.AbstractEntity;
-
-// TODO: Eventually use BatchSize!
 
 @Entity
 @Access(AccessType.FIELD)
@@ -26,20 +24,19 @@ public class Team extends AbstractEntity implements Comparable<Team> {
 
 	private static final long serialVersionUID = -2808246041848437912L;
 
-	private int teamNumber;
+	protected int teamNumber;
 
 	@OneToMany(fetch = FetchType.LAZY)
-	@JoinColumn(name = "assignedteam_fk")
+	@JoinColumn(name = "team_id")
 	@BatchSize(size = 30)
-	private Set<Participant> teamMembers;
+	protected Set<Participant> teamMembers;
 
-	@OneToOne(fetch = FetchType.EAGER)
+	@OneToOne(fetch = FetchType.LAZY)
 	@BatchSize(size = 30)
-	private MealClass mealClass;
+	protected MealClass mealClass;
 
-	// @OneToOne(fetch = FetchType.LAZY)
-	@Transient
-	private VisitationPlan visitationPlan;
+	@Embedded
+	protected VisitationPlan visitationPlan;
 
 	protected Team() {
 		// JPA

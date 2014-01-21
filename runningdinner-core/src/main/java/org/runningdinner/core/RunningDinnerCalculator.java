@@ -12,8 +12,33 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
+/**
+ * Stateless object for calculating running dinner scenarios.<br>
+ * All needed items like the configuration of a dinner (meals, team-size, etc.) must be passed into the according methods.<br>
+ * Main purpose is on the one hand to generate random teams out of the passed participants and on the other hand to create visitation-plans
+ * for each generated team.
+ * 
+ * @author i01002492
+ * 
+ */
 public class RunningDinnerCalculator {
 
+	/**
+	 * Main entry point for calculation of a running dinner.<br>
+	 * Based upon the passed participants and the dinner-options (e.g. team size, number of meals, ...) there is tried to assign each
+	 * participant into teams.<br>
+	 * If there are too few participants for at least one valid combination of teams then a NoPossiblerunningDinnerException is thrown. Thus
+	 * the caller knows
+	 * that it was not possible to assign any single passed participant into teams.<br>
+	 * The returned GeneratedTeamsResult must be used afterwards for further operations like assigning meals to the teams or like finally
+	 * building the dinner-execution-plan. <br>
+	 * Note: The objects inside the GeneratedTeamsResult may be changed during other operations!
+	 * 
+	 * @param runningDinnerConfig The options for the running dinner
+	 * @param participants All participants of the dinner
+	 * @return
+	 * @throws NoPossibleRunningDinnerException If there are too few participants
+	 */
 	public GeneratedTeamsResult generateTeams(final RunningDinnerConfig runningDinnerConfig, final List<Participant> participants)
 			throws NoPossibleRunningDinnerException {
 
@@ -24,7 +49,10 @@ public class RunningDinnerCalculator {
 			throw new NoPossibleRunningDinnerException("There must be more participants than a team's size");
 		}
 
+		TeamCombinationInfo teamCombinationInfo = generateTeamCombinationInfo(participants, runningDinnerConfig);
+
 		GeneratedTeamsResult result = new GeneratedTeamsResult();
+		result.setTeamCombinationInfo(teamCombinationInfo);
 
 		List<Participant> participantsToAssign = splitRegularAndIrregularParticipants(participants, result, runningDinnerConfig);
 
@@ -32,6 +60,35 @@ public class RunningDinnerCalculator {
 		result.setRegularTeams(regularTeams);
 
 		return result;
+	}
+
+	/**
+	 * Returns a list with all participants that cannot be assigned into regular teams based upon the current dinner configuration.<br>
+	 * It all participants can successfully be assigned, then an empty list is returned.<br>
+	 * If not any participant can be assigned (e.g. too few participants) all passed participants are returned<br>
+	 * 
+	 * @param runningDinnerConfig
+	 * @param participants
+	 * @return
+	 */
+	public List<Participant> calculateNotAssignableParticipants(final RunningDinnerConfig runningDinnerConfig,
+			final List<Participant> participants) {
+		try {
+			TeamCombinationInfo teamCombinationInfo = generateTeamCombinationInfo(participants, runningDinnerConfig);
+			int numOfNotAssignableParticipants = calculateNumberOfNotAssignableParticipants(participants, teamCombinationInfo,
+					runningDinnerConfig);
+			if (numOfNotAssignableParticipants <= 0) {
+				return Collections.emptyList();
+			}
+
+			int splitIndex = participants.size() - numOfNotAssignableParticipants;
+			CoreUtil.assertNotNegative(splitIndex, "SplitIndex may never be negative, but was " + splitIndex);
+			return new ArrayList<Participant>(participants.subList(splitIndex, participants.size()));
+		}
+		catch (NoPossibleRunningDinnerException e) {
+			// Return all participants
+			return new ArrayList<Participant>(participants);
+		}
 	}
 
 	/**
@@ -45,42 +102,16 @@ public class RunningDinnerCalculator {
 	 * @param generatedTeamsResult Is enriched with all participants that cannot be assigend to teams (if any).
 	 * @param runningDinnerConfig
 	 * @return
-	 * @throws NoPossibleRunningDinnerException If there are too few participants
 	 * @throws IllegalArgumentException If there occurs computation errors when splitting the list (should never happen actually)
 	 */
 	private List<Participant> splitRegularAndIrregularParticipants(final List<Participant> allParticipants,
-			final GeneratedTeamsResult generatedTeamsResult, final RunningDinnerConfig runningDinnerConfig)
-			throws NoPossibleRunningDinnerException {
+			final GeneratedTeamsResult generatedTeamsResult, final RunningDinnerConfig runningDinnerConfig) {
 
-		int numberOfTeams = allParticipants.size() / runningDinnerConfig.getTeamSize();
-
-		TeamCombinationInfo teamCombinationInfo = null;
-		try {
-			teamCombinationInfo = runningDinnerConfig.generateTeamCombinationInfo(numberOfTeams);
-			generatedTeamsResult.setTeamCombinationInfo(teamCombinationInfo);
-		}
-		catch (NoPossibleRunningDinnerException ex) {
-			generatedTeamsResult.setNotAssignedParticipants(allParticipants);
-			return new ArrayList<Participant>(0);
-		}
+		TeamCombinationInfo teamCombinationInfo = generatedTeamsResult.getTeamCombinationInfo();
 
 		// This will be the count of participants that cannot be assigned and must therefore be substracted from the participant-list before
 		// building teams:
-		int numIrregularParticipants = 0;
-
-		// This is the number of teams that cannot be correctly assigned to a dinner execution plan without violating the rules:
-		int numRemaindingTeams = teamCombinationInfo.getNumRemaindingTeams();
-		if (numRemaindingTeams > 0) {
-			int numRemaindingParticipants = numRemaindingTeams * runningDinnerConfig.getTeamSize();
-			numIrregularParticipants = numRemaindingParticipants;
-		}
-
-		// This will typically be 0 (= all participants can put into teams => even number of participants) or 1 (odd number of
-		// participants), or any other number for any teamSize != 2:
-		int numParticipantOffset = allParticipants.size() % runningDinnerConfig.getTeamSize();
-		if (numParticipantOffset > 0) {
-			numIrregularParticipants += numParticipantOffset;
-		}
+		int numIrregularParticipants = calculateNumberOfNotAssignableParticipants(allParticipants, teamCombinationInfo, runningDinnerConfig);
 
 		if (numIrregularParticipants > 0) {
 			// Split participant list in participants that can be assigned to teams and those who must be excluded:
@@ -100,6 +131,45 @@ public class RunningDinnerCalculator {
 		}
 	}
 
+	protected TeamCombinationInfo generateTeamCombinationInfo(final List<Participant> allParticipants,
+			final RunningDinnerConfig runningDinnerConfig) throws NoPossibleRunningDinnerException {
+
+		int numberOfTeams = allParticipants.size() / runningDinnerConfig.getTeamSize();
+		TeamCombinationInfo teamCombinationInfo = runningDinnerConfig.generateTeamCombinationInfo(numberOfTeams);
+		return teamCombinationInfo;
+	}
+
+	protected int calculateNumberOfNotAssignableParticipants(final List<Participant> allParticipants,
+			final TeamCombinationInfo teamCombinationInfo, final RunningDinnerConfig runningDinnerConfig) {
+
+		// This will be the count of participants that cannot be assigned and must therefore be substracted from the participant-list before
+		// building teams:
+		int numIrregularParticipants = 0;
+
+		// This is the number of teams that cannot be correctly assigned to a dinner execution plan without violating the rules:
+		int numRemaindingTeams = teamCombinationInfo.getNumRemaindingTeams();
+		if (numRemaindingTeams > 0) {
+			int numRemaindingParticipants = numRemaindingTeams * runningDinnerConfig.getTeamSize();
+			numIrregularParticipants = numRemaindingParticipants;
+		}
+
+		// This will typically be 0 (= all participants can put into teams => even number of participants) or 1 (odd number of
+		// participants), or any other number for any teamSize != 2:
+		int numParticipantOffset = allParticipants.size() % runningDinnerConfig.getTeamSize();
+		if (numParticipantOffset > 0) {
+			numIrregularParticipants += numParticipantOffset;
+		}
+
+		return numIrregularParticipants;
+	}
+
+	/**
+	 * Uses the passed mealClasses and assigns randomly each team one mealClass.
+	 * 
+	 * @param generatedTeams Contains all regular teams that shall be assigned random meals
+	 * @param mealClasses The Meals to be assigned
+	 * @throws NoPossibleRunningDinnerException Thrown if number of meals and number of teams are incompatible
+	 */
 	public void assignRandomMealClasses(final GeneratedTeamsResult generatedTeams, final Set<MealClass> mealClasses)
 			throws NoPossibleRunningDinnerException {
 
@@ -226,6 +296,15 @@ public class RunningDinnerCalculator {
 		return result;
 	}
 
+	/**
+	 * Final (and main) method which assigns every regular team a VisitationPlan which indicats which teams are guests and hosts for every
+	 * regular team.
+	 * 
+	 * @param generatedTeams
+	 * @param runningDinnerConfig
+	 * @throws NoPossibleRunningDinnerException
+	 * @throws IllegalArgumentException If some pre-condition is not met in the passed parameters
+	 */
 	public void generateDinnerExecutionPlan(final GeneratedTeamsResult generatedTeams, final RunningDinnerConfig runningDinnerConfig)
 			throws NoPossibleRunningDinnerException {
 		List<Team> regularTeams = generatedTeams.getRegularTeams();
