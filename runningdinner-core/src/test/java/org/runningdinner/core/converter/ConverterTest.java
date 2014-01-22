@@ -208,6 +208,11 @@ public class ConverterTest {
 		checkParsedParticipants(participants, true);
 	}
 
+	@Test
+	public void testIntegrationParsingAndCalculation() {
+		INPUT_FILE_TYPE fileType = ConverterFactory.determineFileType("/excelimport/standard.xls");
+	}
+
 	private void checkParsedParticipants(List<Participant> participants, boolean checkContactInfo) {
 		assertEquals(4, participants.size());
 

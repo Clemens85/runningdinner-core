@@ -290,10 +290,37 @@ public class RunningDinnerCalculator {
 
 			Team team = new Team(i + 1);
 			team.setTeamMembers(teamMembersForOneTeam);
+
+			setHostingParticipant(team, runningDinnerConfig);
+
 			result.add(team);
 		}
 
 		return result;
+	}
+
+	private void setHostingParticipant(Team team, RunningDinnerConfig runningDinnerConfig) {
+		Participant participantWithUnknownHostingStatus = null;
+
+		for (Participant teamMember : team.getTeamMembers()) {
+			FuzzyBoolean canHost = runningDinnerConfig.canHost(teamMember);
+			if (FuzzyBoolean.TRUE == canHost) {
+				teamMember.setHost(true);
+				return;
+			}
+			if (FuzzyBoolean.UNKNOWN == canHost) {
+				participantWithUnknownHostingStatus = teamMember;
+			}
+		}
+
+		// First fallback: Take one participant with unknown hosting status:
+		if (participantWithUnknownHostingStatus != null) {
+			participantWithUnknownHostingStatus.setHost(true);
+			return;
+		}
+
+		// Last fallback, just pick up the first matching participant:
+		team.getTeamMembers().iterator().next().setHost(true);
 	}
 
 	/**

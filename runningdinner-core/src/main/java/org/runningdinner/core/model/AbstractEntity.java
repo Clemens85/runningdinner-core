@@ -79,6 +79,11 @@ public abstract class AbstractEntity implements Serializable {
 		return id == null;
 	}
 
+	/**
+	 * Returns a string (business key) that uniquely identifies this entity independently of its persistence state
+	 * 
+	 * @return
+	 */
 	public String getNaturalKey() {
 		return naturalKey;
 	}
