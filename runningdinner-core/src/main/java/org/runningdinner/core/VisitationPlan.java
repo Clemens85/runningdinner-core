@@ -76,6 +76,24 @@ public class VisitationPlan /* extends AbstractEntity */{
 		return guestTeams.contains(team) || hostTeams.contains(team);
 	}
 
+	public boolean containsHostReferenceWithSameMealClass(MealClass mealClass) {
+		for (Team hostTeam : hostTeams) {
+			if (mealClass.equals(hostTeam.getMealClass())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean containsGuestReferenceWithSameMealClass(MealClass mealClass) {
+		for (Team guestTeam : guestTeams) {
+			if (mealClass.equals(guestTeam.getMealClass())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void addHostTeam(final Team hostTeam) {
 		this.hostTeams.add(hostTeam);
 		hostTeam.getVisitationPlan().addGuestTeam(team);

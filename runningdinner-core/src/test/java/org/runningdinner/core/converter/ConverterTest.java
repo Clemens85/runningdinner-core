@@ -6,7 +6,9 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
@@ -14,10 +16,16 @@ import org.junit.Test;
 import org.runningdinner.core.CoreUtil;
 import org.runningdinner.core.FuzzyBoolean;
 import org.runningdinner.core.Gender;
+import org.runningdinner.core.GeneratedTeamsResult;
+import org.runningdinner.core.MealClass;
+import org.runningdinner.core.NoPossibleRunningDinnerException;
 import org.runningdinner.core.Participant;
 import org.runningdinner.core.ParticipantAddress;
 import org.runningdinner.core.ParticipantName;
+import org.runningdinner.core.RunningDinnerCalculator;
 import org.runningdinner.core.RunningDinnerConfig;
+import org.runningdinner.core.Team;
+import org.runningdinner.core.VisitationPlan;
 import org.runningdinner.core.converter.ConversionException.CONVERSION_ERROR;
 import org.runningdinner.core.converter.ConverterFactory.INPUT_FILE_TYPE;
 import org.runningdinner.core.converter.config.EmailColumnConfig;
@@ -209,8 +217,58 @@ public class ConverterTest {
 	}
 
 	@Test
-	public void testIntegrationParsingAndCalculation() {
-		INPUT_FILE_TYPE fileType = ConverterFactory.determineFileType("/excelimport/standard.xls");
+	public void testIntegrationParsingAndCalculation() throws NoPossibleRunningDinnerException, IOException, ConversionException {
+		String file = "/excelimport/12_participants.xls";
+		INPUT_FILE_TYPE fileType = ConverterFactory.determineFileType(file);
+		FileConverter converter = ConverterFactory.newConverter(ParsingConfiguration.newDefaultConfiguration(), fileType);
+		List<Participant> participants = converter.parseParticipants(getClass().getResourceAsStream(file));
+
+		RunningDinnerCalculator calculator = new RunningDinnerCalculator();
+		RunningDinnerConfig config = RunningDinnerConfig.newConfigurer().build();
+		GeneratedTeamsResult generatedTeams = calculator.generateTeams(config, participants);
+		calculator.assignRandomMealClasses(generatedTeams, config.getMealClasses());
+
+		calculator.generateDinnerExecutionPlan(generatedTeams, config);
+
+		List<Team> teams = generatedTeams.getRegularTeams();
+		for (Team team : teams) {
+			VisitationPlan visitationPlan = team.getVisitationPlan();
+			Set<Team> hostTeams = visitationPlan.getHostTeams();
+			Set<Team> guestTeams = visitationPlan.getGuestTeams();
+
+			assertEquals(team + " has invalid size of host references", 2, hostTeams.size());
+			assertEquals(team + " has invalid size of guest references", 2, guestTeams.size());
+			assertDisjunctTeams(hostTeams, guestTeams, team);
+
+			Set<Team> testingTeams = new HashSet<Team>(hostTeams);
+			testingTeams.add(team);
+			assertDisjunctMealClasses(testingTeams);
+
+			testingTeams.clear();
+			testingTeams.add(team);
+			testingTeams.addAll(guestTeams);
+			assertDisjunctMealClasses(testingTeams);
+		}
+
+	}
+
+	private void assertDisjunctTeams(Set<Team> hostTeams, Set<Team> guestTeams, Team team) {
+		Set<Team> testSet = new HashSet<Team>();
+		testSet.addAll(hostTeams);
+		testSet.addAll(guestTeams);
+		testSet.add(team);
+		assertEquals("There exist at least one team duplicate in test-set for visitation-plan of team " + team, hostTeams.size()
+				+ guestTeams.size() + 1, testSet.size());
+	}
+
+	private void assertDisjunctMealClasses(Set<Team> teams) {
+		Set<MealClass> foundMeals = new HashSet<MealClass>();
+		for (Team team : teams) {
+			if (foundMeals.contains(team.getMealClass())) {
+				fail("Team " + team + " has mealclass which already existed");
+			}
+			foundMeals.add(team.getMealClass());
+		}
 	}
 
 	private void checkParsedParticipants(List<Participant> participants, boolean checkContactInfo) {

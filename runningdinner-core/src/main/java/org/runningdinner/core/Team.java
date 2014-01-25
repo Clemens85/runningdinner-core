@@ -109,7 +109,7 @@ public class Team extends AbstractEntity implements Comparable<Team> {
 	@Override
 	public String toString() {
 		String mealClassStr = mealClass != null ? " - " + mealClass.toString() : "";
-		return teamNumber + mealClassStr + " (" + teamMembers + ")";
+		return teamNumber + mealClassStr; // + " (" + teamMembers + ")";
 	}
 
 	@Override

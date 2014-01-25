@@ -12,6 +12,9 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Stateless object for calculating running dinner scenarios.<br>
  * All needed items like the configuration of a dinner (meals, team-size, etc.) must be passed into the according methods.<br>
@@ -22,6 +25,8 @@ import java.util.Set;
  * 
  */
 public class RunningDinnerCalculator {
+
+	private static Logger LOGGER = LoggerFactory.getLogger(RunningDinnerCalculator.class);
 
 	/**
 	 * Main entry point for calculation of a running dinner.<br>
@@ -416,14 +421,18 @@ public class RunningDinnerCalculator {
 
 			// Iterate through all teams of current meal-class
 			for (Team teamOfCurrentMealClass : teamsOfCurrentMealClass) {
+				LOGGER.debug("Build Visitation-Plan for {}", teamOfCurrentMealClass);
 				VisitationPlan currentTeamVisitationPlan = teamOfCurrentMealClass.getVisitationPlan();
 
 				// Rule #3 is satisfied for this team:
 				if (numReferencesNeeded == currentTeamVisitationPlan.getNumberOfGuests()
 						&& numReferencesNeeded == currentTeamVisitationPlan.getNumberOfHosts()) {
+					LOGGER.debug("Visitation-Plan for {} is already built", teamOfCurrentMealClass);
 					// Visitation plan for this team is already complete
 					break;
 				}
+
+				LOGGER.debug("Iterate through teams of other meal-classes {}", otherMealClasses);
 
 				// Iterate through all teams of other meal-classes:
 				for (MealClass otherMealClass : otherMealClasses) {
@@ -434,34 +443,42 @@ public class RunningDinnerCalculator {
 					Collection<Team> teamsOfOtherMealClass = teamMealMapping.get(otherMealClass);
 					for (Team teamOfOtherMealClass : teamsOfOtherMealClass) {
 
+						if (hasOneGuestReference && hasOneHostReference) {
+							// Nothing left to do
+							break;
+						}
+
+						LOGGER.debug("Check {} for addition to Visitation-Plan", teamOfOtherMealClass);
 						VisitationPlan otherClassifiedTeamVisitationPlan = teamOfOtherMealClass.getVisitationPlan();
+
 						if (otherClassifiedTeamVisitationPlan.containsGuestOrHostReference(teamOfCurrentMealClass)) {
+							LOGGER.debug("{} is already contained in Visitation-Plan of team {}", teamOfOtherMealClass,
+									teamOfCurrentMealClass);
 							continue; // Rule #1
 						}
 
-						// for rule #3
-						if (currentTeamVisitationPlan.getNumberOfHosts() != numReferencesNeeded
-								&& otherClassifiedTeamVisitationPlan.getNumberOfGuests() != numReferencesNeeded) {
+						if (!hasOneHostReference
+								&& canAddAsHostReference(currentTeamVisitationPlan, otherClassifiedTeamVisitationPlan, currentMealClass,
+										numReferencesNeeded)) {
+							LOGGER.debug("Adding {} as host to current team {}", teamOfOtherMealClass, teamOfCurrentMealClass);
 							currentTeamVisitationPlan.addHostTeam(teamOfOtherMealClass);
 							hasOneHostReference = true;
-							if (hasOneGuestReference) {
-								break;
-							}
-							else {
-								continue;
-							}
+							continue;
+						}
+						else {
+							LOGGER.debug("{} cannot be added as host to current team {}", teamOfOtherMealClass, teamOfCurrentMealClass);
 						}
 
-						if (currentTeamVisitationPlan.getNumberOfGuests() != numReferencesNeeded
-								&& otherClassifiedTeamVisitationPlan.getNumberOfHosts() != numReferencesNeeded) {
-							otherClassifiedTeamVisitationPlan.addHostTeam(teamOfCurrentMealClass);
+						if (!hasOneGuestReference
+								&& canAddAsGuestReference(currentTeamVisitationPlan, otherClassifiedTeamVisitationPlan, currentMealClass,
+										numReferencesNeeded)) {
+							LOGGER.debug("Adding {} as guest to current team {}", teamOfOtherMealClass, teamOfCurrentMealClass);
+							teamOfOtherMealClass.getVisitationPlan().addHostTeam(teamOfCurrentMealClass);
 							hasOneGuestReference = true;
-							if (hasOneHostReference) {
-								break;
-							}
-							else {
-								continue;
-							}
+							continue;
+						}
+						else {
+							LOGGER.debug("{} cannot be added as guest to current team {}", teamOfOtherMealClass, teamOfCurrentMealClass);
 						}
 					}
 
@@ -469,6 +486,36 @@ public class RunningDinnerCalculator {
 
 			} // End iteration through all teams of current meal-class
 		}
+	}
+
+	private boolean canAddAsHostReference(VisitationPlan currentTeamPlan, VisitationPlan otherTeamPlan, MealClass mealClass,
+			int numReferencesNeeded) {
+		boolean needStillMoreReferences = currentTeamPlan.getNumberOfHosts() != numReferencesNeeded
+				&& otherTeamPlan.getNumberOfGuests() != numReferencesNeeded;
+		if (!needStillMoreReferences) {
+			return false;
+		}
+
+		if (otherTeamPlan.containsGuestReferenceWithSameMealClass(mealClass)) {
+			return false;
+		}
+
+		return true;
+	}
+
+	private boolean canAddAsGuestReference(VisitationPlan currentTeamPlan, VisitationPlan otherTeamPlan, MealClass mealClass,
+			int numReferencesNeeded) {
+		boolean needStillMoreReferences = currentTeamPlan.getNumberOfGuests() != numReferencesNeeded
+				&& otherTeamPlan.getNumberOfHosts() != numReferencesNeeded;
+		if (!needStillMoreReferences) {
+			return false;
+		}
+
+		if (otherTeamPlan.containsHostReferenceWithSameMealClass(mealClass)) {
+			return false;
+		}
+
+		return true;
 	}
 
 	private void addTeamToMealMapping(final Team team, final Map<MealClass, Queue<Team>> teamMealMapping) {
@@ -486,7 +533,7 @@ public class RunningDinnerCalculator {
 		for (Entry<MealClass, Queue<Team>> entry : completeMealTeamMapping.entrySet()) {
 			Queue<Team> teamList = entry.getValue();
 			if (teamList.size() > 0) {
-				throw new RuntimeException("All teams must be consume when building dinner visitation plans, but there still exist "
+				throw new RuntimeException("All teams must be consumed when building dinner visitation plans, but there still exist "
 						+ teamList.size() + " teams for MealClass " + entry.getKey());
 			}
 		}
