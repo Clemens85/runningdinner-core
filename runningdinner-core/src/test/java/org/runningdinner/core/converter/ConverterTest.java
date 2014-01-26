@@ -218,7 +218,7 @@ public class ConverterTest {
 
 	@Test
 	public void testIntegrationParsingAndCalculation() throws NoPossibleRunningDinnerException, IOException, ConversionException {
-		String file = "/excelimport/12_participants.xls";
+		String file = "/excelimport/18_participants.xls";
 		INPUT_FILE_TYPE fileType = ConverterFactory.determineFileType(file);
 		FileConverter converter = ConverterFactory.newConverter(ParsingConfiguration.newDefaultConfiguration(), fileType);
 		List<Participant> participants = converter.parseParticipants(getClass().getResourceAsStream(file));

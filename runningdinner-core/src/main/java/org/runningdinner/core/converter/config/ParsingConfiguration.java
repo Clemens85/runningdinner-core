@@ -14,6 +14,9 @@ public class ParsingConfiguration {
 	private EmailColumnConfig emailColumnConfig;
 	private MobileNumberColumnConfig mobileNumberColumnConfig;
 
+	private AgeColumnConfig ageColumnConfig;
+	private GenderColumnConfig genderColumnConfig;
+
 	public ParsingConfiguration(NameColumnConfig nameColumnConfig, AddressColumnConfig addressColumnConfig,
 			NumberOfSeatsColumnConfig numSeatsColumnConfig) {
 
@@ -74,6 +77,25 @@ public class ParsingConfiguration {
 		this.mobileNumberColumnConfig = mobileNumberColumnConfig;
 	}
 
+	public AgeColumnConfig getAgeColumnConfig() {
+		return ageColumnConfig;
+	}
+
+	public void setAgeColumnConfig(AgeColumnConfig ageColumnConfig) {
+		this.ageColumnConfig = ageColumnConfig;
+	}
+
+	public GenderColumnConfig getGenderColumnConfig() {
+		if (genderColumnConfig == null) {
+			return GenderColumnConfig.noGenderColumn();
+		}
+		return genderColumnConfig;
+	}
+
+	public void setGenderColumnConfig(GenderColumnConfig genderColumnConfig) {
+		this.genderColumnConfig = genderColumnConfig;
+	}
+
 	public SequenceColumnConfig getSequenceColumnConfig() {
 		if (sequenceColumnConfig == null) {
 			return SequenceColumnConfig.noSequenceColumn();
@@ -92,7 +114,11 @@ public class ParsingConfiguration {
 		NumberOfSeatsColumnConfig numberSeatsColumnConfig = NumberOfSeatsColumnConfig.newNumericSeatsColumnConfig(3);
 
 		ParsingConfiguration config = new ParsingConfiguration(nameColumnConfig, addressColumnConfig, numberSeatsColumnConfig);
+		config.setEmailColumnConfig(EmailColumnConfig.createEmailColumnConfig(4));
+		config.setMobileNumberColumnConfig(MobileNumberColumnConfig.createMobileNumberColumnConfig(5));
+
 		config.setStartRow(1);
+
 		return config;
 	}
 }

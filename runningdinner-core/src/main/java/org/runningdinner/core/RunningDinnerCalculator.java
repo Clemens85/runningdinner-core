@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -197,7 +198,7 @@ public class RunningDinnerCalculator {
 		Collections.shuffle(regularTeams); // Randomize List
 
 		// Now, with the randomized list, we iterate this list, and assign one mealClass to the current iterating list-segment (e.g.:
-		// [0..5] => APPETIZER, [6..11] => MAINCOURSE, [12..17] => DESSERT) for 18 teams and a segmentionSize of 3:
+		// [0..8] => APPETIZER, [9..17] => MAINCOURSE, [18..26] => DESSERT) for 18 teams and a segmentionSize of 3:
 		int startIndex = 0;
 		int endIndex = segmentionSize;
 		for (MealClass mealClassToAssign : mealClasses) {
@@ -356,7 +357,7 @@ public class RunningDinnerCalculator {
 		final int numMealClasses = runningDinnerConfig.getMealClasses().size();
 		CoreUtil.assertSmaller(0, numMealClasses, "There must exist more than zero MealClasses");
 
-		// This should always equal to 2:
+		// This should always equal to 3:
 		final int numTeamsNeededPerMealClass = teamSegmentSize / numMealClasses;
 
 		// Ensure that all teams are run through:
@@ -412,6 +413,8 @@ public class RunningDinnerCalculator {
 			throw new NoPossibleRunningDinnerException("There must be at least two meal types for having a running-dinner!");
 		}
 
+		List<LinkedHashSet<Team>> allTeamTupels = new ArrayList<LinkedHashSet<Team>>();
+
 		// Iterate thorough all teams by meal-class
 		for (Entry<MealClass, ? extends Collection<Team>> entry : teamMealMapping.entrySet()) {
 			MealClass currentMealClass = entry.getKey();
@@ -434,21 +437,16 @@ public class RunningDinnerCalculator {
 
 				LOGGER.debug("Iterate through teams of other meal-classes {}", otherMealClasses);
 
+				LinkedHashSet<Team> currentTeamTupel = new LinkedHashSet<Team>(3);
+				currentTeamTupel.add(teamOfCurrentMealClass);
+
 				// Iterate through all teams of other meal-classes:
 				for (MealClass otherMealClass : otherMealClasses) {
-
-					boolean hasOneGuestReference = false;
-					boolean hasOneHostReference = false;
 
 					Collection<Team> teamsOfOtherMealClass = teamMealMapping.get(otherMealClass);
 					for (Team teamOfOtherMealClass : teamsOfOtherMealClass) {
 
-						if (hasOneGuestReference && hasOneHostReference) {
-							// Nothing left to do
-							break;
-						}
-
-						LOGGER.debug("Check {} for addition to Visitation-Plan", teamOfOtherMealClass);
+						LOGGER.debug("Check {}", teamOfOtherMealClass);
 						VisitationPlan otherClassifiedTeamVisitationPlan = teamOfOtherMealClass.getVisitationPlan();
 
 						if (otherClassifiedTeamVisitationPlan.containsGuestOrHostReference(teamOfCurrentMealClass)) {
@@ -457,52 +455,164 @@ public class RunningDinnerCalculator {
 							continue; // Rule #1
 						}
 
-						if (!hasOneHostReference
-								&& canAddAsHostReference(currentTeamVisitationPlan, otherClassifiedTeamVisitationPlan, currentMealClass,
-										numReferencesNeeded)) {
-							LOGGER.debug("Adding {} as host to current team {}", teamOfOtherMealClass, teamOfCurrentMealClass);
-							currentTeamVisitationPlan.addHostTeam(teamOfOtherMealClass);
-							hasOneHostReference = true;
-							continue;
-						}
-						else {
-							LOGGER.debug("{} cannot be added as host to current team {}", teamOfOtherMealClass, teamOfCurrentMealClass);
-						}
+						// if (canAddAsGuestReference(currentTeamVisitationPlan, otherClassifiedTeamVisitationPlan, currentMealClass,
+						// numReferencesNeeded)) {
+						// teamTupel.add(teamOfOtherMealClass);
+						// }
 
-						if (!hasOneGuestReference
-								&& canAddAsGuestReference(currentTeamVisitationPlan, otherClassifiedTeamVisitationPlan, currentMealClass,
-										numReferencesNeeded)) {
-							LOGGER.debug("Adding {} as guest to current team {}", teamOfOtherMealClass, teamOfCurrentMealClass);
-							teamOfOtherMealClass.getVisitationPlan().addHostTeam(teamOfCurrentMealClass);
-							hasOneGuestReference = true;
-							continue;
-						}
-						else {
-							LOGGER.debug("{} cannot be added as guest to current team {}", teamOfOtherMealClass, teamOfCurrentMealClass);
+						if (canAddAsGuestReference(currentTeamVisitationPlan, otherClassifiedTeamVisitationPlan, currentMealClass,
+								numReferencesNeeded)) {
+
+							if (!haveTeamsMeetupAlready(teamOfCurrentMealClass, teamOfOtherMealClass, allTeamTupels, currentTeamTupel)) {
+								LOGGER.debug("Adding {} as guest to current team {}", teamOfOtherMealClass, teamOfCurrentMealClass);
+								// This makes current team the host of other meal-class team:
+								// teamOfOtherMealClass.getVisitationPlan().addHostTeam(teamOfCurrentMealClass);
+								currentTeamTupel.add(teamOfOtherMealClass);
+								break;
+							}
+							else {
+								LOGGER.debug("Team {} meets current team {} already", teamOfOtherMealClass, teamOfCurrentMealClass);
+							}
 						}
 					}
 
 				} // End iteration through teams with other meal-classes
 
+				Set<Team> blackList = new HashSet<Team>();
+				while (currentTeamTupel.size() < 3) { // TODO: 3 is hardcoded
+					Team lastTeamTupel = getAndRemoveLastTeamTupelElement(currentTeamTupel);
+					blackList.add(lastTeamTupel);
+
+					currentTeamTupel.clear();
+					currentTeamTupel.add(teamOfCurrentMealClass);
+
+					LOGGER.debug("Not enough teams found, reiterate with blackliust {}", blackList);
+					buildNewTeamTupel(teamOfCurrentMealClass, allTeamTupels, currentTeamTupel, otherMealClasses, teamMealMapping,
+							numReferencesNeeded, blackList);
+				}
+
+				LOGGER.debug("Add 3-tupel {} to allTeamTupels", currentTeamTupel);
+				allTeamTupels.add(currentTeamTupel);
+
+				Set<Team> guestTeams = CoreUtil.excludeFromSet(teamOfCurrentMealClass, currentTeamTupel);
+				for (Team guestTeam : guestTeams) {
+					guestTeam.getVisitationPlan().addHostTeam(teamOfCurrentMealClass);
+				}
+
+				// teamRelations.addAll(teamOfCurrentMealClass.getVisitationPlan().getGuestTeams());
+				// LOGGER.debug("Add 3-tupel {} to teamMeetupRelations list", teamRelations);
+				// teamMeetupRelations.add(teamRelations);
+
 			} // End iteration through all teams of current meal-class
 		}
 	}
 
-	private boolean canAddAsHostReference(VisitationPlan currentTeamPlan, VisitationPlan otherTeamPlan, MealClass mealClass,
-			int numReferencesNeeded) {
-		boolean needStillMoreReferences = currentTeamPlan.getNumberOfHosts() != numReferencesNeeded
-				&& otherTeamPlan.getNumberOfGuests() != numReferencesNeeded;
-		if (!needStillMoreReferences) {
-			return false;
+	private Team getAndRemoveLastTeamTupelElement(LinkedHashSet<Team> teamTupel) {
+		Team result = null;
+		for (Team team : teamTupel) {
+			result = team;
 		}
-
-		if (otherTeamPlan.containsGuestReferenceWithSameMealClass(mealClass)) {
-			return false;
-		}
-
-		return true;
+		return result;
 	}
 
+	private boolean haveTeamsMeetupAlready(Team teamOfCurrentMealClass, Team teamOfOtherMealClass, List<LinkedHashSet<Team>> allTeamTupels,
+			LinkedHashSet<Team> currentTeamTupel) {
+		Set<Team> alreadyMeetedTeams = getAlreadyMeetedTeams(teamOfCurrentMealClass, allTeamTupels);
+		if (alreadyMeetedTeams.contains(teamOfOtherMealClass)) {
+			return true;
+		}
+
+		Set<Team> alreadyMeetedTeamsOfOtherTeam = getAlreadyMeetedTeams(teamOfOtherMealClass, allTeamTupels);
+		if (alreadyMeetedTeamsOfOtherTeam.contains(teamOfCurrentMealClass)) {
+			return true;
+		}
+
+		Set<Team> currentTeamsToTest = CoreUtil.excludeFromSet(teamOfCurrentMealClass, currentTeamTupel);
+		for (Team currentTeamToTest : currentTeamsToTest) {
+			Set<Team> currentAlreadyMeetedTeams = getAlreadyMeetedTeams(currentTeamToTest, allTeamTupels);
+			if (currentAlreadyMeetedTeams.contains(teamOfOtherMealClass)) {
+				return true;
+			}
+		}
+
+		// Set<Team> currentGuestTeams = teamOfCurrentMealClass.getVisitationPlan().getGuestTeams();
+		// for (Team currentGuestTeam : currentGuestTeams) {
+		// if (alreadyMeetedTeamsOfOtherTeam.contains(currentGuestTeam)) {
+		// return true;
+		// }
+		// }
+
+		return false;
+	}
+
+	private Set<Team> getAlreadyMeetedTeams(final Team teamToTest, final List<LinkedHashSet<Team>> allTeamTupels) {
+		Set<Team> result = new HashSet<Team>();
+		for (Set<Team> teamTupel : allTeamTupels) {
+			if (teamTupel.contains(teamToTest)) {
+				result.addAll(teamTupel);
+			}
+		}
+
+		// When we added some tupels we also added the current testing team. So remove it again:
+		if (result.size() > 0) {
+			result.remove(teamToTest);
+		}
+
+		return result;
+	}
+
+	private void buildNewTeamTupel(final Team teamOfCurrentMealClass, List<LinkedHashSet<Team>> allTeamTupels,
+			final LinkedHashSet<Team> currentTeamTupel, final Set<MealClass> otherMealClasses,
+			final Map<MealClass, ? extends Collection<Team>> teamMealMapping, final int numReferencesNeeded, final Set<Team> blackList) {
+
+		// Iterate through all teams of other meal-classes:
+		for (MealClass otherMealClass : otherMealClasses) {
+
+			Collection<Team> teamsOfOtherMealClass = teamMealMapping.get(otherMealClass);
+			for (Team teamOfOtherMealClass : teamsOfOtherMealClass) {
+
+				LOGGER.debug("Check {}", teamOfOtherMealClass);
+				VisitationPlan otherClassifiedTeamVisitationPlan = teamOfOtherMealClass.getVisitationPlan();
+
+				if (otherClassifiedTeamVisitationPlan.containsGuestOrHostReference(teamOfCurrentMealClass)) {
+					LOGGER.debug("{} is already contained in Visitation-Plan of team {}", teamOfOtherMealClass, teamOfCurrentMealClass);
+					continue; // Rule #1
+				}
+
+				if (blackList.contains(teamOfOtherMealClass)) {
+					continue;
+				}
+
+				VisitationPlan currentTeamVisitationPlan = teamOfCurrentMealClass.getVisitationPlan();
+				if (canAddAsGuestReference(currentTeamVisitationPlan, otherClassifiedTeamVisitationPlan,
+						teamOfCurrentMealClass.getMealClass(), numReferencesNeeded)) {
+
+					if (!haveTeamsMeetupAlready(teamOfCurrentMealClass, teamOfOtherMealClass, allTeamTupels, currentTeamTupel)) {
+						LOGGER.debug("Adding {} as guest to current team {}", teamOfOtherMealClass, teamOfCurrentMealClass);
+						// This makes current team the host of other meal-class team:
+						// teamOfOtherMealClass.getVisitationPlan().addHostTeam(teamOfCurrentMealClass);
+						currentTeamTupel.add(teamOfOtherMealClass);
+						break;
+					}
+					else {
+						LOGGER.debug("Team {} meets current team {} already", teamOfOtherMealClass, teamOfCurrentMealClass);
+					}
+				}
+			}
+
+		} // End iteration through teams with other meal-classes
+
+	}
+
+	/**
+	 * Checks whether otherTeamPlan's team can be added as a guest to currentTeamPlan's team.
+	 * 
+	 * @param currentTeamPlan The team for which to check that the passed otherTeam is added as guest
+	 * @param otherTeamPlan
+	 * @param mealClass
+	 * @param numReferencesNeeded
+	 * @return
+	 */
 	private boolean canAddAsGuestReference(VisitationPlan currentTeamPlan, VisitationPlan otherTeamPlan, MealClass mealClass,
 			int numReferencesNeeded) {
 		boolean needStillMoreReferences = currentTeamPlan.getNumberOfGuests() != numReferencesNeeded
