@@ -7,6 +7,7 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -287,14 +288,23 @@ public class RunningDinnerCalculatorTest {
 		for (Team team : teams) {
 			assertEquals(2, team.getVisitationPlan().getNumberOfGuests());
 			assertEquals(2, team.getVisitationPlan().getNumberOfHosts());
-			// assertEquals(team, team.getVisitationPlan().getTeam());
-			assertEquals(false, team.getVisitationPlan().getGuestTeams().contains(team));
-			assertEquals(false, team.getVisitationPlan().getHostTeams().contains(team));
+
+			RunningDinnerCalculatorTest.assertDisjunctTeams(team.getVisitationPlan().getHostTeams(),
+					team.getVisitationPlan().getGuestTeams(), team);
 
 			Set<Team> guestTeams = team.getVisitationPlan().getGuestTeams();
 			checkMealClassNotContained(team, guestTeams);
 			Set<Team> hostTeams = team.getVisitationPlan().getHostTeams();
 			checkMealClassNotContained(team, hostTeams);
+
+			Set<Team> testingTeams = new HashSet<Team>(hostTeams);
+			testingTeams.add(team);
+			assertDisjunctMealClasses(testingTeams);
+
+			testingTeams.clear();
+			testingTeams.add(team);
+			testingTeams.addAll(guestTeams);
+			assertDisjunctMealClasses(testingTeams);
 		}
 	}
 
@@ -368,5 +378,24 @@ public class RunningDinnerCalculatorTest {
 
 	protected List<Participant> generateParticipants(int numParticipants) {
 		return generateParticipants(numParticipants, 0);
+	}
+
+	public static void assertDisjunctTeams(Set<Team> hostTeams, Set<Team> guestTeams, Team team) {
+		Set<Team> testSet = new HashSet<Team>();
+		testSet.addAll(hostTeams);
+		testSet.addAll(guestTeams);
+		testSet.add(team);
+		assertEquals("There exist at least one team duplicate in test-set for visitation-plan of team " + team, hostTeams.size()
+				+ guestTeams.size() + 1, testSet.size());
+	}
+
+	public static void assertDisjunctMealClasses(Set<Team> teams) {
+		Set<MealClass> foundMeals = new HashSet<MealClass>();
+		for (Team team : teams) {
+			if (foundMeals.contains(team.getMealClass())) {
+				fail("Team " + team + " has mealclass which already existed");
+			}
+			foundMeals.add(team.getMealClass());
+		}
 	}
 }
