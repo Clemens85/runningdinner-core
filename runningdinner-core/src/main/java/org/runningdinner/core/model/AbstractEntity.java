@@ -79,6 +79,11 @@ public abstract class AbstractEntity implements Serializable {
 		return id == null;
 	}
 
+	public static boolean validateNaturalKey(final String passedNaturalKey) {
+		// TODO: validate the passed key:
+		return true;
+	}
+
 	/**
 	 * Returns a string (business key) that uniquely identifies this entity independently of its persistence state
 	 * 

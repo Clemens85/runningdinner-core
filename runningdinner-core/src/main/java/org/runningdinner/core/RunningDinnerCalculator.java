@@ -232,6 +232,9 @@ public class RunningDinnerCalculator {
 		Queue<Participant> categoryTwoList = new ArrayDeque<Participant>();
 		Queue<Participant> uncategeorizedList = new ArrayDeque<Participant>();
 
+		boolean hasDistributionPolicy = runningDinnerConfig.isForceEqualDistributedCapacityTeams()
+				|| runningDinnerConfig.getGenderAspects() != GenderAspect.IGNORE_GENDER;
+
 		if (runningDinnerConfig.isForceEqualDistributedCapacityTeams()) {
 			// Distribute team-members based on whether they have enough seats or not:
 			for (Participant teamMember : participantsToAssign) {
@@ -255,7 +258,11 @@ public class RunningDinnerCalculator {
 			CoreUtil.distributeEqually(categoryOneList, uncategeorizedList, categoryTwoList);
 			uncategeorizedList.clear();
 		}
-		else {
+		if (runningDinnerConfig.getGenderAspects() != GenderAspect.IGNORE_GENDER) {
+
+		}
+
+		if (!hasDistributionPolicy) {
 			// Equally distribute all team-members over the two category-lists:
 			CoreUtil.distributeEqually(categoryOneList, participantsToAssign, categoryTwoList);
 		}
