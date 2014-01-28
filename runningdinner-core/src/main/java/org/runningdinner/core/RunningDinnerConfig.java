@@ -9,6 +9,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 
 @Embeddable
 public class RunningDinnerConfig {
@@ -17,6 +18,7 @@ public class RunningDinnerConfig {
 	@JoinColumn(name = "dinner_id")
 	// Actually not needed as we look currently always at one dinner... maybe interesting for an global-admin-overview in some time
 	// @BatchSize(size = 30)
+	@OrderBy(value = "time")
 	private Set<MealClass> mealClasses;
 
 	private int teamSize;
