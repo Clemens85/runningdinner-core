@@ -10,8 +10,8 @@ public class ParticipantName {
 	private String firstnamePart;
 	private String lastname;
 
-	protected ParticipantName() {
-		// JPA
+	public ParticipantName() {
+		// JPA & Spring MVC
 	}
 
 	/**
@@ -49,6 +49,16 @@ public class ParticipantName {
 		}
 
 		return result;
+	}
+
+	// Unfortunately needed by Spring MVC
+
+	public void setFirstnamePart(String firstnamePart) {
+		this.firstnamePart = firstnamePart;
+	}
+
+	public void setLastname(String lastname) {
+		this.lastname = lastname;
 	}
 
 	@Override

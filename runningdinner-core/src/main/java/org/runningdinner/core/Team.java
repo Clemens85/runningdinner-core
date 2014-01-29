@@ -77,6 +77,17 @@ public class Team extends AbstractEntity implements Comparable<Team> {
 		this.visitationPlan = visitationPlan;
 	}
 
+	public Participant getHostTeamMember() {
+		if (!CoreUtil.isEmpty(teamMembers)) {
+			for (Participant p : teamMembers) {
+				if (p.isHost()) {
+					return p;
+				}
+			}
+		}
+		return null;
+	}
+
 	public List<FuzzyBoolean> getHostingDump(final RunningDinnerConfig runningDinnerConfig) {
 		ArrayList<FuzzyBoolean> result = new ArrayList<FuzzyBoolean>(teamMembers.size());
 		for (Participant member : teamMembers) {
