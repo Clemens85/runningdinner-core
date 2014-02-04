@@ -2,7 +2,9 @@ package org.runningdinner.core;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -126,5 +128,18 @@ public class CoreUtil {
 			return FuzzyBoolean.FALSE;
 		}
 		return fallback;
+	}
+
+	public static String getFormattedTime(final Date time, final DateFormat timeFormat, final String fallback) {
+		if (time == null) {
+			return fallback;
+		}
+		try {
+			return timeFormat.format(time);
+		}
+		catch (Exception ex) {
+			LOGGER.error("Failed to format time-string {}", time, ex);
+			return fallback;
+		}
 	}
 }
