@@ -11,7 +11,7 @@ public class ConversionException extends Exception {
 	private static final long serialVersionUID = -5727835165400406188L;
 
 	public static enum CONVERSION_ERROR {
-		NAME, ADDRESS, PARTICIPANT_NR, NUMBER_OF_SEATS, UNKNOWN
+		NAME, ADDRESS, PARTICIPANT_NR, NUMBER_OF_SEATS, TOO_MUCH_PARTICIPANTS, UNKNOWN
 	}
 
 	private int rowNumber = -1;

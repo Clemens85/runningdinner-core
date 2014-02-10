@@ -18,12 +18,15 @@ import org.runningdinner.core.ParticipantAddress;
 import org.runningdinner.core.ParticipantName;
 import org.runningdinner.core.converter.ConversionException;
 import org.runningdinner.core.converter.ConversionException.CONVERSION_ERROR;
+import org.runningdinner.core.converter.FileConverter;
 import org.runningdinner.core.converter.config.AbstractColumnConfig;
 import org.runningdinner.core.converter.config.AddressColumnConfig;
 import org.runningdinner.core.converter.config.NameColumnConfig;
 import org.runningdinner.core.converter.config.NumberOfSeatsColumnConfig;
 import org.runningdinner.core.converter.config.ParsingConfiguration;
 import org.runningdinner.core.converter.config.SequenceColumnConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract class for parsing excel files which contains the main logic.<br>
@@ -35,6 +38,8 @@ import org.runningdinner.core.converter.config.SequenceColumnConfig;
 public class AbstractExcelConverterHighLevel {
 
 	protected ParsingConfiguration parsingConfiguration;
+
+	private static Logger LOGGER = LoggerFactory.getLogger(AbstractExcelConverterHighLevel.class);
 
 	public AbstractExcelConverterHighLevel(ParsingConfiguration parsingConfiguration) {
 		this.parsingConfiguration = parsingConfiguration;
@@ -55,6 +60,9 @@ public class AbstractExcelConverterHighLevel {
 		int cnt = 1;
 		for (int rowIndex = startRow; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
 			Row row = sheet.getRow(rowIndex);
+
+			LOGGER.info("Parsing row number {}", cnt);
+
 			if (row == null) {
 				continue;
 			}
@@ -80,6 +88,11 @@ public class AbstractExcelConverterHighLevel {
 			if (!tmpResult.add(participant)) {
 				handleDuplicateError(participant, rowIndex);
 			}
+		}
+
+		if (tmpResult.size() > FileConverter.MAX_PARTICIPANTS) {
+			// Not quite clever to first parse all particiapants and then throw exception, but actually this should never happen
+			throw new ConversionException().setErrorInformation(-1, CONVERSION_ERROR.TOO_MUCH_PARTICIPANTS);
 		}
 
 		return new ArrayList<Participant>(tmpResult);
@@ -154,7 +167,7 @@ public class AbstractExcelConverterHighLevel {
 
 				ParticipantAddress result = new ParticipantAddress(street, streetNr, zip);
 
-				if (addressColumnConfig.getCityColumn() != Integer.MIN_VALUE) { // TODO: Das mit Int.minvalue ist scheisse
+				if (addressColumnConfig.getCityColumn() != AbstractColumnConfig.UNAVAILABLE_COLUMN_INDEX) {
 					String city = getCellValueAsString(row, addressColumnConfig.getCityColumn());
 					result.setCityName(city);
 				}

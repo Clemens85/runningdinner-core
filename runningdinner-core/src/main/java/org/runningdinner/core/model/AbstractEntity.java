@@ -3,6 +3,7 @@ package org.runningdinner.core.model;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -102,15 +103,15 @@ public abstract class AbstractEntity implements Serializable {
 
 	/**
 	 * Validates whether the passed naturalKey is valid.<br>
-	 * TODO 1: Implement<br>
-	 * TODO 2: Should be refactored to another class
 	 * 
 	 * @param passedNaturalKey
-	 * @throws IllegalArgumentException
-	 * @return
+	 * @return True if passed natural key is valid
 	 */
-	public static boolean validateNaturalKey(final String passedNaturalKey) {
-		return true;
+	public static boolean isValid(final String passedNaturalKey) {
+		if (StringUtils.isEmpty(passedNaturalKey)) {
+			return false;
+		}
+		return Pattern.matches("[a-fA-F0-9]{8}[a-fA-F0-9]{4}[a-fA-F0-9]{4}[a-fA-F0-9]{4}[a-fA-F0-9]{12}", passedNaturalKey);
 	}
 
 	/**

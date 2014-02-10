@@ -15,6 +15,11 @@ import org.runningdinner.core.Participant;
 public interface FileConverter {
 
 	/**
+	 * Biggest running dinner ever was performed with 2428 participants, so this hard-coded limit should be sufficient for now ;-)
+	 */
+	public static final int MAX_PARTICIPANTS = 3000;
+
+	/**
 	 * Parse the passed input stream and returns a list with participants.
 	 * 
 	 * @param inputStream The input stream. The caller of this method is responsible for closing this stream himself!
