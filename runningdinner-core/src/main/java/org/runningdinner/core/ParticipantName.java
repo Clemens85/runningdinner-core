@@ -4,6 +4,12 @@ import javax.persistence.Embeddable;
 
 import org.apache.commons.lang3.StringUtils;
 
+/**
+ * Represents the name of a participant.
+ * 
+ * @author Clemens Stich
+ * 
+ */
 @Embeddable
 public class ParticipantName {
 
@@ -11,7 +17,7 @@ public class ParticipantName {
 	private String lastname;
 
 	public ParticipantName() {
-		// JPA & Spring MVC
+		// Unfortunately needed for JPA & Spring MVC
 	}
 
 	/**
@@ -33,6 +39,11 @@ public class ParticipantName {
 		return lastname;
 	}
 
+	/**
+	 * Returns the fullname of a participant
+	 * 
+	 * @return
+	 */
 	public String getFullnameFirstnameFirst() {
 		String result = firstnamePart;
 		if (StringUtils.isEmpty(firstnamePart)) {
@@ -66,20 +77,46 @@ public class ParticipantName {
 		return getFullnameFirstnameFirst();
 	}
 
+	/**
+	 * Use this for creating new ParticipantName instances
+	 * 
+	 * @return
+	 */
 	public static NameBuilder newName() {
 		return new NameBuilder();
 	}
 
+	/**
+	 * Builder for creating new ParticipantNames in a fluent way
+	 * 
+	 * @author Clemens Stich
+	 * 
+	 */
 	public static class NameBuilder {
 
 		protected NameBuilder() {
 		}
 
+		/**
+		 * Construct a ParticipantName with passing in firstname and lastname separately.
+		 * 
+		 * @param firstname
+		 * @return
+		 */
 		public FirstLastNameBuilder withFirstname(final String firstname) {
 			CoreUtil.assertNotEmpty(firstname, "Firstname must not be empty!");
 			return new FirstLastNameBuilder(firstname);
 		}
 
+		/**
+		 * Construct a ParticipantName by using a complete string in the following formats:<br>
+		 * Peter Lustig<br>
+		 * Max Middlename Mustermann<br>
+		 * 
+		 * @param firstname
+		 * @throws IllegalArgumentException If string was passed in wrong format
+		 * @return
+		 */
 		public ParticipantName withCompleteNameString(final String completeName) {
 			ParticipantName result = new ParticipantName();
 

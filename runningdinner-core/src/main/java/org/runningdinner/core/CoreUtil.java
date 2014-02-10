@@ -12,6 +12,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Contains some helper method used throughout the whole project
+ * 
+ * @author Clemens Stich
+ * 
+ */
 public class CoreUtil {
 
 	public static String NEWLINE = System.getProperty("line.separator");
@@ -22,6 +28,14 @@ public class CoreUtil {
 		return (collection == null || collection.isEmpty());
 	}
 
+	/**
+	 * Distributes all elements of the middle-collection equally to the left- and right-collection.<br>
+	 * Ideally the left-size equals to right-size after method invocation.
+	 * 
+	 * @param left The "left"-side collection in which to distribute elements
+	 * @param middle The collection from which to take the elements for distribution.
+	 * @param right The "right"-side collection in which to distribute elements
+	 */
 	public static <T> void distributeEqually(final Collection<T> left, final Collection<T> middle, final Collection<T> right) {
 		for (T m : middle) {
 			if (left.size() < right.size()) {
@@ -37,7 +51,7 @@ public class CoreUtil {
 	 * Returns a new set with all objects that were passed by theSet except the object exclude.<br>
 	 * In other words: Result = theSet - exclude
 	 * 
-	 * @param exclude
+	 * @param exclude The object that shall be excluded
 	 * @param theSet Original Set that contains all objects. This set will not be modified.
 	 * @return New constructed set with the result of the subtraction
 	 */
@@ -70,36 +84,81 @@ public class CoreUtil {
 		}
 	}
 
+	/**
+	 * Asserts that the passed testNumber is smaller as the passed comparingValue.
+	 * 
+	 * @param testNumber The number which shall be checked
+	 * @param comparingValue The reference-value for comparison
+	 * @param message The error message that shall be wrapped into the exception if the assertion fails
+	 * @throws IllegalArgumentException If assertion fails
+	 */
 	public static void assertSmaller(int testNumber, int comparingValue, String message) {
 		if (!(testNumber < comparingValue)) {
 			throw new IllegalArgumentException(message);
 		}
 	}
 
-	public static void assertNotNegative(int a, String message) {
-		if (a < 0) {
+	/**
+	 * Asserts that the passed testNumber is not negative.
+	 * 
+	 * @param testNumber The number which shall be checked
+	 * @param message The error message that shall be wrapped into the exception if the assertion fails
+	 * @throws IllegalArgumentException If assertion fails
+	 */
+	public static void assertNotNegative(int testNumber, String message) {
+		if (testNumber < 0) {
 			throw new IllegalArgumentException(message);
 		}
 	}
 
+	/**
+	 * Asserts that the passed object is not null
+	 * 
+	 * @param obj The object to test for
+	 * @param message The error message that shall be wrapped into the exception if the assertion fails
+	 * @throws IllegalArgumentException If assertion fails
+	 */
 	public static void assertNotNull(Object obj, String message) {
 		if (null == obj) {
 			throw new IllegalArgumentException(message);
 		}
 	}
 
+	/**
+	 * Throws an exception if the passed string is null or empty.
+	 * 
+	 * @param s The string to test for
+	 * @param message The error message that shall be wrapped into the exception if the assertion fails
+	 * @throws IllegalArgumentException If assertion fails
+	 */
 	public static void assertNotEmpty(final String s, String message) {
 		if (StringUtils.isEmpty(s)) {
 			throw new IllegalArgumentException(message);
 		}
 	}
 
+	/**
+	 * Asserts that the passed testNumber is smaller or equal as the passed comparingValue.
+	 * 
+	 * @param testNumber The number which shall be checked
+	 * @param comparingValue The reference-value for comparison
+	 * @param message The error message that shall be wrapped into the exception if the assertion fails
+	 * @throws IllegalArgumentException If assertion fails
+	 */
 	public static void assertSmallerOrEq(int testNumber, int comparingValue, String message) {
 		if (!(testNumber <= comparingValue)) {
 			throw new IllegalArgumentException(message);
 		}
 	}
 
+	/**
+	 * Safely converts a string to a number <br>
+	 * If the passed string cannot be converted the passed fallback is returned.
+	 * 
+	 * @param str The string to convert
+	 * @param fallback Fallback to return
+	 * @return
+	 */
 	public static int convertToNumber(String str, int fallback) {
 		try {
 			if (StringUtils.isEmpty(str)) {
@@ -113,6 +172,15 @@ public class CoreUtil {
 		}
 	}
 
+	/**
+	 * Safely converts the passed String to a FuzzyBoolean.<br>
+	 * Mainly this method checks for occurrence like "true" or "false" in order to return the appropriate FuzzyBoolean. It used however also
+	 * other patterns like "yes" or "no" for checking.
+	 * 
+	 * @param str The string to convert
+	 * @param fallback Fallback to return
+	 * @return
+	 */
 	public static FuzzyBoolean convertToBoolean(String str, FuzzyBoolean fallback) {
 		if (StringUtils.isEmpty(str)) {
 			return fallback;
@@ -130,6 +198,14 @@ public class CoreUtil {
 		return fallback;
 	}
 
+	/**
+	 * Safely returns a formatted date string.
+	 * 
+	 * @param time The date to format
+	 * @param timeFormat The dateformat which shall be used for formatting
+	 * @param fallback The fallback to return if the date cannot be formatted
+	 * @return
+	 */
 	public static String getFormattedTime(final Date time, final DateFormat timeFormat, final String fallback) {
 		if (time == null) {
 			return fallback;

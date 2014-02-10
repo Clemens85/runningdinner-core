@@ -65,7 +65,7 @@ public class RunningDinnerCalculatorTest {
 
 			assertEquals(true, isDistributionBalanced(team, standardConfig));
 
-			System.out.println(team + " - canHost: " + team.getHostingDump(standardConfig));
+			System.out.println(team + " - canHost: " + team.getHostingCapability(standardConfig));
 		}
 	}
 
@@ -134,7 +134,7 @@ public class RunningDinnerCalculatorTest {
 				numUnbalancedTeams++;
 			}
 
-			System.out.println(team + " - canHouse :" + team.getHostingDump(standardConfig));
+			System.out.println(team + " - canHouse :" + team.getHostingCapability(standardConfig));
 		}
 
 		assertEquals(4, numBalancedTeams);
@@ -180,10 +180,10 @@ public class RunningDinnerCalculatorTest {
 		List<Participant> teamMembers = generateParticipants(13);
 		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(customConfig, teamMembers);
 		assertEquals(true, teamsResult.hasNotAssignedParticipants());
-		assertEquals(1, teamsResult.getNotAssignedParticipants().size());
-		assertEquals(13, teamsResult.getNotAssignedParticipants().get(0).getParticipantNumber()); // Ensure that last user is the one not
+		assertEquals(5, teamsResult.getNotAssignedParticipants().size());
+		assertEquals(9, teamsResult.getNotAssignedParticipants().get(0).getParticipantNumber()); // Ensure that last user is the one not
 																									// assigned
-		assertEquals(6, teamsResult.getRegularTeams().size());
+		assertEquals(9, teamsResult.getRegularTeams().size());
 
 		System.out.println("*** testCustomConfigTeamBuilding ***");
 		for (Team team : teamsResult.getRegularTeams()) {

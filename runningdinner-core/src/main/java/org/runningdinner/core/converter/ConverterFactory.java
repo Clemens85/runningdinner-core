@@ -5,17 +5,34 @@ import org.runningdinner.core.converter.config.ParsingConfiguration;
 import org.runningdinner.core.converter.impl.HssfConverter;
 import org.runningdinner.core.converter.impl.XssfConverter;
 
+/**
+ * Factory for instantiating concrete implementations for parsing different file-types with participants.
+ * 
+ * @author Clemens Stich
+ * 
+ */
 public class ConverterFactory {
 
 	private static final String XLS = "xls";
 	private static final String XLSX = "xlsx";
 	private static final String XLSM = "xlsm";
-	private static final String CSV = "csv";
+	private static final String CSV = "csv"; // Currently not supported
 
+	/**
+	 * Low level file type information which is used for instantiating a concrete converter class
+	 */
 	public static enum INPUT_FILE_TYPE {
 		HSSF, XSSF, CSV, UNKNOWN
 	}
 
+	/**
+	 * Instantiates a new concrete converter implementation which is used for parsing a file with participants.<br>
+	 * Currently there exist only support for Excel files.
+	 * 
+	 * @param parsingConfiguration The configuration that is passed to the concrete FileConverter
+	 * @param fileType Identifier for instantiating the concrete converter class
+	 * @return
+	 */
 	public static FileConverter newConverter(final ParsingConfiguration parsingConfiguration, final INPUT_FILE_TYPE fileType) {
 		if (INPUT_FILE_TYPE.HSSF == fileType) {
 			return new HssfConverter(parsingConfiguration);
@@ -32,7 +49,7 @@ public class ConverterFactory {
 	 * The identifier can either be a file-suffix (like e.g. "xlsx"), a filename or a mime-type like e.g. ("application/vnd.ms-excel").<br>
 	 * 
 	 * @param identifier
-	 * @return The recognized excel file type or EXCEL_FILE_TYPE.UNKNOWN if recognition failed.
+	 * @return The recognized file type or INPUT_FILE_TYPE.UNKNOWN if recognition failed.
 	 */
 	public static INPUT_FILE_TYPE determineFileType(final String identifier) {
 

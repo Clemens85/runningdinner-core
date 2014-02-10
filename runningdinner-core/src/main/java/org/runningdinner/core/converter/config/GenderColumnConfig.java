@@ -7,7 +7,7 @@ public class GenderColumnConfig extends AbstractColumnConfig {
 	}
 
 	public static GenderColumnConfig noGenderColumn() {
-		GenderColumnConfig result = new GenderColumnConfig(Integer.MIN_VALUE);
+		GenderColumnConfig result = new GenderColumnConfig(UNAVAILABLE_COLUMN_INDEX);
 		return result;
 	}
 

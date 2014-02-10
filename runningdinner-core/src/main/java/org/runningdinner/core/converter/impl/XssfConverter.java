@@ -2,20 +2,25 @@ package org.runningdinner.core.converter.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.runningdinner.core.CoreUtil;
 import org.runningdinner.core.Participant;
-import org.runningdinner.core.Team;
 import org.runningdinner.core.converter.ConversionException;
 import org.runningdinner.core.converter.FileConverter;
 import org.runningdinner.core.converter.config.ParsingConfiguration;
 
-// TODO: XLSX parsing takes huge amount of memory when using the highlevel XSSF API.
-// If this is an issue, it has to be changed to low-level event-driven parsing
+/**
+ * Entry point for parsing "new" XLSX excel files.<br>
+ * 
+ * TODO: XLSX parsing takes huge amount of memory when using the highlevel XSSF API.<br>
+ * If this is an issue, it has to be changed to low-level event-driven parsing
+ * 
+ * @author Clemens Stich
+ * 
+ */
 public class XssfConverter extends AbstractExcelConverterHighLevel implements FileConverter {
 
 	public XssfConverter(ParsingConfiguration parsingConfiguration) {
@@ -31,8 +36,4 @@ public class XssfConverter extends AbstractExcelConverterHighLevel implements Fi
 		return parseParticipants(sheet);
 	}
 
-	@Override
-	public InputStream saveTeamPlans(Collection<Team> teams) throws IOException, ConversionException {
-		throw new UnsupportedOperationException("not yet implemented");
-	}
 }

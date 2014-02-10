@@ -3,7 +3,7 @@ package org.runningdinner.core;
 /**
  * Simple helper object for saving information about combining teams
  * 
- * @author i01002492
+ * @author Clemens Stich
  * 
  */
 public class TeamCombinationInfo {

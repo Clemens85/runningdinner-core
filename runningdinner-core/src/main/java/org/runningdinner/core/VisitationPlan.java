@@ -13,7 +13,7 @@ import javax.persistence.Transient;
 
 @Embeddable
 @Access(AccessType.FIELD)
-public class VisitationPlan /* extends AbstractEntity */{
+public class VisitationPlan {
 
 	/**
 	 * This is just used when populating the VisitationPlan. Later on this information isn't needed any longer
@@ -72,10 +72,22 @@ public class VisitationPlan /* extends AbstractEntity */{
 		return hostTeams.size();
 	}
 
+	/**
+	 * Returns true if this team has at least one reference to the passed team
+	 * 
+	 * @param team
+	 * @return
+	 */
 	public boolean containsGuestOrHostReference(final Team team) {
 		return guestTeams.contains(team) || hostTeams.contains(team);
 	}
 
+	/**
+	 * Returns true if this team has at least one hosting reference to a team that must cook the passed meal.
+	 * 
+	 * @param mealClass
+	 * @return
+	 */
 	public boolean containsHostReferenceWithSameMealClass(MealClass mealClass) {
 		for (Team hostTeam : hostTeams) {
 			if (mealClass.equals(hostTeam.getMealClass())) {
@@ -85,6 +97,12 @@ public class VisitationPlan /* extends AbstractEntity */{
 		return false;
 	}
 
+	/**
+	 * Returns true if this team has at least one guest reference to a team that must cook itself the passed meal.
+	 * 
+	 * @param mealClass
+	 * @return
+	 */
 	public boolean containsGuestReferenceWithSameMealClass(MealClass mealClass) {
 		for (Team guestTeam : guestTeams) {
 			if (mealClass.equals(guestTeam.getMealClass())) {
@@ -94,6 +112,12 @@ public class VisitationPlan /* extends AbstractEntity */{
 		return false;
 	}
 
+	/**
+	 * Adds the passed team as a host team for this team.<br>
+	 * This method acts transitive, thus this team is also added as a guest-team to the passed hostTeam.
+	 * 
+	 * @param hostTeam
+	 */
 	public void addHostTeam(final Team hostTeam) {
 		this.hostTeams.add(hostTeam);
 		hostTeam.getVisitationPlan().addGuestTeam(team);
@@ -108,6 +132,9 @@ public class VisitationPlan /* extends AbstractEntity */{
 		this.guestTeams.add(guestTeam);
 	}
 
+	/**
+	 * This method works only when all associations are loaded!
+	 */
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();

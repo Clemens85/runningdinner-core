@@ -13,10 +13,16 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.runningdinner.core.model.AbstractEntity;
 
+/**
+ * Represents a meal-type in a running diner like e.g. dessert.
+ * 
+ * @author Clemens Stich
+ * 
+ */
 @Entity
 @Access(AccessType.FIELD)
-// Ignore JPA basic entity attributes, as we don't need them currently
-// TODO: Currently this is sufficient, if we need different cases, then the JSON serializer/deserializer must be adapted
+// Simple workaround for ignoring JPA basic entity attributes when serializing/deserializing to/from JSON Format.
+// Currently this is sufficient, in future it may be more suitable to adapt the JSON serializer/deserializer API.
 @JsonIgnoreProperties(value = { "id", "naturalKey", "versionNo", "createdAt", "modifiedAt", "new" })
 public final class MealClass extends AbstractEntity {
 
@@ -32,6 +38,7 @@ public final class MealClass extends AbstractEntity {
 	private Date time;
 
 	protected MealClass() {
+		// JPA
 	}
 
 	public MealClass(String label) {
@@ -39,10 +46,21 @@ public final class MealClass extends AbstractEntity {
 		this.label = label;
 	}
 
+	/**
+	 * Returns the name of this meal (the meal is actually identified by this name).
+	 * 
+	 * @return
+	 */
 	public String getLabel() {
 		return label;
 	}
 
+	/**
+	 * The time for ingesting this meal.<br>
+	 * This time is returned as a whole date, although the time is the actual important data.
+	 * 
+	 * @return
+	 */
 	public Date getTime() {
 		return time;
 	}

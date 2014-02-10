@@ -20,9 +20,9 @@ import org.slf4j.LoggerFactory;
  * Stateless object for calculating running dinner scenarios.<br>
  * All needed items like the configuration of a dinner (meals, team-size, etc.) must be passed into the according methods.<br>
  * Main purpose is on the one hand to generate random teams out of the passed participants and on the other hand to create visitation-plans
- * for each generated team.
+ * (= dinner-routes) for each generated team.
  * 
- * @author i01002492
+ * @author Clemens Stich
  * 
  */
 public class RunningDinnerCalculator {
@@ -52,7 +52,7 @@ public class RunningDinnerCalculator {
 		int numParticipants = participants.size();
 
 		if (teamSize >= numParticipants) {
-			throw new NoPossibleRunningDinnerException("There must be more participants than a team's size");
+			throw new NoPossibleRunningDinnerException("There must be more participants as a team's size");
 		}
 
 		TeamCombinationInfo teamCombinationInfo = generateTeamCombinationInfo(participants, runningDinnerConfig);

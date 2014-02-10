@@ -7,7 +7,7 @@ public class SequenceColumnConfig extends AbstractColumnConfig {
 	}
 
 	public static SequenceColumnConfig noSequenceColumn() {
-		SequenceColumnConfig result = new SequenceColumnConfig(Integer.MIN_VALUE);
+		SequenceColumnConfig result = new SequenceColumnConfig(UNAVAILABLE_COLUMN_INDEX);
 		return result;
 	}
 

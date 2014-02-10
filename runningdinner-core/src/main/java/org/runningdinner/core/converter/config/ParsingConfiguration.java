@@ -2,6 +2,14 @@ package org.runningdinner.core.converter.config;
 
 import org.runningdinner.core.CoreUtil;
 
+/**
+ * A ParsingConfiguration is used for parsing arbitrary participant files.<br>
+ * It contains several column configurations which identify which information is mapped into which column (and/or which information is
+ * available and which not).
+ * 
+ * @author Clemens Stich
+ * 
+ */
 public class ParsingConfiguration {
 
 	private int startRow = 1;
@@ -32,6 +40,11 @@ public class ParsingConfiguration {
 		this(nameColumnConfig, addressColumnConfig, NumberOfSeatsColumnConfig.noNumberOfSeatsColumn());
 	}
 
+	/**
+	 * Returns the zero-index based row number from which to start parsing.
+	 * 
+	 * @return
+	 */
 	public int getStartRow() {
 		return startRow;
 	}
@@ -107,6 +120,11 @@ public class ParsingConfiguration {
 		this.sequenceColumnConfig = sequenceColumnConfig;
 	}
 
+	/**
+	 * Constructs a default ParsingConfiguration which contains the most used (and of course also mandatory) configurations.
+	 * 
+	 * @return
+	 */
 	public static ParsingConfiguration newDefaultConfiguration() {
 		NameColumnConfig nameColumnConfig = NameColumnConfig.createForOneColumn(0);
 		AddressColumnConfig addressColumnConfig = AddressColumnConfig.newBuilder().withStreetAndStreetNrColumn(1).buildWithZipAndCityColumn(

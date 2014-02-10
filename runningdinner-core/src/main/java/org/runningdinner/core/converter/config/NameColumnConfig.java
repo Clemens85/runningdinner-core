@@ -2,8 +2,8 @@ package org.runningdinner.core.converter.config;
 
 public class NameColumnConfig {
 
-	private int firstnameColumn = Integer.MIN_VALUE;
-	private int lastnameColumn = Integer.MIN_VALUE;
+	private int firstnameColumn = AbstractColumnConfig.UNAVAILABLE_COLUMN_INDEX;
+	private int lastnameColumn = AbstractColumnConfig.UNAVAILABLE_COLUMN_INDEX;
 
 	protected NameColumnConfig(final int column) {
 		this.firstnameColumn = column;
@@ -40,7 +40,8 @@ public class NameColumnConfig {
 	}
 
 	public boolean isAvailable() {
-		return firstnameColumn != Integer.MIN_VALUE && lastnameColumn != Integer.MIN_VALUE;
+		return firstnameColumn != AbstractColumnConfig.UNAVAILABLE_COLUMN_INDEX
+				&& lastnameColumn != AbstractColumnConfig.UNAVAILABLE_COLUMN_INDEX;
 	}
 
 	public static NameColumnConfig createForTwoColumns(final int firstnameColumn, final int lastnameColumn) {

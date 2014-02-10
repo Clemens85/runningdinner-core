@@ -1,5 +1,11 @@
 package org.runningdinner.core;
 
+/**
+ * Thrown when it is tried to calculate a running dinner with insufficient options.
+ * 
+ * @author Clemens Stich
+ * 
+ */
 public class NoPossibleRunningDinnerException extends Exception {
 
 	private static final long serialVersionUID = -8611468413016877441L;

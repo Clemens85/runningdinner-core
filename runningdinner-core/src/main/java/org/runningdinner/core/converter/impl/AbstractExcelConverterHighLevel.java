@@ -25,6 +25,13 @@ import org.runningdinner.core.converter.config.NumberOfSeatsColumnConfig;
 import org.runningdinner.core.converter.config.ParsingConfiguration;
 import org.runningdinner.core.converter.config.SequenceColumnConfig;
 
+/**
+ * Abstract class for parsing excel files which contains the main logic.<br>
+ * This class is independent of XSSF or HSSF excel file types.
+ * 
+ * @author Clemens Stich
+ * 
+ */
 public class AbstractExcelConverterHighLevel {
 
 	protected ParsingConfiguration parsingConfiguration;
@@ -33,6 +40,13 @@ public class AbstractExcelConverterHighLevel {
 		this.parsingConfiguration = parsingConfiguration;
 	}
 
+	/**
+	 * Parses each excel row and assigns each participant an ascending participant-number.
+	 * 
+	 * @param sheet
+	 * @return
+	 * @throws ConversionException
+	 */
 	public List<Participant> parseParticipants(final Sheet sheet) throws ConversionException {
 		int startRow = parsingConfiguration.getStartRow();
 
@@ -71,6 +85,14 @@ public class AbstractExcelConverterHighLevel {
 		return new ArrayList<Participant>(tmpResult);
 	}
 
+	/**
+	 * Reads out the value that is represented by the passed column configuration or returns an empty string if the passed column
+	 * configuration shall not be considered.
+	 * 
+	 * @param row Current row of excel sheet
+	 * @param columnConfig
+	 * @return
+	 */
 	private String getColumnString(final Row row, final AbstractColumnConfig columnConfig) {
 		if (columnConfig.isAvailable()) {
 			return getCellValueAsString(row, columnConfig.getColumnIndex());
@@ -78,6 +100,13 @@ public class AbstractExcelConverterHighLevel {
 		return StringUtils.EMPTY;
 	}
 
+	/**
+	 * Reads out the participant name as it is configured in the NameColumnConfig
+	 * 
+	 * @param row Current row of excel sheet
+	 * @return
+	 * @throws ConversionException
+	 */
 	private ParticipantName getName(Row row) throws ConversionException {
 		try {
 			NameColumnConfig nameColumnConfig = parsingConfiguration.getNameColumnConfig();
@@ -106,6 +135,13 @@ public class AbstractExcelConverterHighLevel {
 				CONVERSION_ERROR.PARTICIPANT_NR);
 	}
 
+	/**
+	 * Reads out the participant address as it is configured in the AddressColumnConfig
+	 * 
+	 * @param row Current row of excel sheet
+	 * @return
+	 * @throws ConversionException
+	 */
 	private ParticipantAddress getAddress(Row row) throws ConversionException {
 		try {
 			AddressColumnConfig addressColumnConfig = parsingConfiguration.getAddressColumnConfig();
@@ -157,6 +193,15 @@ public class AbstractExcelConverterHighLevel {
 		}
 	}
 
+	/**
+	 * Reads out the participant's number of seats (important for hosting capabilities) as it is configured in the NumberOfSeatsColumnConfig
+	 * 
+	 * @param row Current row of excel sheet
+	 * @return The number of seats for this participant. If this information is not available it is returned a negative number. Furthermore
+	 *         if the information about number of seats is represented by a boolen (can host or cannot host) it is returned
+	 *         Integer.MAX_VALUE which is certainly sufficient for every scenario
+	 * @throws ConversionException
+	 */
 	private int getNumberOfSeats(final Row row) throws ConversionException {
 
 		try {
@@ -190,6 +235,17 @@ public class AbstractExcelConverterHighLevel {
 		}
 	}
 
+	/**
+	 * It is possible to specify a separate sequence number column, which is used for assigning participantNumbers to participants.<br>
+	 * If such a sequence-number column is configured this column is used for generating the participant number. Otherwise the passed
+	 * pre-generated participant-number will be used
+	 * 
+	 * @param row Current row of excel sheet
+	 * @param participantNr The generated participant number according to the order in excel. This is used as a result if no sequence column
+	 *            configuration exists
+	 * @return
+	 * @throws ConversionException
+	 */
 	private int getSequenceNumberIfAvailable(final Row row, final int participantNr) {
 		int result = participantNr;
 
@@ -208,6 +264,14 @@ public class AbstractExcelConverterHighLevel {
 		return parsingConfiguration;
 	}
 
+	/**
+	 * Helper method for dealing with different column types from Excel.<br>
+	 * It returns for each column type a string, so that the caller is responsible for handling different datatypes
+	 * 
+	 * @param row
+	 * @param cellNumber
+	 * @return
+	 */
 	protected String getCellValueAsString(final Row row, final int cellNumber) {
 		Cell cell = row.getCell(cellNumber);
 
@@ -221,7 +285,7 @@ public class AbstractExcelConverterHighLevel {
 				if (DateUtil.isCellDateFormatted(cell)) {
 
 					// if (HSSFDateUtil.isCellDateFormatted(cell)) {
-					// TODO: XSSF <-> HSSF
+					// TODO: XSSF <-> HSSF, but seems to work for both
 					HSSFDataFormatter formater = new HSSFDataFormatter();
 					result = formater.formatCellValue(cell);
 				}

@@ -7,7 +7,7 @@ public class AgeColumnConfig extends AbstractColumnConfig {
 	}
 
 	public static AgeColumnConfig noAgeColumn() {
-		AgeColumnConfig result = new AgeColumnConfig(Integer.MIN_VALUE);
+		AgeColumnConfig result = new AgeColumnConfig(UNAVAILABLE_COLUMN_INDEX);
 		return result;
 	}
 

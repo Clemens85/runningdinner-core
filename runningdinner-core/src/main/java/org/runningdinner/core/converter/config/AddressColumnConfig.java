@@ -5,10 +5,10 @@ import java.util.Set;
 
 public class AddressColumnConfig {
 
-	private int streetColumn = Integer.MIN_VALUE;
-	private int streetNrColumn = Integer.MIN_VALUE;
-	private int zipColumn = Integer.MIN_VALUE;
-	private int cityColumn = Integer.MIN_VALUE;
+	private int streetColumn = AbstractColumnConfig.UNAVAILABLE_COLUMN_INDEX;
+	private int streetNrColumn = AbstractColumnConfig.UNAVAILABLE_COLUMN_INDEX;
+	private int zipColumn = AbstractColumnConfig.UNAVAILABLE_COLUMN_INDEX;
+	private int cityColumn = AbstractColumnConfig.UNAVAILABLE_COLUMN_INDEX;
 
 	protected AddressColumnConfig(int streetColumn, int streetNrColumn, int zipColumn, int cityColumn) {
 		this.streetColumn = streetColumn;
@@ -62,7 +62,7 @@ public class AddressColumnConfig {
 
 	public static class AddressColumnConfigBuilder {
 
-		int compositeColumn = Integer.MIN_VALUE;
+		int compositeColumn = AbstractColumnConfig.UNAVAILABLE_COLUMN_INDEX;
 
 		public AddressColumnConfigBuilder withCompositeColumn(int compositeColumn) {
 			this.compositeColumn = compositeColumn;
@@ -84,10 +84,10 @@ public class AddressColumnConfig {
 
 	public static class SingleAddressColumnConfigBuilder {
 
-		private int streetColumn = Integer.MIN_VALUE;
-		private int streetNrColumn = Integer.MIN_VALUE;
-		private int zipColumn = Integer.MIN_VALUE;
-		private int cityColumn = Integer.MIN_VALUE;
+		private int streetColumn = AbstractColumnConfig.UNAVAILABLE_COLUMN_INDEX;
+		private int streetNrColumn = AbstractColumnConfig.UNAVAILABLE_COLUMN_INDEX;
+		private int zipColumn = AbstractColumnConfig.UNAVAILABLE_COLUMN_INDEX;
+		private int cityColumn = AbstractColumnConfig.UNAVAILABLE_COLUMN_INDEX;
 
 		public SingleAddressColumnConfigBuilder(int streetColumn) {
 			this.streetColumn = streetColumn;
@@ -115,7 +115,7 @@ public class AddressColumnConfig {
 
 	public static class CompositeAddressColumnConfigBuilder {
 
-		private int streetAndStreetNrColumn = Integer.MIN_VALUE;
+		private int streetAndStreetNrColumn = AbstractColumnConfig.UNAVAILABLE_COLUMN_INDEX;
 
 		protected CompositeAddressColumnConfigBuilder(int streetAndStreetNrColumn) {
 			this.streetAndStreetNrColumn = streetAndStreetNrColumn;

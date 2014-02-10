@@ -17,24 +17,45 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+/**
+ * Base class for all JPA entity classes.
+ * 
+ * @author Clemens Stich
+ * 
+ */
 @SuppressWarnings("serial")
 @MappedSuperclass
 public abstract class AbstractEntity implements Serializable {
 
+	/**
+	 * Primary Key identifier
+	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
+	/**
+	 * Natural business key which is also used from the "outside" for identifying entities
+	 */
 	@Column(unique = true, length = 32, name = "naturalKey", nullable = false)
 	private String naturalKey;
 
+	/**
+	 * Used for optimistic locking
+	 */
 	@Version
 	@Column(name = "VERSION_NR", nullable = false)
 	private long versionNo;
 
+	/**
+	 * Column when entity is created (currently not filled in)
+	 */
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date createdAt;
 
+	/**
+	 * Column when entity is modified (currently not filled in)
+	 */
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date modifiedAt;
 
@@ -79,8 +100,16 @@ public abstract class AbstractEntity implements Serializable {
 		return id == null;
 	}
 
+	/**
+	 * Validates whether the passed naturalKey is valid.<br>
+	 * TODO 1: Implement<br>
+	 * TODO 2: Should be refactored to another class
+	 * 
+	 * @param passedNaturalKey
+	 * @throws IllegalArgumentException
+	 * @return
+	 */
 	public static boolean validateNaturalKey(final String passedNaturalKey) {
-		// TODO: validate the passed key:
 		return true;
 	}
 

@@ -7,7 +7,7 @@ public class MobileNumberColumnConfig extends AbstractColumnConfig {
 	}
 
 	public static MobileNumberColumnConfig noMobileNumberColumn() {
-		MobileNumberColumnConfig result = new MobileNumberColumnConfig(Integer.MIN_VALUE);
+		MobileNumberColumnConfig result = new MobileNumberColumnConfig(UNAVAILABLE_COLUMN_INDEX);
 		return result;
 	}
 

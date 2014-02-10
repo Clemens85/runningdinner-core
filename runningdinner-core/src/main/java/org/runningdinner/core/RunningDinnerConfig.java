@@ -11,20 +11,26 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
+/**
+ * Contains the options for a running dinner (e.g. which meals to cook, size of the teams, ...)
+ * 
+ * @author Clemens Stich
+ * 
+ */
 @Embeddable
 public class RunningDinnerConfig {
 
 	@OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
 	@JoinColumn(name = "dinner_id")
-	// Actually not needed as we look currently always at one dinner... maybe interesting for an global-admin-overview in some time
-	// @BatchSize(size = 30)
 	@OrderBy(value = "time")
 	private Set<MealClass> mealClasses;
 
 	private int teamSize;
 
 	private boolean considerShortestPaths;
+
 	private GenderAspect genderAspects;
+
 	private boolean forceEqualDistributedCapacityTeams;
 
 	protected RunningDinnerConfig() {
@@ -39,22 +45,49 @@ public class RunningDinnerConfig {
 		this.genderAspects = builder.genderAspects;
 	}
 
+	/**
+	 * Determines whether teams shall be mixed up by using certain gender aspects.<br>
+	 * Currently not supported by calculation.
+	 * 
+	 * @return
+	 */
 	public GenderAspect getGenderAspects() {
 		return genderAspects;
 	}
 
+	/**
+	 * Determines whether teams shall be mixed up based on the hosting capabilities of single participants
+	 * 
+	 * @return
+	 */
 	public boolean isForceEqualDistributedCapacityTeams() {
 		return forceEqualDistributedCapacityTeams;
 	}
 
+	/**
+	 * Determines whether dinner-routes between teams shall be generated based up on nearest distances.<br>
+	 * Currently not supported by calculation
+	 * 
+	 * @return
+	 */
 	public boolean isConsiderShortestPaths() {
 		return considerShortestPaths;
 	}
 
+	/**
+	 * Contains all meals to cook for a running dinner
+	 * 
+	 * @return
+	 */
 	public Set<MealClass> getMealClasses() {
 		return mealClasses;
 	}
 
+	/**
+	 * Determines how many participants are mixed up into one team. Typcially this should be 2.
+	 * 
+	 * @return
+	 */
 	public int getTeamSize() {
 		return teamSize;
 	}
@@ -82,6 +115,13 @@ public class RunningDinnerConfig {
 		return new TeamCombinationInfo(teamSegmentSize, numRemaindingTeams);
 	}
 
+	/**
+	 * Checks whether the passed participant can act as host based upon the current dinner-options.<br>
+	 * It may happen that the hosting-capabilities of the participant is not known. In such a case FuzzyBoolean.UNKNOWN will be returned.
+	 * 
+	 * @param participant
+	 * @return
+	 */
 	public FuzzyBoolean canHost(final Participant participant) {
 		if (participant.getNumSeats() == Participant.UNDEFINED_SEATS) {
 			return FuzzyBoolean.UNKNOWN;
@@ -90,6 +130,11 @@ public class RunningDinnerConfig {
 		return participant.getNumSeats() >= numSeatsNeeded ? FuzzyBoolean.TRUE : FuzzyBoolean.FALSE;
 	}
 
+	/**
+	 * Create a new running dinner configuration instance
+	 * 
+	 * @return
+	 */
 	public static ConfigBuilder newConfigurer() {
 		return new ConfigBuilder();
 	}

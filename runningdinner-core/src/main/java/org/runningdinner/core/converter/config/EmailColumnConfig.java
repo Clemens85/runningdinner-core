@@ -6,7 +6,7 @@ public class EmailColumnConfig extends AbstractColumnConfig {
 	}
 
 	public static EmailColumnConfig noEmailColumn() {
-		EmailColumnConfig result = new EmailColumnConfig(Integer.MIN_VALUE);
+		EmailColumnConfig result = new EmailColumnConfig(UNAVAILABLE_COLUMN_INDEX);
 		return result;
 	}
 

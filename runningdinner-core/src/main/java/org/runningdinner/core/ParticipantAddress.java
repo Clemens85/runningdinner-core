@@ -6,6 +6,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+/**
+ * Represents the address of a participant.<br>
+ * A valid address must contain at least the street, street-number and zip-code.
+ * 
+ * @author Clemens Stich
+ * 
+ */
 @Embeddable
 public class ParticipantAddress {
 
@@ -24,10 +31,24 @@ public class ParticipantAddress {
 		this.setZip(zip);
 	}
 
+	/**
+	 * Used only for JPA and Spring MVC
+	 */
 	public ParticipantAddress() {
-		// JPA
+		// JPA and Spring MVC
 	}
 
+	/**
+	 * Tries to construct a new address from the passed string.<br>
+	 * The passed string is to be expected in the following format:<br>
+	 * <br>
+	 * Street Street-Number \n<br>
+	 * Zip City<br>
+	 * 
+	 * @param completeAddressString
+	 * @throws IllegalArgumentException If string could not be parsed
+	 * @return
+	 */
 	public static ParticipantAddress parseFromString(String completeAddressString) {
 		String[] addressParts = completeAddressString.split("\\r?\\n");
 
@@ -43,6 +64,16 @@ public class ParticipantAddress {
 		return result;
 	}
 
+	/**
+	 * Tries to construct a new address from the passed string.<br>
+	 * The passed string is to be expected in the following format:<br>
+	 * <br>
+	 * Street Street-Number<b>,</b> Zip City<br>
+	 * 
+	 * @param completeAddressString
+	 * @throws IllegalArgumentException If string could not be parsed
+	 * @return
+	 */
 	public static ParticipantAddress parseFromCommaSeparatedString(String completeAddressString) {
 		String[] addressParts = completeAddressString.split(",");
 
@@ -73,6 +104,11 @@ public class ParticipantAddress {
 	}
 
 	/**
+	 * Sets the street with street number.<br>
+	 * The passed string is expected to be in a format like following:<br>
+	 * MyStreet 12<br>
+	 * But it is also possible to have something like e.g.:<br>
+	 * Im Spechtweg 12a
 	 * 
 	 * @param streetWithNumber
 	 * @throws IllegalArgumentException
@@ -104,8 +140,13 @@ public class ParticipantAddress {
 	}
 
 	/**
+	 * Sets the zip with city.<br>
+	 * The passed string is expected to be in a format like following:<br>
+	 * 79100 Freiburg<br>
+	 * <br>
+	 * Additionally the zip is validated
 	 * 
-	 * @param zipWithCity
+	 * @param streetWithNumber
 	 * @throws IllegalArgumentException
 	 */
 	public void setZipAndCity(final String zipWithCity) {
@@ -164,6 +205,12 @@ public class ParticipantAddress {
 		return zip;
 	}
 
+	/**
+	 * Sets the zip of the address and performs a validation whether the zip is a valid 5 digit number.
+	 * (Maybe this must be adapted for other countries...)
+	 * 
+	 * @param zip
+	 */
 	public void setZip(int zip) {
 		CoreUtil.assertSmaller(9999, zip, "Zip must be a positive number with exactly 5 digits");
 		CoreUtil.assertSmaller(zip, 100000, "Zip must be a positive number with exactly 5 digits");

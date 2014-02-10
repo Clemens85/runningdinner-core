@@ -18,6 +18,13 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.runningdinner.core.model.AbstractEntity;
 
+/**
+ * Represents a team of a running dinner.<br>
+ * Each team is identified by his teamNumber which is unique inside <b>one</b> running-dinner.
+ * 
+ * @author Clemens Stich
+ * 
+ */
 @Entity
 @Access(AccessType.FIELD)
 public class Team extends AbstractEntity implements Comparable<Team> {
@@ -42,10 +49,20 @@ public class Team extends AbstractEntity implements Comparable<Team> {
 		// JPA
 	}
 
+	/**
+	 * Constructs a new team with the passed teamNumber
+	 * 
+	 * @param teamNumber
+	 */
 	public Team(int teamNumber) {
 		this.teamNumber = teamNumber;
 	}
 
+	/**
+	 * Returns all participans that are members of this team
+	 * 
+	 * @return
+	 */
 	public Set<Participant> getTeamMembers() {
 		return teamMembers;
 	}
@@ -54,6 +71,11 @@ public class Team extends AbstractEntity implements Comparable<Team> {
 		this.teamMembers = teamMembers;
 	}
 
+	/**
+	 * Returns the assigned meal of this team. The team is therefore responsible for cooking this meal.
+	 * 
+	 * @return
+	 */
 	public MealClass getMealClass() {
 		return mealClass;
 	}
@@ -62,10 +84,22 @@ public class Team extends AbstractEntity implements Comparable<Team> {
 		this.mealClass = mealClass;
 	}
 
+	/**
+	 * Returns the number of this team
+	 * 
+	 * @return
+	 */
 	public int getTeamNumber() {
 		return teamNumber;
 	}
 
+	/**
+	 * Gets the VisitationPlan (=dinner-route) of this team.<br>
+	 * If there exist no VisitationPlan yet a new one will be created.<br>
+	 * During calculation of dinner-routes (-> RunningDinnerCalculator) each VisitationPlan is sequentially enriched
+	 * 
+	 * @return
+	 */
 	public VisitationPlan getVisitationPlan() {
 		if (this.visitationPlan == null) {
 			this.visitationPlan = new VisitationPlan(this);
@@ -77,6 +111,11 @@ public class Team extends AbstractEntity implements Comparable<Team> {
 		this.visitationPlan = visitationPlan;
 	}
 
+	/**
+	 * Retrieves the participant from this team which is marked as host
+	 * 
+	 * @return
+	 */
 	public Participant getHostTeamMember() {
 		if (!CoreUtil.isEmpty(teamMembers)) {
 			for (Participant p : teamMembers) {
@@ -88,12 +127,49 @@ public class Team extends AbstractEntity implements Comparable<Team> {
 		return null;
 	}
 
-	public List<FuzzyBoolean> getHostingDump(final RunningDinnerConfig runningDinnerConfig) {
+	/**
+	 * Returns a list with hosting capabilities of each team member.
+	 * 
+	 * @param runningDinnerConfig Must be passed in for determining the hosting capabilities
+	 * @return E.g. [TRUE, UNKNOWN] for two participants whereas one can act as host and whereas it is unknown for the other team member.
+	 */
+	public List<FuzzyBoolean> getHostingCapability(final RunningDinnerConfig runningDinnerConfig) {
 		ArrayList<FuzzyBoolean> result = new ArrayList<FuzzyBoolean>(teamMembers.size());
 		for (Participant member : teamMembers) {
 			result.add(runningDinnerConfig.canHost(member));
 		}
 		return result;
+	}
+
+	/**
+	 * Retrieves the number of possible hosts inside this team.
+	 * 
+	 * @param hostingCapabilities List with all hosting capabilities of the team (see {@link getHostingCapability})
+	 * @return
+	 */
+	public int getNumberOfHosts(final List<FuzzyBoolean> hostingCapabilities) {
+		int result = 0;
+		for (FuzzyBoolean canHost : hostingCapabilities) {
+			if (FuzzyBoolean.TRUE == canHost) {
+				result++;
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Checks whether there exist at least one host which has an unknown hosting capability
+	 * 
+	 * @param hostingCapabilities List with all hosting capabilities of the team (see {@link getHostingCapability})
+	 * @return
+	 */
+	public boolean hasOneUnknownHost(final List<FuzzyBoolean> hostingCapabilities) {
+		for (FuzzyBoolean canHost : hostingCapabilities) {
+			if (FuzzyBoolean.UNKNOWN == canHost) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

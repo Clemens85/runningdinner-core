@@ -11,13 +11,29 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.runningdinner.core.model.AbstractEntity;
 
+/**
+ * Represents a participant of a running dinner.<br>
+ * Each participant is identified by his participantNumber which is unique inside <b>one</b> running-dinner.
+ * The participant number is also used for comparing participants and is thus also used for giving participants with a lower number a higher
+ * precedence when they are assigned into teams.
+ * 
+ * @author Clemens Stich
+ * 
+ */
 @Entity
 @Access(AccessType.FIELD)
 public class Participant extends AbstractEntity implements Comparable<Participant> {
 
 	private static final long serialVersionUID = -8062709434676386371L;
 
+	/**
+	 * Number which represents an undefined (=unknown) number of seats of a participant
+	 */
 	public static final int UNDEFINED_SEATS = -1;
+
+	/**
+	 * Number which represents an undefined (=unknown) age of a participant
+	 */
 	public static final int UNDEFINED_AGE = -1;
 
 	@Column(nullable = false)
@@ -45,24 +61,45 @@ public class Participant extends AbstractEntity implements Comparable<Participan
 		// JPA
 	}
 
+	/**
+	 * Constructs a new participant with his participant-number.<br>
+	 * 
+	 * @param participantNumber
+	 */
 	public Participant(final int participantNumber) {
 		this.participantNumber = participantNumber;
 		this.numSeats = UNDEFINED_SEATS;
 	}
 
+	/**
+	 * Returns the name of a participant
+	 * 
+	 * @return Participant's name. Is never null.
+	 */
 	public ParticipantName getName() {
 		return name;
 	}
 
 	public void setName(ParticipantName name) {
+		if (name == null) {
+			throw new NullPointerException("Null value for name is not allowed!");
+		}
 		this.name = name;
 	}
 
+	/**
+	 * Returns the address of a participant
+	 * 
+	 * @return Participant's address. Is never null.
+	 */
 	public ParticipantAddress getAddress() {
 		return address;
 	}
 
 	public void setAddress(ParticipantAddress address) {
+		if (address == null) {
+			throw new NullPointerException("Null value for address is not allowed!");
+		}
 		this.address = address;
 	}
 
@@ -119,6 +156,12 @@ public class Participant extends AbstractEntity implements Comparable<Participan
 		return participantNumber;
 	}
 
+	/**
+	 * If true a participant is marked as the host within a team.<br>
+	 * There exist only one host inside one team.
+	 * 
+	 * @return
+	 */
 	public boolean isHost() {
 		return host;
 	}

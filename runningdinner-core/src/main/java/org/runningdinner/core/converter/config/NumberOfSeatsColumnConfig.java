@@ -17,7 +17,7 @@ public class NumberOfSeatsColumnConfig extends AbstractColumnConfig {
 	}
 
 	public static NumberOfSeatsColumnConfig noNumberOfSeatsColumn() {
-		return new NumberOfSeatsColumnConfig(Integer.MIN_VALUE);
+		return new NumberOfSeatsColumnConfig(UNAVAILABLE_COLUMN_INDEX);
 	}
 
 	public static NumberOfSeatsColumnConfig newNumericSeatsColumnConfig(final int column) {
