@@ -61,7 +61,7 @@ public class AbstractExcelConverterHighLevel {
 		for (int rowIndex = startRow; rowIndex <= sheet.getLastRowNum(); rowIndex++) {
 			Row row = sheet.getRow(rowIndex);
 
-			LOGGER.info("Parsing row number {}", cnt);
+			LOGGER.debug("Parsing row number {}", cnt);
 
 			if (row == null) {
 				continue;
@@ -88,6 +88,8 @@ public class AbstractExcelConverterHighLevel {
 			if (!tmpResult.add(participant)) {
 				handleDuplicateError(participant, rowIndex);
 			}
+
+			LOGGER.debug("Participant {} has been parsed", participant);
 		}
 
 		if (tmpResult.size() > FileConverter.MAX_PARTICIPANTS) {

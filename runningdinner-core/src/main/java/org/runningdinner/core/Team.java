@@ -35,10 +35,12 @@ public class Team extends AbstractEntity implements Comparable<Team> {
 
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "team_id")
+	// Important: Only valid for Hibernate !!!
 	@BatchSize(size = 30)
 	protected Set<Participant> teamMembers;
 
 	@OneToOne(fetch = FetchType.LAZY)
+	// Important: Only valid for Hibernate !!!
 	@BatchSize(size = 30)
 	protected MealClass mealClass;
 
@@ -195,8 +197,9 @@ public class Team extends AbstractEntity implements Comparable<Team> {
 
 	@Override
 	public String toString() {
+		// Be careful: Only valid if mealClass is loaded. We load it however all time in our queries.
 		String mealClassStr = mealClass != null ? " - " + mealClass.toString() : "";
-		return teamNumber + mealClassStr; // + " (" + teamMembers + ")";
+		return teamNumber + mealClassStr;
 	}
 
 	@Override

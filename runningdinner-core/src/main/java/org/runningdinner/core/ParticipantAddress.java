@@ -212,9 +212,18 @@ public class ParticipantAddress {
 	 * @param zip
 	 */
 	public void setZip(int zip) {
-		CoreUtil.assertSmaller(9999, zip, "Zip must be a positive number with exactly 5 digits");
-		CoreUtil.assertSmaller(zip, 100000, "Zip must be a positive number with exactly 5 digits");
+		if (!isValidZip(zip)) {
+			throw new IllegalArgumentException("Zip must be a positive number with exactly 5 digits");
+		}
 		this.zip = zip;
+	}
+
+	public static boolean isValidZip(int zip) {
+		// TODO: Only valid assumption for german zips...
+		if (zip < 9999 || zip >= 100000) {
+			return false;
+		}
+		return true;
 	}
 
 	public String getZipWithCity() {

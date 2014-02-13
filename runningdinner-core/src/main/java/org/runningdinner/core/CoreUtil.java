@@ -3,6 +3,7 @@ package org.runningdinner.core;
 import java.io.Closeable;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -217,5 +218,9 @@ public class CoreUtil {
 			LOGGER.error("Failed to format time-string {}", time, ex);
 			return fallback;
 		}
+	}
+
+	public static DateFormat getDefaultDateFormat() {
+		return new SimpleDateFormat("dd.MM.yyyy");
 	}
 }

@@ -183,7 +183,7 @@ public class RunningDinnerCalculatorTest {
 		assertEquals(5, teamsResult.getNotAssignedParticipants().size());
 		assertEquals(9, teamsResult.getNotAssignedParticipants().get(0).getParticipantNumber()); // Ensure that last user is the one not
 																									// assigned
-		assertEquals(9, teamsResult.getRegularTeams().size());
+		assertEquals(4, teamsResult.getRegularTeams().size());
 
 		System.out.println("*** testCustomConfigTeamBuilding ***");
 		for (Team team : teamsResult.getRegularTeams()) {
