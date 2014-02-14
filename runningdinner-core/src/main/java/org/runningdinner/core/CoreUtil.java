@@ -223,4 +223,8 @@ public class CoreUtil {
 	public static DateFormat getDefaultDateFormat() {
 		return new SimpleDateFormat("dd.MM.yyyy");
 	}
+
+	public static String getDefaultTimeFormat() {
+		return "HH:mm";
+	}
 }
