@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
  */
 public class CoreUtil {
 
+	public static final String DEFAULT_DATEFORMAT_PATTERN = "dd.MM.yyyy";
+
 	public static String NEWLINE = System.getProperty("line.separator");
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CoreUtil.class);
@@ -221,7 +223,7 @@ public class CoreUtil {
 	}
 
 	public static DateFormat getDefaultDateFormat() {
-		return new SimpleDateFormat("dd.MM.yyyy");
+		return new SimpleDateFormat(DEFAULT_DATEFORMAT_PATTERN);
 	}
 
 	public static String getDefaultTimeFormat() {
