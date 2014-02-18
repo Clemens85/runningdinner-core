@@ -124,6 +124,15 @@ public class VisitationPlan {
 	}
 
 	/**
+	 * Removes all team-references from this VisitationPlan.<br>
+	 * Note: This method is NOT transitive meaning that e.g. removed guest-teams are not removed in the host-team reference
+	 */
+	public void removeAllTeamReferences() {
+		this.hostTeams.clear();
+		this.guestTeams.clear();
+	}
+
+	/**
 	 * Only needed for internal usage.
 	 * 
 	 * @param guestTeam

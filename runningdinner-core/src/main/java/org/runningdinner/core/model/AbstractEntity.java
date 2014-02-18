@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PreUpdate;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
@@ -63,6 +64,7 @@ public abstract class AbstractEntity implements Serializable {
 	public AbstractEntity() {
 		String uuid = UUID.randomUUID().toString().replaceAll("-", StringUtils.EMPTY);
 		setNaturalKey(uuid);
+		setCreatedAt(new Date());
 	}
 
 	public Long getId() {
@@ -121,6 +123,14 @@ public abstract class AbstractEntity implements Serializable {
 	 */
 	public String getNaturalKey() {
 		return naturalKey;
+	}
+
+	/**
+	 * Track modification date on every change
+	 */
+	@PreUpdate
+	protected void onUpdate() {
+		setModifiedAt(new Date());
 	}
 
 	protected void setNaturalKey(String naturalKey) {
