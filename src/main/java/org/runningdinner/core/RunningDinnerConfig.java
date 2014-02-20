@@ -182,9 +182,9 @@ public class RunningDinnerConfig {
 			if (mealClasses == null) {
 				// Add standard courses:
 				mealClasses = new HashSet<MealClass>(3);
-				mealClasses.add(MealClass.APPETIZER);
-				mealClasses.add(MealClass.MAINCOURSE);
-				mealClasses.add(MealClass.DESSERT);
+				mealClasses.add(MealClass.APPETIZER());
+				mealClasses.add(MealClass.MAINCOURSE());
+				mealClasses.add(MealClass.DESSERT());
 			}
 
 			return new RunningDinnerConfig(this);

@@ -28,10 +28,6 @@ public final class MealClass extends AbstractEntity {
 
 	private static final long serialVersionUID = 8167694721190832584L;
 
-	public static MealClass APPETIZER = new MealClass("Vorspeise");
-	public static MealClass MAINCOURSE = new MealClass("Hauptgericht");
-	public static MealClass DESSERT = new MealClass("Nachspeise");
-
 	private String label;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -95,4 +91,17 @@ public final class MealClass extends AbstractEntity {
 		return label;
 	}
 
+	// Convenience methods for standalone scenario
+
+	public static MealClass APPETIZER() {
+		return new MealClass("Vorspeise");
+	}
+
+	public static MealClass MAINCOURSE() {
+		return new MealClass("Hauptgericht");
+	}
+
+	public static MealClass DESSERT() {
+		return new MealClass("Nachspeise");
+	}
 }

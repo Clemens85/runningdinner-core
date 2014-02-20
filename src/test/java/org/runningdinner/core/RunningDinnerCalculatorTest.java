@@ -23,7 +23,7 @@ public class RunningDinnerCalculatorTest {
 	private RunningDinnerConfig standardConfigWithoutDistributing = RunningDinnerConfig.newConfigurer().withEqualDistributedCapacityTeams(
 			false).withGenderAspects(GenderAspect.IGNORE_GENDER).build();
 	private RunningDinnerConfig customConfig = RunningDinnerConfig.newConfigurer().havingMeals(
-			Arrays.asList(MealClass.APPETIZER, MealClass.MAINCOURSE)).build();
+			Arrays.asList(MealClass.APPETIZER(), MealClass.MAINCOURSE())).build();
 
 	@Test
 	public void testInvalidConditionWithDefaults() {
@@ -209,7 +209,7 @@ public class RunningDinnerCalculatorTest {
 			@Override
 			public boolean evaluate(Object obj) {
 				Team team = (Team)obj;
-				return team.getMealClass().equals(MealClass.APPETIZER);
+				return team.getMealClass().equals(MealClass.APPETIZER());
 			}
 		}));
 
@@ -217,7 +217,7 @@ public class RunningDinnerCalculatorTest {
 			@Override
 			public boolean evaluate(Object obj) {
 				Team team = (Team)obj;
-				return team.getMealClass().equals(MealClass.MAINCOURSE);
+				return team.getMealClass().equals(MealClass.MAINCOURSE());
 			}
 		}));
 
@@ -225,7 +225,7 @@ public class RunningDinnerCalculatorTest {
 			@Override
 			public boolean evaluate(Object obj) {
 				Team team = (Team)obj;
-				return team.getMealClass().equals(MealClass.DESSERT);
+				return team.getMealClass().equals(MealClass.DESSERT());
 			}
 		}));
 
