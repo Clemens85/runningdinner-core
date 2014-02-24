@@ -386,6 +386,7 @@ public class RunningDinnerCalculatorTest {
 			int participantNr = i + participantNrOffset;
 			Participant participant = new Participant(participantNr);
 			participant.setName(ParticipantName.newName().withFirstname("first" + participantNr).andLastname("last" + participantNr));
+			participant.setEmail("participant_" + participantNr + "@mail.de");
 			result.add(participant);
 		}
 		return result;

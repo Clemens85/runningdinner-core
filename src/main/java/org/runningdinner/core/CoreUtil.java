@@ -4,12 +4,15 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.runningdinner.core.model.AbstractEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -222,11 +225,29 @@ public class CoreUtil {
 		}
 	}
 
+	/**
+	 * Gets app-global default date format instance
+	 * 
+	 * @return
+	 */
 	public static DateFormat getDefaultDateFormat() {
 		return new SimpleDateFormat(DEFAULT_DATEFORMAT_PATTERN);
 	}
 
+	/**
+	 * Gets app-global default time format string
+	 * 
+	 * @return
+	 */
 	public static String getDefaultTimeFormat() {
 		return "HH:mm";
+	}
+
+	public static <T extends AbstractEntity> List<String> getNaturalKeysForEntities(final Collection<T> entities) {
+		List<String> result = new ArrayList<String>(entities.size());
+		for (T entity : entities) {
+			result.add(entity.getNaturalKey());
+		}
+		return result;
 	}
 }
