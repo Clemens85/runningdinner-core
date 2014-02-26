@@ -339,6 +339,7 @@ public class RunningDinnerCalculator {
 	/**
 	 * Final (and main) method which assigns every regular team a VisitationPlan which indicats which teams are guests and hosts for every
 	 * regular team.
+	 * TODO: This method must completely be rewritten as it contains some crap code and wrong (and/or hard-coded) assumptions !!!
 	 * 
 	 * @param generatedTeams
 	 * @param runningDinnerConfig
@@ -402,6 +403,7 @@ public class RunningDinnerCalculator {
 		validateAllTeamsAreConsumed(completeMealTeamMapping);
 	}
 
+	// TODO: Must completely be revised!
 	private <T extends Collection<Team>> void buildVisitationPlans(final Map<MealClass, ? extends Collection<Team>> teamMealMapping,
 			final RunningDinnerConfig runningDinnerConfig) throws NoPossibleRunningDinnerException {
 
@@ -462,11 +464,6 @@ public class RunningDinnerCalculator {
 							continue; // Rule #1
 						}
 
-						// if (canAddAsGuestReference(currentTeamVisitationPlan, otherClassifiedTeamVisitationPlan, currentMealClass,
-						// numReferencesNeeded)) {
-						// teamTupel.add(teamOfOtherMealClass);
-						// }
-
 						if (canAddAsGuestReference(currentTeamVisitationPlan, otherClassifiedTeamVisitationPlan, currentMealClass,
 								numReferencesNeeded)) {
 
@@ -506,10 +503,6 @@ public class RunningDinnerCalculator {
 					guestTeam.getVisitationPlan().addHostTeam(teamOfCurrentMealClass);
 				}
 
-				// teamRelations.addAll(teamOfCurrentMealClass.getVisitationPlan().getGuestTeams());
-				// LOGGER.debug("Add 3-tupel {} to teamMeetupRelations list", teamRelations);
-				// teamMeetupRelations.add(teamRelations);
-
 			} // End iteration through all teams of current meal-class
 		}
 	}
@@ -541,13 +534,6 @@ public class RunningDinnerCalculator {
 				return true;
 			}
 		}
-
-		// Set<Team> currentGuestTeams = teamOfCurrentMealClass.getVisitationPlan().getGuestTeams();
-		// for (Team currentGuestTeam : currentGuestTeams) {
-		// if (alreadyMeetedTeamsOfOtherTeam.contains(currentGuestTeam)) {
-		// return true;
-		// }
-		// }
 
 		return false;
 	}
