@@ -1,4 +1,4 @@
-package org.runningdinner.core;
+package org.runningdinner.core.util;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -9,9 +9,12 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.runningdinner.core.FuzzyBoolean;
+import org.runningdinner.core.Gender;
 import org.runningdinner.core.model.AbstractEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,6 +156,20 @@ public class CoreUtil {
 	 */
 	public static void assertSmallerOrEq(int testNumber, int comparingValue, String message) {
 		if (!(testNumber <= comparingValue)) {
+			throw new IllegalArgumentException(message);
+		}
+	}
+
+	/**
+	 * Asserts that the passed collection has the passed size.
+	 * 
+	 * @param collection The collection which shall be checked
+	 * @param expectedSize The expected size of the passed collection
+	 * @param message The error message that shall be wrapped into the exception if the assertion fails
+	 * @throws IllegalArgumentException If assertion fails
+	 */
+	public static <T> void assertHasSize(final Collection<T> collection, int expectedSize, String message) {
+		if (collection == null || collection.size() != expectedSize) {
 			throw new IllegalArgumentException(message);
 		}
 	}

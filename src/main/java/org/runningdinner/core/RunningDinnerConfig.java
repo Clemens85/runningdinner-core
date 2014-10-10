@@ -143,7 +143,7 @@ public class RunningDinnerConfig {
 
 		// Defaults:
 		private GenderAspect genderAspects = GenderAspect.IGNORE_GENDER;
-		private boolean forceEqualDistributedCapacityTeams = true;
+		private boolean forceEqualDistributedCapacityTeams = true; // What is the effect of this?!
 		private boolean considerShortestPaths = true;
 		private Set<MealClass> mealClasses = null;
 		private int teamSize = 2;

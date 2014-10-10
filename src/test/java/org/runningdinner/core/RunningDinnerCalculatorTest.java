@@ -27,7 +27,7 @@ public class RunningDinnerCalculatorTest {
 
 	@Test
 	public void testInvalidConditionWithDefaults() {
-		List<Participant> teamMembers = generateParticipants(2);
+		List<Participant> teamMembers = ParticipantGenerator.generateParticipants(2);
 		try {
 			runningDinnerCalculator.generateTeams(standardConfig, teamMembers);
 			fail("Should never reach here, because Exception should be thrown!");
@@ -39,7 +39,7 @@ public class RunningDinnerCalculatorTest {
 
 	@Test
 	public void testTeamsWithoutDistributing() throws NoPossibleRunningDinnerException {
-		List<Participant> teamMembers = generateParticipants(18);
+		List<Participant> teamMembers = ParticipantGenerator.generateParticipants(18);
 
 		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(standardConfigWithoutDistributing, teamMembers);
 		assertEquals(false, teamsResult.hasNotAssignedParticipants());
@@ -70,56 +70,17 @@ public class RunningDinnerCalculatorTest {
 	}
 
 	private List<Participant> generateEqualBalancedParticipants(int participantNrOffset) {
-		List<Participant> result = generateParticipants(18, participantNrOffset);
-		result.get(0).setNumSeats(6);
-		result.get(1).setNumSeats(3);
-		result.get(2).setNumSeats(4);
-		result.get(3).setNumSeats(7);
-		result.get(4).setNumSeats(10);
-		result.get(5).setNumSeats(6);
-
-		result.get(6).setNumSeats(6);
-		result.get(7).setNumSeats(3);
-		result.get(8).setNumSeats(4);
-		result.get(9).setNumSeats(5);
-		result.get(10).setNumSeats(3);
-		result.get(11).setNumSeats(6);
-
-		result.get(12).setNumSeats(6);
-		result.get(13).setNumSeats(3);
-		result.get(14).setNumSeats(6);
-		result.get(15).setNumSeats(5);
-		result.get(16).setNumSeats(3);
-		result.get(17).setNumSeats(6);
-
+		List<Participant> result = ParticipantGenerator.generateParticipants(18, participantNrOffset);
+		ParticipantGenerator.distributeSeatsEqualBalanced(result, 6);
 		return result;
 	}
 
 	@Test
 	public void testTeamsWithUnbalancedDistributing() throws NoPossibleRunningDinnerException {
-		List<Participant> particiapnts = generateParticipants(18);
-		particiapnts.get(0).setNumSeats(6);
-		particiapnts.get(1).setNumSeats(6);
-		particiapnts.get(2).setNumSeats(6);
-		particiapnts.get(3).setNumSeats(1);
-		particiapnts.get(4).setNumSeats(1);
-		particiapnts.get(5).setNumSeats(1);
+		List<Participant> participants = ParticipantGenerator.generateParticipants(18);
+		ParticipantGenerator.distributeSeats(participants, 6, 4);
 
-		particiapnts.get(6).setNumSeats(1);
-		particiapnts.get(7).setNumSeats(1);
-		particiapnts.get(8).setNumSeats(1);
-		particiapnts.get(9).setNumSeats(1);
-		particiapnts.get(10).setNumSeats(1);
-		particiapnts.get(11).setNumSeats(6);
-
-		particiapnts.get(12).setNumSeats(1);
-		particiapnts.get(13).setNumSeats(1);
-		particiapnts.get(14).setNumSeats(1);
-		particiapnts.get(15).setNumSeats(1);
-		particiapnts.get(16).setNumSeats(1);
-		particiapnts.get(17).setNumSeats(1);
-
-		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(standardConfig, particiapnts);
+		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(standardConfig, participants);
 		assertEquals(false, teamsResult.hasNotAssignedParticipants());
 		assertEquals(9, teamsResult.getRegularTeams().size());
 
@@ -143,7 +104,7 @@ public class RunningDinnerCalculatorTest {
 
 	@Test
 	public void testNotAssignedTeamMembers() throws NoPossibleRunningDinnerException {
-		List<Participant> teamMembers = generateParticipants(19);
+		List<Participant> teamMembers = ParticipantGenerator.generateParticipants(19);
 		GeneratedTeamsResult result = runningDinnerCalculator.generateTeams(standardConfig, teamMembers);
 		assertEquals(true, result.hasNotAssignedParticipants());
 		assertEquals(1, result.getNotAssignedParticipants().size());
@@ -159,7 +120,7 @@ public class RunningDinnerCalculatorTest {
 	@Test
 	public void testTooFewParticipants() {
 
-		List<Participant> teamMembers = generateParticipants(5);
+		List<Participant> teamMembers = ParticipantGenerator.generateParticipants(5);
 
 		// Assert that all participants are returned again as non assignable:
 		List<Participant> notAssignableParticipants = runningDinnerCalculator.calculateNotAssignableParticipants(standardConfig,
@@ -177,7 +138,7 @@ public class RunningDinnerCalculatorTest {
 
 	@Test
 	public void testCustomConfigTeamBuilding() throws NoPossibleRunningDinnerException {
-		List<Participant> teamMembers = generateParticipants(13);
+		List<Participant> teamMembers = ParticipantGenerator.generateParticipants(13);
 		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(customConfig, teamMembers);
 		assertEquals(true, teamsResult.hasNotAssignedParticipants());
 		assertEquals(5, teamsResult.getNotAssignedParticipants().size());
@@ -194,7 +155,7 @@ public class RunningDinnerCalculatorTest {
 
 	@Test
 	public void testRandomMealClasses() throws NoPossibleRunningDinnerException {
-		List<Participant> particiapnts = generateParticipants(18);
+		List<Participant> particiapnts = ParticipantGenerator.generateParticipants(18);
 		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(standardConfig, particiapnts);
 		List<Team> teams = teamsResult.getRegularTeams();
 		assertEquals(9, teams.size());
@@ -372,28 +333,6 @@ public class RunningDinnerCalculatorTest {
 		}
 
 		throw new RuntimeException("May never reach here!");
-	}
-
-	/**
-	 * Helper method for quickly generating some arbitrary participants
-	 * 
-	 * @param numParticipants
-	 * @return
-	 */
-	public static List<Participant> generateParticipants(int numParticipants, int participantNrOffset) {
-		List<Participant> result = new ArrayList<Participant>(numParticipants);
-		for (int i = 1; i <= numParticipants; i++) {
-			int participantNr = i + participantNrOffset;
-			Participant participant = new Participant(participantNr);
-			participant.setName(ParticipantName.newName().withFirstname("first" + participantNr).andLastname("last" + participantNr));
-			participant.setEmail("participant_" + participantNr + "@mail.de");
-			result.add(participant);
-		}
-		return result;
-	}
-
-	protected List<Participant> generateParticipants(int numParticipants) {
-		return generateParticipants(numParticipants, 0);
 	}
 
 	public static void assertDisjunctTeams(Set<Team> hostTeams, Set<Team> guestTeams, Team team) {

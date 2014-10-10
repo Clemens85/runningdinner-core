@@ -7,11 +7,11 @@ import java.util.List;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
-import org.runningdinner.core.CoreUtil;
 import org.runningdinner.core.Participant;
 import org.runningdinner.core.converter.ConversionException;
 import org.runningdinner.core.converter.FileConverter;
 import org.runningdinner.core.converter.config.ParsingConfiguration;
+import org.runningdinner.core.util.CoreUtil;
 
 /**
  * Entry point for parsing "old" XLS excel files

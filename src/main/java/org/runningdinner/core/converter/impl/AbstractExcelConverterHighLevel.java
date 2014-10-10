@@ -11,7 +11,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.runningdinner.core.CoreUtil;
 import org.runningdinner.core.FuzzyBoolean;
 import org.runningdinner.core.Participant;
 import org.runningdinner.core.ParticipantAddress;
@@ -25,6 +24,7 @@ import org.runningdinner.core.converter.config.NameColumnConfig;
 import org.runningdinner.core.converter.config.NumberOfSeatsColumnConfig;
 import org.runningdinner.core.converter.config.ParsingConfiguration;
 import org.runningdinner.core.converter.config.SequenceColumnConfig;
+import org.runningdinner.core.util.CoreUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

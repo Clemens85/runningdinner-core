@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,6 +29,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
  */
 @SuppressWarnings("serial")
 @MappedSuperclass
+@Access(AccessType.FIELD)
 public abstract class AbstractEntity implements Serializable {
 
 	/**
@@ -34,32 +37,32 @@ public abstract class AbstractEntity implements Serializable {
 	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Long id;
+	protected Long id;
 
 	/**
 	 * Natural business key which is also used from the "outside" for identifying entities
 	 */
 	@Column(unique = true, length = 32, name = "naturalKey", nullable = false)
-	private String naturalKey;
+	protected String naturalKey;
 
 	/**
 	 * Used for optimistic locking
 	 */
 	@Version
 	@Column(name = "VERSION_NR", nullable = false)
-	private long versionNo;
+	protected long versionNo;
 
 	/**
 	 * Column when entity is created (currently not filled in)
 	 */
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date createdAt;
+	protected Date createdAt;
 
 	/**
 	 * Column when entity is modified (currently not filled in)
 	 */
 	@Temporal(TemporalType.TIMESTAMP)
-	private Date modifiedAt;
+	protected Date modifiedAt;
 
 	public AbstractEntity() {
 		String uuid = UUID.randomUUID().toString().replaceAll("-", StringUtils.EMPTY);

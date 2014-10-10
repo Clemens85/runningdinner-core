@@ -17,6 +17,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.runningdinner.core.model.AbstractEntity;
+import org.runningdinner.core.util.CoreUtil;
 
 /**
  * Represents a team of a running dinner.<br>

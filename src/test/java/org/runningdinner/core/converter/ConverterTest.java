@@ -13,7 +13,6 @@ import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.After;
 import org.junit.Test;
-import org.runningdinner.core.CoreUtil;
 import org.runningdinner.core.FuzzyBoolean;
 import org.runningdinner.core.Gender;
 import org.runningdinner.core.GeneratedTeamsResult;
@@ -31,6 +30,7 @@ import org.runningdinner.core.converter.ConverterFactory.INPUT_FILE_TYPE;
 import org.runningdinner.core.converter.config.EmailColumnConfig;
 import org.runningdinner.core.converter.config.MobileNumberColumnConfig;
 import org.runningdinner.core.converter.config.ParsingConfiguration;
+import org.runningdinner.core.util.CoreUtil;
 
 public class ConverterTest {
 

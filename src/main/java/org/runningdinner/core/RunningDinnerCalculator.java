@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
+import org.runningdinner.core.util.CoreUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -228,44 +229,10 @@ public class RunningDinnerCalculator {
 
 		Collections.shuffle(participantsToAssign); // Sort list randomly!
 
-		Queue<Participant> categoryOneList = new ArrayDeque<Participant>();
-		Queue<Participant> categoryTwoList = new ArrayDeque<Participant>();
-		Queue<Participant> uncategeorizedList = new ArrayDeque<Participant>();
-
-		boolean hasDistributionPolicy = runningDinnerConfig.isForceEqualDistributedCapacityTeams()
-				|| runningDinnerConfig.getGenderAspects() != GenderAspect.IGNORE_GENDER;
-
-		if (runningDinnerConfig.isForceEqualDistributedCapacityTeams()) {
-			// Distribute team-members based on whether they have enough seats or not:
-			for (Participant teamMember : participantsToAssign) {
-
-				FuzzyBoolean canHost = runningDinnerConfig.canHost(teamMember);
-
-				if (FuzzyBoolean.TRUE == canHost) {
-					// Enough space
-					categoryOneList.offer(teamMember);
-				}
-				else if (FuzzyBoolean.UNKNOWN == canHost) {
-					// We don't know...
-					uncategeorizedList.offer(teamMember);
-				}
-				else {
-					// Not enough space
-					categoryTwoList.offer(teamMember);
-				}
-			}
-
-			CoreUtil.distributeEqually(categoryOneList, uncategeorizedList, categoryTwoList);
-			uncategeorizedList.clear();
-		}
-		if (runningDinnerConfig.getGenderAspects() != GenderAspect.IGNORE_GENDER) {
-
-		}
-
-		if (!hasDistributionPolicy) {
-			// Equally distribute all team-members over the two category-lists:
-			CoreUtil.distributeEqually(categoryOneList, participantsToAssign, categoryTwoList);
-		}
+		TeamDistributor teamDistributor = new TeamDistributor(participantsToAssign);
+		teamDistributor.distribute(runningDinnerConfig);
+		Queue<Participant> categoryOneList = teamDistributor.getCategoryOneList();
+		Queue<Participant> categoryTwoList = teamDistributor.getCategoryTwoList();
 
 		// Build teams based upon the previously created category-queues:
 		for (int i = 0; i < numTeamsToBuild; i++) {
@@ -309,6 +276,11 @@ public class RunningDinnerCalculator {
 			result.add(team);
 		}
 
+		CoreUtil.assertHasSize(
+				result,
+				numTeamsToBuild,
+				String.format("Fatal Error: Expected %d teams to be built, but actually there were built %d teams", numTeamsToBuild,
+						result.size()));
 		return result;
 	}
 

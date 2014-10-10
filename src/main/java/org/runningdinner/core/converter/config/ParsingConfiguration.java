@@ -1,6 +1,6 @@
 package org.runningdinner.core.converter.config;
 
-import org.runningdinner.core.CoreUtil;
+import org.runningdinner.core.util.CoreUtil;
 
 /**
  * A ParsingConfiguration is used for parsing arbitrary participant files.<br>

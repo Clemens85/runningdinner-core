@@ -3,6 +3,7 @@ package org.runningdinner.core;
 import javax.persistence.Embeddable;
 
 import org.apache.commons.lang3.StringUtils;
+import org.runningdinner.core.util.CoreUtil;
 
 /**
  * Represents the name of a participant.

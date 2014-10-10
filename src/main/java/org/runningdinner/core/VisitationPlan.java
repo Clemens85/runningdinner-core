@@ -11,6 +11,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 
+import org.runningdinner.core.util.CoreUtil;
+
 @Embeddable
 @Access(AccessType.FIELD)
 public class VisitationPlan {

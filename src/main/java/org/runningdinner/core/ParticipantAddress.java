@@ -5,6 +5,7 @@ import javax.persistence.Embeddable;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.runningdinner.core.util.CoreUtil;
 
 /**
  * Represents the address of a participant.<br>
