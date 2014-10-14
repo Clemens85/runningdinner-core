@@ -91,6 +91,9 @@ public class ParsingConfiguration {
 	}
 
 	public AgeColumnConfig getAgeColumnConfig() {
+		if (ageColumnConfig == null) {
+			return AgeColumnConfig.noAgeColumn();
+		}
 		return ageColumnConfig;
 	}
 
