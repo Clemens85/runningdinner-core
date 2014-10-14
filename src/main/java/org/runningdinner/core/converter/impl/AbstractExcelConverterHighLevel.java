@@ -12,6 +12,7 @@ import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.runningdinner.core.FuzzyBoolean;
+import org.runningdinner.core.Gender;
 import org.runningdinner.core.Participant;
 import org.runningdinner.core.ParticipantAddress;
 import org.runningdinner.core.ParticipantName;
@@ -20,6 +21,7 @@ import org.runningdinner.core.converter.ConversionException.CONVERSION_ERROR;
 import org.runningdinner.core.converter.FileConverter;
 import org.runningdinner.core.converter.config.AbstractColumnConfig;
 import org.runningdinner.core.converter.config.AddressColumnConfig;
+import org.runningdinner.core.converter.config.GenderColumnConfig;
 import org.runningdinner.core.converter.config.NameColumnConfig;
 import org.runningdinner.core.converter.config.NumberOfSeatsColumnConfig;
 import org.runningdinner.core.converter.config.ParsingConfiguration;
@@ -77,6 +79,8 @@ public class AbstractExcelConverterHighLevel {
 
 			ParticipantAddress address = getAddress(row);
 
+			Gender gender = getGender(row);
+
 			Participant participant = new Participant(participantNr);
 			participant.setNumSeats(numSeats);
 			participant.setName(participantName);
@@ -84,6 +88,7 @@ public class AbstractExcelConverterHighLevel {
 
 			participant.setEmail(getColumnString(row, parsingConfiguration.getEmailColumnConfig()));
 			participant.setMobileNumber(getColumnString(row, parsingConfiguration.getMobileNumberColumnConfig()));
+			participant.setGender(gender);
 
 			if (!tmpResult.add(participant)) {
 				handleDuplicateError(participant, rowIndex);
@@ -139,7 +144,7 @@ public class AbstractExcelConverterHighLevel {
 			}
 		}
 		catch (IllegalArgumentException ex) {
-			throw new ConversionException("Could not parse name at row " + row.getRowNum() + 1, ex).setErrorInformation(
+			throw new ConversionException("Could not parse name at row " + (row.getRowNum() + 1), ex).setErrorInformation(
 					row.getRowNum() + 1, CONVERSION_ERROR.NAME);
 		}
 	}
@@ -248,6 +253,24 @@ public class AbstractExcelConverterHighLevel {
 			throw new ConversionException("Could not parse number of seats at row " + row.getRowNum() + 1, ex).setErrorInformation(
 					row.getRowNum() + 1, CONVERSION_ERROR.NUMBER_OF_SEATS);
 		}
+	}
+
+	private Gender getGender(final Row row) {
+		GenderColumnConfig genderColumnConfig = parsingConfiguration.getGenderColumnConfig();
+		String rowValue = getColumnString(row, genderColumnConfig);
+
+		Gender result = Gender.UNDEFINED;
+		if (!StringUtils.isEmpty(rowValue)) {
+			rowValue = rowValue.trim();
+			if (StringUtils.equalsIgnoreCase(rowValue, "m")) {
+				result = Gender.MALE;
+			}
+			else if (StringUtils.equalsIgnoreCase(rowValue, "f") || StringUtils.equalsIgnoreCase(rowValue, "w")) {
+				result = Gender.FEMALE;
+			}
+		}
+
+		return result;
 	}
 
 	/**
