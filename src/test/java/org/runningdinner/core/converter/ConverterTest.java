@@ -27,10 +27,17 @@ import org.runningdinner.core.Team;
 import org.runningdinner.core.VisitationPlan;
 import org.runningdinner.core.converter.ConversionException.CONVERSION_ERROR;
 import org.runningdinner.core.converter.ConverterFactory.INPUT_FILE_TYPE;
+import org.runningdinner.core.converter.config.AddressColumnConfig;
 import org.runningdinner.core.converter.config.EmailColumnConfig;
+import org.runningdinner.core.converter.config.GenderColumnConfig;
 import org.runningdinner.core.converter.config.MobileNumberColumnConfig;
+import org.runningdinner.core.converter.config.NameColumnConfig;
+import org.runningdinner.core.converter.config.NumberOfSeatsColumnConfig;
 import org.runningdinner.core.converter.config.ParsingConfiguration;
+import org.runningdinner.core.test.helper.GenderPredicate;
 import org.runningdinner.core.util.CoreUtil;
+
+import com.google.common.collect.Collections2;
 
 public class ConverterTest {
 
@@ -39,6 +46,8 @@ public class ConverterTest {
 	public static final String STANDARD_XLSX_FILE = "/excelimport/standard.xlsx";
 	public static final String EMPTY_XLS_FILE = "/excelimport/empty.xls";
 	public static final String INVALID_XLSX_FILE = "/excelimport/invalid.xlsx";
+
+	public static final String STANDARD_GENDER_XLS_FILE = "/excelimport/standard_gender.xls";
 
 	private InputStream inputStream;
 
@@ -182,6 +191,26 @@ public class ConverterTest {
 		List<Participant> participants = excelConverter.parseParticipants(inputStream);
 
 		checkParsedParticipants(participants, false);
+	}
+
+	@Test
+	public void testGenderXls() throws IOException, ConversionException {
+
+		INPUT_FILE_TYPE fileType = ConverterFactory.determineFileType(STANDARD_GENDER_XLS_FILE);
+
+		ParsingConfiguration parsingConfiguration = ParsingConfiguration.newDefaultConfiguration();
+		GenderColumnConfig genderColumnConfig = GenderColumnConfig.createGenderColumn(4);
+		parsingConfiguration.setEmailColumnConfig(EmailColumnConfig.noEmailColumn());
+		parsingConfiguration.setMobileNumberColumnConfig(MobileNumberColumnConfig.noMobileNumberColumn());
+		parsingConfiguration.setGenderColumnConfig(genderColumnConfig);
+
+		inputStream = getClass().getResourceAsStream(STANDARD_GENDER_XLS_FILE);
+		FileConverter excelConverter = ConverterFactory.newConverter(parsingConfiguration, fileType);
+		List<Participant> participants = excelConverter.parseParticipants(inputStream);
+
+		assertEquals(2, Collections2.filter(participants, GenderPredicate.FEMALE_GENDER_PREDICATE).size());
+		assertEquals(2, Collections2.filter(participants, GenderPredicate.MALE_GENDER_PREDICATE).size());
+		assertEquals(1, Collections2.filter(participants, new GenderPredicate(Gender.UNDEFINED)).size());
 	}
 
 	@Test
