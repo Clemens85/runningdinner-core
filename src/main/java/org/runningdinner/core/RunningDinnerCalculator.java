@@ -8,7 +8,7 @@ import java.util.Queue;
 import java.util.Set;
 
 import org.runningdinner.core.dinnerplan.DinnerPlanGenerator;
-import org.runningdinner.core.dinnerplan.DynamicDinnerPlanGenerator;
+import org.runningdinner.core.dinnerplan.StaticTemplateDinnerPlanGenerator;
 import org.runningdinner.core.util.CoreUtil;
 
 /**
@@ -25,7 +25,7 @@ public class RunningDinnerCalculator {
 	private DinnerPlanGenerator dinnerPlanGenerator;
 
 	public RunningDinnerCalculator() {
-		this(new DynamicDinnerPlanGenerator());
+		this(new StaticTemplateDinnerPlanGenerator());
 	}
 
 	public RunningDinnerCalculator(DinnerPlanGenerator dinnerPlanGenerator) {

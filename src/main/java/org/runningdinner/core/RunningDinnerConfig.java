@@ -102,17 +102,7 @@ public class RunningDinnerConfig {
 	public TeamCombinationInfo generateTeamCombinationInfo(final int numberOfTeams) throws NoPossibleRunningDinnerException {
 		Set<MealClass> mealClasses = getMealClasses();
 		int numMeals = mealClasses.size();
-
-		int teamSegmentSize = numMeals * numMeals; // I needs this number of teams to get a valid running dinner team-combination
-
-		if (teamSegmentSize > numberOfTeams) {
-			throw new NoPossibleRunningDinnerException("Too few number of teams (" + numberOfTeams
-					+ ") for performing a running dinner without violating the rules!");
-		}
-
-		int numRemaindingTeams = numberOfTeams % teamSegmentSize;
-
-		return new TeamCombinationInfo(teamSegmentSize, numRemaindingTeams);
+		return new TeamCombinationInfo(numberOfTeams, numMeals);
 	}
 
 	/**
