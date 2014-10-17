@@ -1,135 +1,31 @@
 package org.runningdinner.core;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.hamcrest.Matchers.*;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.junit.Test;
+import org.runningdinner.core.dinnerplan.TeamRouteBuilder;
+import org.runningdinner.core.test.helper.Configurations;
 
 public class RunningDinnerCalculatorTest {
 
 	private RunningDinnerCalculator runningDinnerCalculator = new RunningDinnerCalculator();
 
-	private RunningDinnerConfig standardConfig = RunningDinnerConfig.newConfigurer().withEqualDistributedCapacityTeams(true).build();
-	private RunningDinnerConfig standardConfigWithoutDistributing = RunningDinnerConfig.newConfigurer().withEqualDistributedCapacityTeams(
-			false).withGenderAspects(GenderAspect.IGNORE_GENDER).build();
-	private RunningDinnerConfig customConfig = RunningDinnerConfig.newConfigurer().havingMeals(
-			Arrays.asList(MealClass.APPETIZER(), MealClass.MAINCOURSE())).build();
-
 	@Test
 	public void testInvalidConditionWithDefaults() {
 		List<Participant> teamMembers = ParticipantGenerator.generateParticipants(2);
 		try {
-			runningDinnerCalculator.generateTeams(standardConfig, teamMembers);
+			runningDinnerCalculator.generateTeams(Configurations.standardConfig, teamMembers);
 			fail("Should never reach here, because Exception should be thrown!");
-		}
-		catch (NoPossibleRunningDinnerException e) {
-			assertTrue(true);
-		}
-	}
-
-	@Test
-	public void testTeamsWithoutDistributing() throws NoPossibleRunningDinnerException {
-		List<Participant> teamMembers = ParticipantGenerator.generateParticipants(18);
-
-		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(standardConfigWithoutDistributing, teamMembers);
-		assertEquals(false, teamsResult.hasNotAssignedParticipants());
-		assertEquals(9, teamsResult.getRegularTeams().size());
-
-		System.out.println("*** testTeamsWithoutDistributing ***");
-		for (Team team : teamsResult.getRegularTeams()) {
-			assertEquals(standardConfigWithoutDistributing.getTeamSize(), team.getTeamMembers().size());
-			System.out.println(team);
-		}
-	}
-
-	@Test
-	public void testTeamsWithBalancedDistributing() throws NoPossibleRunningDinnerException {
-		List<Participant> participants = generateEqualBalancedParticipants(0);
-
-		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(standardConfig, participants);
-		assertEquals(false, teamsResult.hasNotAssignedParticipants());
-		assertEquals(9, teamsResult.getRegularTeams().size());
-
-		System.out.println("*** testTeamsWithBalancedDistributing ***");
-		for (Team team : teamsResult.getRegularTeams()) {
-
-			assertEquals(true, isDistributionBalanced(team, standardConfig));
-
-			System.out.println(team + " - canHost: " + team.getHostingCapability(standardConfig));
-		}
-	}
-
-	private List<Participant> generateEqualBalancedParticipants(int participantNrOffset) {
-		List<Participant> result = ParticipantGenerator.generateParticipants(18, participantNrOffset);
-		ParticipantGenerator.distributeSeatsEqualBalanced(result, 6);
-		return result;
-	}
-
-	@Test
-	public void testTeamsWithUnbalancedDistributing() throws NoPossibleRunningDinnerException {
-		List<Participant> participants = ParticipantGenerator.generateParticipants(18);
-		ParticipantGenerator.distributeSeats(participants, 6, 4);
-
-		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(standardConfig, participants);
-		assertEquals(false, teamsResult.hasNotAssignedParticipants());
-		assertEquals(9, teamsResult.getRegularTeams().size());
-
-		System.out.println("*** testTeamsWithUnbalancedDistributing ***");
-		int numBalancedTeams = 0;
-		int numUnbalancedTeams = 0;
-		for (Team team : teamsResult.getRegularTeams()) {
-			if (isDistributionBalanced(team, standardConfig)) {
-				numBalancedTeams++;
-			}
-			else {
-				numUnbalancedTeams++;
-			}
-
-			System.out.println(team + " - canHouse :" + team.getHostingCapability(standardConfig));
-		}
-
-		assertEquals(4, numBalancedTeams);
-		assertEquals(5, numUnbalancedTeams);
-	}
-
-	@Test
-	public void testNotAssignedTeamMembers() throws NoPossibleRunningDinnerException {
-		List<Participant> teamMembers = ParticipantGenerator.generateParticipants(19);
-		GeneratedTeamsResult result = runningDinnerCalculator.generateTeams(standardConfig, teamMembers);
-		assertEquals(true, result.hasNotAssignedParticipants());
-		assertEquals(1, result.getNotAssignedParticipants().size());
-		assertEquals(9, result.getRegularTeams().size());
-
-		Participant notAssignedMember = result.getNotAssignedParticipants().iterator().next();
-		for (Team regularTeam : result.getRegularTeams()) {
-			assertEquals(2, regularTeam.getTeamMembers().size());
-			assertEquals(false, regularTeam.getTeamMembers().contains(notAssignedMember));
-		}
-	}
-
-	@Test
-	public void testTooFewParticipants() {
-
-		List<Participant> teamMembers = ParticipantGenerator.generateParticipants(5);
-
-		// Assert that all participants are returned again as non assignable:
-		List<Participant> notAssignableParticipants = runningDinnerCalculator.calculateNotAssignableParticipants(standardConfig,
-				teamMembers);
-		assertEquals(teamMembers.size(), notAssignableParticipants.size());
-
-		try {
-			runningDinnerCalculator.generateTeams(standardConfig, teamMembers);
-			fail("Expected NoPossibleRunningDinnerException to be thrown");
 		}
 		catch (NoPossibleRunningDinnerException e) {
 			assertTrue(true);
@@ -139,7 +35,7 @@ public class RunningDinnerCalculatorTest {
 	@Test
 	public void testCustomConfigTeamBuilding() throws NoPossibleRunningDinnerException {
 		List<Participant> teamMembers = ParticipantGenerator.generateParticipants(13);
-		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(customConfig, teamMembers);
+		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(Configurations.customConfig, teamMembers);
 		assertEquals(true, teamsResult.hasNotAssignedParticipants());
 		assertEquals(1, teamsResult.getNotAssignedParticipants().size());
 		assertEquals(13, teamsResult.getNotAssignedParticipants().get(0).getParticipantNumber()); // Ensure that last user is the one not
@@ -148,7 +44,7 @@ public class RunningDinnerCalculatorTest {
 
 		System.out.println("*** testCustomConfigTeamBuilding ***");
 		for (Team team : teamsResult.getRegularTeams()) {
-			assertEquals(customConfig.getTeamSize(), team.getTeamMembers().size());
+			assertEquals(Configurations.customConfig.getTeamSize(), team.getTeamMembers().size());
 			System.out.println(team);
 		}
 	}
@@ -156,7 +52,7 @@ public class RunningDinnerCalculatorTest {
 	@Test
 	public void testRandomMealClasses() throws NoPossibleRunningDinnerException {
 		List<Participant> particiapnts = ParticipantGenerator.generateParticipants(18);
-		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(standardConfig, particiapnts);
+		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(Configurations.standardConfig, particiapnts);
 		List<Team> teams = teamsResult.getRegularTeams();
 		assertEquals(9, teams.size());
 
@@ -164,7 +60,7 @@ public class RunningDinnerCalculatorTest {
 			assertEquals(null, team.getMealClass());
 		}
 
-		runningDinnerCalculator.assignRandomMealClasses(teamsResult, standardConfig.getMealClasses());
+		runningDinnerCalculator.assignRandomMealClasses(teamsResult, Configurations.standardConfig.getMealClasses());
 
 		assertEquals(3, CollectionUtils.countMatches(teams, new Predicate() {
 			@Override
@@ -211,7 +107,7 @@ public class RunningDinnerCalculatorTest {
 		GeneratedTeamsResult generatedTeamsResult = new GeneratedTeamsResult();
 		generatedTeamsResult.setRegularTeams(teamList);
 		try {
-			runningDinnerCalculator.assignRandomMealClasses(generatedTeamsResult, standardConfig.getMealClasses());
+			runningDinnerCalculator.assignRandomMealClasses(generatedTeamsResult, Configurations.standardConfig.getMealClasses());
 			fail("Should never reach here, because Exception should be thrown!");
 		}
 		catch (NoPossibleRunningDinnerException e) {
@@ -221,15 +117,15 @@ public class RunningDinnerCalculatorTest {
 
 	@Test
 	public void testBuildSingleVisitationPlan() throws NoPossibleRunningDinnerException {
-		List<Participant> participants = generateEqualBalancedParticipants(0);
-		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(standardConfig, participants);
+		List<Participant> participants = ParticipantGenerator.generateEqualBalancedParticipants(0);
+		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(Configurations.standardConfig, participants);
 
 		assertEquals(false, teamsResult.hasNotAssignedParticipants());
 		assertEquals(9, teamsResult.getRegularTeams().size());
 
-		runningDinnerCalculator.assignRandomMealClasses(teamsResult, standardConfig.getMealClasses());
+		runningDinnerCalculator.assignRandomMealClasses(teamsResult, Configurations.standardConfig.getMealClasses());
 
-		runningDinnerCalculator.generateDinnerExecutionPlan(teamsResult, standardConfig);
+		runningDinnerCalculator.generateDinnerExecutionPlan(teamsResult, Configurations.standardConfig);
 
 		List<Team> teams = teamsResult.getRegularTeams();
 		for (Team team : teams) {
@@ -248,17 +144,17 @@ public class RunningDinnerCalculatorTest {
 
 	@Test
 	public void testBuildMultipleVisitationPlans() throws NoPossibleRunningDinnerException {
-		List<Participant> participants = generateEqualBalancedParticipants(0);
-		participants.addAll(generateEqualBalancedParticipants(18));
-		participants.addAll(generateEqualBalancedParticipants(36));
+		List<Participant> participants = ParticipantGenerator.generateEqualBalancedParticipants(0);
+		participants.addAll(ParticipantGenerator.generateEqualBalancedParticipants(18));
+		participants.addAll(ParticipantGenerator.generateEqualBalancedParticipants(36));
 		assertEquals(54, participants.size());
 
-		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(standardConfig, participants);
+		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(Configurations.standardConfig, participants);
 		assertEquals(false, teamsResult.hasNotAssignedParticipants());
 		assertEquals(27, teamsResult.getRegularTeams().size());
 
-		runningDinnerCalculator.assignRandomMealClasses(teamsResult, standardConfig.getMealClasses());
-		runningDinnerCalculator.generateDinnerExecutionPlan(teamsResult, standardConfig);
+		runningDinnerCalculator.assignRandomMealClasses(teamsResult, Configurations.standardConfig.getMealClasses());
+		runningDinnerCalculator.generateDinnerExecutionPlan(teamsResult, Configurations.standardConfig);
 
 		List<Team> teams = teamsResult.getRegularTeams();
 		for (Team team : teams) {
@@ -284,6 +180,44 @@ public class RunningDinnerCalculatorTest {
 		}
 	}
 
+	@Test
+	public void testBuildVisitationPlansWith21Teams() throws NoPossibleRunningDinnerException {
+
+		int numTeams = 21;
+		List<Participant> participants = ParticipantGenerator.generateParticipants(numTeams * 2);
+		ParticipantGenerator.distributeSeatsEqualBalanced(participants, 6);
+
+		RunningDinnerConfig config = RunningDinnerConfig.newConfigurer().withEqualDistributedCapacityTeams(true).withTeamSize(2).withGenderAspects(
+				GenderAspect.FORCE_GENDER_MIX).build();
+		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(config, participants);
+		assertEquals(false, teamsResult.hasNotAssignedParticipants());
+		assertEquals(numTeams, teamsResult.getRegularTeams().size());
+
+		runningDinnerCalculator.assignRandomMealClasses(teamsResult, config.getMealClasses());
+		runningDinnerCalculator.generateDinnerExecutionPlan(teamsResult, config);
+		List<Team> teams = teamsResult.getRegularTeams();
+
+		for (Team team : teams) {
+			// Ensure that every team visit two guest teams and that every team is hoster for 2 other teams.
+			assertEquals(2, team.getVisitationPlan().getNumberOfGuests());
+			assertEquals(2, team.getVisitationPlan().getNumberOfHosts());
+
+			RunningDinnerCalculatorTest.assertDisjunctTeams(team.getVisitationPlan().getHostTeams(),
+					team.getVisitationPlan().getGuestTeams(), team);
+
+			Set<Team> guestTeams = team.getVisitationPlan().getGuestTeams();
+			checkMealClassNotContained(team, guestTeams);
+			Set<Team> hostTeams = team.getVisitationPlan().getHostTeams();
+			checkMealClassNotContained(team, hostTeams);
+
+			Collection<Team> crossedTeams = TeamRouteBuilder.getAllCrossedTeams(team);
+			// Expect that this team sees 6 other teams (no dublettes)
+			assertThat(new HashSet<Team>(crossedTeams), hasSize(6));
+			// This team must not occur in the crossed teams
+			assertThat(crossedTeams,not(hasItem(team)));
+		}
+	}
+
 	/**
 	 * Asserts that the mealclass of the passed team is not contained in the mealclasses of the passed teamsToCheck
 	 * 
@@ -299,48 +233,18 @@ public class RunningDinnerCalculatorTest {
 	}
 
 	/**
-	 * Assume team with team-size of 2
+	 * Assert that passed teamToTest does not occur in the passed hostTeams and guestTeams
 	 * 
-	 * @param team
-	 * @return
+	 * @param hostTeams
+	 * @param guestTeams
+	 * @param teamToTest
 	 */
-	protected boolean isDistributionBalanced(final Team team, final RunningDinnerConfig runningDinnerConfig) {
-		Set<Participant> teamMembers = team.getTeamMembers();
-		if (teamMembers.size() != 2) {
-			throw new IllegalArgumentException("Team " + team + " must have exactly two members, but had " + teamMembers.size());
-		}
-		Participant[] teamMemberArr = teamMembers.toArray(new Participant[2]);
-
-		FuzzyBoolean canHouse1 = runningDinnerConfig.canHost(teamMemberArr[0]);
-		FuzzyBoolean canHouse2 = runningDinnerConfig.canHost(teamMemberArr[1]);
-
-		if (canHouse1 == FuzzyBoolean.UNKNOWN && canHouse2 == FuzzyBoolean.UNKNOWN) {
-			return false;
-		}
-
-		if (canHouse1 == FuzzyBoolean.TRUE) {
-			if (canHouse2 == FuzzyBoolean.FALSE) {
-				return true;
-			}
-		}
-		else if (canHouse2 == FuzzyBoolean.TRUE) {
-			if (canHouse1 == FuzzyBoolean.FALSE) {
-				return true;
-			}
-		}
-		else if (canHouse2 == canHouse1) {
-			return false;
-		}
-
-		throw new RuntimeException("May never reach here!");
-	}
-
-	public static void assertDisjunctTeams(Set<Team> hostTeams, Set<Team> guestTeams, Team team) {
+	public static void assertDisjunctTeams(Set<Team> hostTeams, Set<Team> guestTeams, Team teamToTest) {
 		Set<Team> testSet = new HashSet<Team>();
 		testSet.addAll(hostTeams);
 		testSet.addAll(guestTeams);
-		testSet.add(team);
-		assertEquals("There exist at least one team duplicate in test-set for visitation-plan of team " + team, hostTeams.size()
+		testSet.add(teamToTest);
+		assertEquals("There exist at least one team duplicate in test-set for visitation-plan of team " + teamToTest, hostTeams.size()
 				+ guestTeams.size() + 1, testSet.size());
 	}
 

@@ -59,6 +59,35 @@ public class TeamSegmentTemplateMatrix {
 		};		
 		return result;
 	}
+	
+	protected int[][][] build12Matrix() {
+		int[][][] result = new int[][][] {
+				{ 
+					{ 1, 5, 9 }, 
+					{ 2, 6, 10 }, 
+					{ 3, 7, 11 },
+					{ 4, 8, 12 }
+				}, 
+				{ 
+					{ 5, 10, 11 },
+					{ 6, 9, 12 },
+					{ 7, 1, 4 },
+					{ 8, 2, 3 }
+				}, 
+				{ 
+					{ 9, 2, 7 }, 
+					{ 10, 1, 8 }, 
+					{ 11, 4, 6 },
+					{ 12, 3, 5 }
+				}
+			};		
+			return result;
+	}
+	
+	protected int[][][] build15Matrix() {
+		throw new UnsupportedOperationException("nyi");
+	}
+	
 
 	protected int[][][] build4Matrix() {
 		int[][][] result = new int[][][] {
@@ -75,14 +104,6 @@ public class TeamSegmentTemplateMatrix {
 	}
 	
 	protected int[][][] build6Matrix() {
-		throw new UnsupportedOperationException("nyi");
-	}
-
-	protected int[][][] build12Matrix() {
-		throw new UnsupportedOperationException("nyi");
-	}
-	
-	protected int[][][] build15Matrix() {
 		throw new UnsupportedOperationException("nyi");
 	}
 }

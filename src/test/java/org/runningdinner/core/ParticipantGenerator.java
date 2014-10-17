@@ -84,4 +84,10 @@ public class ParticipantGenerator {
 
 		Collections.shuffle(participants);
 	}
+	
+	public static List<Participant> generateEqualBalancedParticipants(int participantNrOffset) {
+		List<Participant> result = generateParticipants(18, participantNrOffset);
+		ParticipantGenerator.distributeSeatsEqualBalanced(result, 6);
+		return result;
+	}
 }
