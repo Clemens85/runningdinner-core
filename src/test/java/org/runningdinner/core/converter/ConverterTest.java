@@ -268,15 +268,6 @@ public class ConverterTest {
 			assertEquals(team + " has invalid size of host references", 2, hostTeams.size());
 			assertEquals(team + " has invalid size of guest references", 2, guestTeams.size());
 			RunningDinnerCalculatorTest.assertDisjunctTeams(hostTeams, guestTeams, team);
-
-			Set<Team> testingTeams = new HashSet<Team>(hostTeams);
-			testingTeams.add(team);
-			RunningDinnerCalculatorTest.assertDisjunctMealClasses(testingTeams);
-
-			testingTeams.clear();
-			testingTeams.add(team);
-			testingTeams.addAll(guestTeams);
-			RunningDinnerCalculatorTest.assertDisjunctMealClasses(testingTeams);
 		}
 
 	}
