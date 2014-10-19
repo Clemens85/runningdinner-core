@@ -143,55 +143,43 @@ public class RunningDinnerCalculatorTest {
 	}
 
 	@Test
-	public void testBuildMultipleVisitationPlans() throws NoPossibleRunningDinnerException {
-		List<Participant> participants = ParticipantGenerator.generateEqualBalancedParticipants(0);
-		participants.addAll(ParticipantGenerator.generateEqualBalancedParticipants(18));
-		participants.addAll(ParticipantGenerator.generateEqualBalancedParticipants(36));
-		assertEquals(54, participants.size());
-
-		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(Configurations.standardConfig, participants);
-		assertEquals(false, teamsResult.hasNotAssignedParticipants());
-		assertEquals(27, teamsResult.getRegularTeams().size());
-
-		runningDinnerCalculator.assignRandomMealClasses(teamsResult, Configurations.standardConfig.getMealClasses());
-		runningDinnerCalculator.generateDinnerExecutionPlan(teamsResult, Configurations.standardConfig);
-
-		List<Team> teams = teamsResult.getRegularTeams();
-		for (Team team : teams) {
-			assertEquals(2, team.getVisitationPlan().getNumberOfGuests());
-			assertEquals(2, team.getVisitationPlan().getNumberOfHosts());
-
-			RunningDinnerCalculatorTest.assertDisjunctTeams(team.getVisitationPlan().getHostTeams(),
-					team.getVisitationPlan().getGuestTeams(), team);
-
-			Set<Team> guestTeams = team.getVisitationPlan().getGuestTeams();
-			checkMealClassNotContained(team, guestTeams);
-			Set<Team> hostTeams = team.getVisitationPlan().getHostTeams();
-			checkMealClassNotContained(team, hostTeams);
-
-			Set<Team> testingTeams = new HashSet<Team>(hostTeams);
-			testingTeams.add(team);
-			assertDisjunctMealClasses(testingTeams);
-
-			testingTeams.clear();
-			testingTeams.add(team);
-			testingTeams.addAll(guestTeams);
-			assertDisjunctMealClasses(testingTeams);
-		}
+	public void testBuildMultipleVisitationPlans() throws NoPossibleRunningDinnerException {	
+		createAndCheckDinnerplans(54);
 	}
 
 	@Test
 	public void testBuildVisitationPlansWith21Teams() throws NoPossibleRunningDinnerException {
 
-		int numTeams = 21;
-		List<Participant> participants = ParticipantGenerator.generateParticipants(numTeams * 2);
+		int numberOfTeams = 21;
+		createAndCheckDinnerplans(numberOfTeams);
+	}
+
+	
+	@Test
+	public void testBuildVisitationPlanWith15Teams() throws NoPossibleRunningDinnerException {
+		createAndCheckDinnerplans(15);
+	}
+	
+	@Test
+	public void testBuildVisitationPlanWith12Teams() throws NoPossibleRunningDinnerException {
+		createAndCheckDinnerplans(12);
+	}
+	
+	@Test
+	public void testBuildVisitationPlansWith33Teams() throws NoPossibleRunningDinnerException {
+		int numberOfTeams = 33;
+		createAndCheckDinnerplans(numberOfTeams);
+	}
+	
+	protected void createAndCheckDinnerplans(int numberOfTeams) throws NoPossibleRunningDinnerException {
+		List<Participant> participants = ParticipantGenerator.generateParticipants(numberOfTeams * 2);
 		ParticipantGenerator.distributeSeatsEqualBalanced(participants, 6);
 
 		RunningDinnerConfig config = RunningDinnerConfig.newConfigurer().withEqualDistributedCapacityTeams(true).withTeamSize(2).withGenderAspects(
 				GenderAspect.FORCE_GENDER_MIX).build();
 		GeneratedTeamsResult teamsResult = runningDinnerCalculator.generateTeams(config, participants);
 		assertEquals(false, teamsResult.hasNotAssignedParticipants());
-		assertEquals(numTeams, teamsResult.getRegularTeams().size());
+		assertEquals(numberOfTeams, teamsResult.getRegularTeams().size());
 
 		runningDinnerCalculator.assignRandomMealClasses(teamsResult, config.getMealClasses());
 		runningDinnerCalculator.generateDinnerExecutionPlan(teamsResult, config);
@@ -212,12 +200,13 @@ public class RunningDinnerCalculatorTest {
 
 			Collection<Team> crossedTeams = TeamRouteBuilder.getAllCrossedTeams(team);
 			// Expect that this team sees 6 other teams (no dublettes)
-			assertThat(new HashSet<Team>(crossedTeams), hasSize(6));
+			assertThat(team + " should contain 6 teams, but there were only " + crossedTeams, new HashSet<Team>(crossedTeams), hasSize(6));
 			// This team must not occur in the crossed teams
 			assertThat(crossedTeams,not(hasItem(team)));
 		}
 	}
-
+	
+	
 	/**
 	 * Asserts that the mealclass of the passed team is not contained in the mealclasses of the passed teamsToCheck
 	 * 
