@@ -129,7 +129,37 @@ public class Team extends AbstractEntity implements Comparable<Team> {
 		}
 		return null;
 	}
+	
+	/**
+	 * Checks whether the participant denoted by the passed participantKey is a member of this team
+	 * 
+	 * @param participantKey
+	 * @return
+	 */
+	public boolean isParticipantTeamMember(final String participantKey) {
+		if (CoreUtil.isEmpty(teamMembers)) {
+			return false;
+		}
+		for (Participant p : teamMembers) {
+			if (p.getNaturalKey().equals(participantKey)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
+	public Participant getTeamMemberByKey(final String participantKey) {
+		if (CoreUtil.isEmpty(teamMembers)) {
+			return null;
+		}
+		for (Participant p : teamMembers) {
+			if (p.getNaturalKey().equals(participantKey)) {
+				return p;
+			}
+		}
+		return null;
+	}
+	
 	/**
 	 * Returns a list with hosting capabilities of each team member.
 	 * 
@@ -213,4 +243,6 @@ public class Team extends AbstractEntity implements Comparable<Team> {
 		}
 		return 0;
 	}
+
+
 }

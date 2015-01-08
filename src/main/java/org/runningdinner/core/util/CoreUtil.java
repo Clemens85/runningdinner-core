@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -256,6 +257,10 @@ public class CoreUtil {
 	 */
 	public static String getDefaultTimeFormat() {
 		return "HH:mm";
+	}
+	
+	public static Locale getDefaultLocale() {
+		return Locale.GERMAN;
 	}
 
 	public static <T extends AbstractEntity> List<String> getNaturalKeysForEntities(final Collection<T> entities) {
