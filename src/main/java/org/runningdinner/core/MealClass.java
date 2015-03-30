@@ -105,22 +105,5 @@ public final class MealClass extends AbstractEntity {
 	public static MealClass DESSERT() {
 		return new MealClass("Nachspeise");
 	}
-	
-	
-	/**
-	 * Sorts the meals according to their time values.
-	 * @author Clemens
-	 *
-	 */
-	public static class MealClassSorter implements Comparator<MealClass> {
-
-		@Override
-		public int compare(MealClass mc1, MealClass mc2) {
-			if (mc1.getTime() != null && mc2.getTime() != null) {
-				return mc1.getTime().compareTo(mc2.getTime());
-			}
-			return 0;
-		}
-
-	}
+		
 }

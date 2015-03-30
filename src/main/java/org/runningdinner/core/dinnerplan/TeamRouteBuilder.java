@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.runningdinner.core.MealClass;
+import org.runningdinner.core.MealClassSorter;
 import org.runningdinner.core.Team;
 
 public class TeamRouteBuilder {
@@ -33,7 +34,7 @@ public class TeamRouteBuilder {
 		}
 
 		List<MealClass> allMeals = new ArrayList<MealClass>(mealTeamMapping.keySet());
-		Collections.sort(allMeals, new MealClass.MealClassSorter());
+		Collections.sort(allMeals, new MealClassSorter());
 
 		ArrayList<Team> teamDinnerRoute = new ArrayList<Team>();
 		for (MealClass orderedMeal : allMeals) {
