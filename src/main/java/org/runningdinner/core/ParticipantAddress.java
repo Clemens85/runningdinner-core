@@ -220,8 +220,8 @@ public class ParticipantAddress {
 	}
 
 	public static boolean isValidZip(int zip) {
-		// TODO: Only valid assumption for german zips...
-		if (zip < 9999 || zip >= 100000) {
+		// TODO: Only valid assumption for DACH zips...
+		if (zip < 999 || zip >= 100000) {
 			return false;
 		}
 		return true;
