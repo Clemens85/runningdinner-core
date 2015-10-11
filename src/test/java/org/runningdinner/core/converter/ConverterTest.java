@@ -152,7 +152,7 @@ public class ConverterTest {
 	@Test
 	public void testEmptyXls() throws IOException, ConversionException {
 		inputStream = getClass().getResourceAsStream(EMPTY_XLS_FILE);
-		FileConverter excelConverter = ConverterFactory.newConverter(ParsingConfiguration.newDefaultConfiguration(), INPUT_FILE_TYPE.HSSF);
+		FileConverter excelConverter = ConverterFactory.newFileConverter(ParsingConfiguration.newDefaultConfiguration(), INPUT_FILE_TYPE.HSSF);
 		List<Participant> participants = excelConverter.parseParticipants(inputStream);
 		assertEquals(0, participants.size());
 	}
@@ -165,7 +165,7 @@ public class ConverterTest {
 		ParsingConfiguration parsingConfiguration = ParsingConfiguration.newDefaultConfiguration();
 		parsingConfiguration.setStartRow(0);
 
-		FileConverter excelConverter = ConverterFactory.newConverter(parsingConfiguration, INPUT_FILE_TYPE.XSSF);
+		FileConverter excelConverter = ConverterFactory.newFileConverter(parsingConfiguration, INPUT_FILE_TYPE.XSSF);
 
 		try {
 			excelConverter.parseParticipants(inputStream);
@@ -187,7 +187,7 @@ public class ConverterTest {
 		ParsingConfiguration parsingConfiguration = ParsingConfiguration.newDefaultConfiguration();
 
 		inputStream = getClass().getResourceAsStream(STANDARD_XLS_FILE);
-		FileConverter excelConverter = ConverterFactory.newConverter(parsingConfiguration, fileType);
+		FileConverter excelConverter = ConverterFactory.newFileConverter(parsingConfiguration, fileType);
 		List<Participant> participants = excelConverter.parseParticipants(inputStream);
 
 		checkParsedParticipants(participants, false);
@@ -205,7 +205,7 @@ public class ConverterTest {
 		parsingConfiguration.setGenderColumnConfig(genderColumnConfig);
 
 		inputStream = getClass().getResourceAsStream(STANDARD_GENDER_XLS_FILE);
-		FileConverter excelConverter = ConverterFactory.newConverter(parsingConfiguration, fileType);
+		FileConverter excelConverter = ConverterFactory.newFileConverter(parsingConfiguration, fileType);
 		List<Participant> participants = excelConverter.parseParticipants(inputStream);
 
 		assertEquals(2, Collections2.filter(participants, GenderPredicate.FEMALE_GENDER_PREDICATE).size());
@@ -222,7 +222,7 @@ public class ConverterTest {
 		ParsingConfiguration parsingConfiguration = ParsingConfiguration.newDefaultConfiguration();
 
 		inputStream = getClass().getResourceAsStream(STANDARD_XLSX_FILE);
-		FileConverter excelConverter = ConverterFactory.newConverter(parsingConfiguration, fileType);
+		FileConverter excelConverter = ConverterFactory.newFileConverter(parsingConfiguration, fileType);
 		List<Participant> participants = excelConverter.parseParticipants(inputStream);
 
 		checkParsedParticipants(participants, false);
@@ -239,7 +239,7 @@ public class ConverterTest {
 		parsingConfiguration.setMobileNumberColumnConfig(MobileNumberColumnConfig.createMobileNumberColumnConfig(5));
 
 		inputStream = getClass().getResourceAsStream(STANDARD_XLS_WITH_CONTACTINFO_FILE);
-		FileConverter excelConverter = ConverterFactory.newConverter(parsingConfiguration, fileType);
+		FileConverter excelConverter = ConverterFactory.newFileConverter(parsingConfiguration, fileType);
 		List<Participant> participants = excelConverter.parseParticipants(inputStream);
 
 		checkParsedParticipants(participants, true);
@@ -249,7 +249,7 @@ public class ConverterTest {
 	public void testIntegrationParsingAndCalculation() throws NoPossibleRunningDinnerException, IOException, ConversionException {
 		String file = "/excelimport/18_participants.xls";
 		INPUT_FILE_TYPE fileType = ConverterFactory.determineFileType(file);
-		FileConverter converter = ConverterFactory.newConverter(ParsingConfiguration.newDefaultConfiguration(), fileType);
+		FileConverter converter = ConverterFactory.newFileConverter(ParsingConfiguration.newDefaultConfiguration(), fileType);
 		List<Participant> participants = converter.parseParticipants(getClass().getResourceAsStream(file));
 
 		RunningDinnerCalculator calculator = new RunningDinnerCalculator();

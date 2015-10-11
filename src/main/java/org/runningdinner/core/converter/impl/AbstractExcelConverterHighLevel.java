@@ -47,6 +47,36 @@ public class AbstractExcelConverterHighLevel {
 		this.parsingConfiguration = parsingConfiguration;
 	}
 
+	public List<List<String>> readRows(Sheet sheet, int maxRows) {
+
+		List<List<String>> result = new ArrayList<>();
+
+		for (int rowIndex = sheet.getFirstRowNum(); rowIndex < sheet.getLastRowNum(); rowIndex++) {
+			Row row = sheet.getRow(rowIndex);
+
+			if (row == null) {
+				continue;
+			}
+
+			List<String> columns = new ArrayList<>();
+
+			short firstCellNum = row.getFirstCellNum();
+			short lastCellNum = row.getLastCellNum();
+			for (int colIndex = firstCellNum; colIndex < lastCellNum; colIndex++) {
+				String cellValue = getCellValueAsString(row, colIndex);
+				columns.add(cellValue);
+			}
+
+			result.add(columns);
+
+			if (result.size() >= maxRows) {
+				break;
+			}
+		}
+
+		return result;
+	}
+
 	/**
 	 * Parses each excel row and assigns each participant an ascending participant-number.
 	 * 
@@ -54,7 +84,7 @@ public class AbstractExcelConverterHighLevel {
 	 * @return
 	 * @throws ConversionException
 	 */
-	public List<Participant> parseParticipants(final Sheet sheet) throws ConversionException {
+	public List<Participant> parseParticipants(Sheet sheet) throws ConversionException {
 		int startRow = parsingConfiguration.getStartRow();
 
 		Set<Participant> tmpResult = new LinkedHashSet<Participant>();

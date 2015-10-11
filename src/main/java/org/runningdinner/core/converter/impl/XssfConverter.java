@@ -29,11 +29,21 @@ public class XssfConverter extends AbstractExcelConverterHighLevel implements Fi
 
 	@Override
 	public List<Participant> parseParticipants(final InputStream inputStream) throws IOException, ConversionException {
+		XSSFSheet sheet = openSheet(inputStream);
+		return parseParticipants(sheet);
+	}
+
+	@Override
+	public List<List<String>> readRows(InputStream inputStream, int maxRows) throws IOException {
+		XSSFSheet sheet = openSheet(inputStream);
+		return readRows(sheet, maxRows);
+	}
+
+	private XSSFSheet openSheet(InputStream inputStream) throws IOException {
 		CoreUtil.assertNotNull(inputStream, "Passed InputStream must not be null!");
 		XSSFWorkbook workbook = new XSSFWorkbook(inputStream);
 		XSSFSheet sheet = workbook.getSheetAt(0);
-
-		return parseParticipants(sheet);
+		return sheet;
 	}
 
 }

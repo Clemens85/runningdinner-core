@@ -33,7 +33,8 @@ public class ConverterFactory {
 	 * @param fileType Identifier for instantiating the concrete converter class
 	 * @return
 	 */
-	public static FileConverter newConverter(final ParsingConfiguration parsingConfiguration, final INPUT_FILE_TYPE fileType) {
+	public static FileConverter newFileConverter(final ParsingConfiguration parsingConfiguration, final INPUT_FILE_TYPE fileType) {
+		
 		if (INPUT_FILE_TYPE.HSSF == fileType) {
 			return new HssfConverter(parsingConfiguration);
 		}
@@ -42,6 +43,11 @@ public class ConverterFactory {
 		}
 
 		throw new IllegalArgumentException("Unsupported input file type " + fileType);
+	}
+
+	public static RowConverter newRowConverter(final INPUT_FILE_TYPE fileType) {
+		
+		return newFileConverter(null, fileType);
 	}
 
 	/**

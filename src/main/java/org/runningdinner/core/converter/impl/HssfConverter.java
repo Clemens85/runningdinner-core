@@ -26,13 +26,22 @@ public class HssfConverter extends AbstractExcelConverterHighLevel implements Fi
 	}
 
 	@Override
-	public List<Participant> parseParticipants(final InputStream inputStream) throws IOException, ConversionException {
+	public List<Participant> parseParticipants(InputStream inputStream) throws IOException, ConversionException {
+		HSSFSheet sheet = openSheet(inputStream);
+		return parseParticipants(sheet);
+	}
+
+	@Override
+	public List<List<String>> readRows(InputStream inputStream, int maxRows) throws IOException {
+		HSSFSheet sheet = openSheet(inputStream);
+		return readRows(sheet, maxRows);
+	}
+
+	private HSSFSheet openSheet(InputStream inputStream) throws IOException {
 		CoreUtil.assertNotNull(inputStream, "Passed InputStream must not be null!");
 		POIFSFileSystem poiFileSystem = new POIFSFileSystem(inputStream);
 		HSSFWorkbook workbook = new HSSFWorkbook(poiFileSystem);
 		HSSFSheet sheet = workbook.getSheetAt(0);
-
-		return parseParticipants(sheet);
+		return sheet;
 	}
-
 }

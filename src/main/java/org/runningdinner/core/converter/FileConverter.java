@@ -12,7 +12,7 @@ import org.runningdinner.core.Participant;
  * @author Clemens Stich
  * 
  */
-public interface FileConverter {
+public interface FileConverter extends RowConverter {
 
 	/**
 	 * Biggest running dinner ever was performed with 2428 participants, so this hard-coded limit should be sufficient for now ;-)
