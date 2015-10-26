@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.runningdinner.core.Participant;
@@ -11,6 +12,8 @@ import org.runningdinner.core.converter.ConversionException;
 import org.runningdinner.core.converter.FileConverter;
 import org.runningdinner.core.converter.config.ParsingConfiguration;
 import org.runningdinner.core.util.CoreUtil;
+
+import com.google.common.base.Optional;
 
 /**
  * Entry point for parsing "new" XLSX excel files.<br>
@@ -37,6 +40,12 @@ public class XssfConverter extends AbstractExcelConverterHighLevel implements Fi
 	public List<List<String>> readRows(InputStream inputStream, int maxRows) throws IOException {
 		XSSFSheet sheet = openSheet(inputStream);
 		return readRows(sheet, maxRows);
+	}
+	
+	@Override
+	public Optional<List<String>> readSingleRow(InputStream inputStream, int rowIndex) throws IOException {
+		XSSFSheet sheet = openSheet(inputStream);
+		return readSingleRow(sheet, rowIndex);
 	}
 
 	private XSSFSheet openSheet(InputStream inputStream) throws IOException {

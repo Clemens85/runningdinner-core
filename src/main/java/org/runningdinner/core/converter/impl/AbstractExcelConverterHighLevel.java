@@ -30,6 +30,8 @@ import org.runningdinner.core.util.CoreUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Optional;
+
 /**
  * Abstract class for parsing excel files which contains the main logic.<br>
  * This class is independent of XSSF or HSSF excel file types.
@@ -58,15 +60,7 @@ public class AbstractExcelConverterHighLevel {
 				continue;
 			}
 
-			List<String> columns = new ArrayList<>();
-
-			short firstCellNum = row.getFirstCellNum();
-			short lastCellNum = row.getLastCellNum();
-			for (int colIndex = firstCellNum; colIndex < lastCellNum; colIndex++) {
-				String cellValue = getCellValueAsString(row, colIndex);
-				columns.add(cellValue);
-			}
-
+			List<String> columns = getColumns(row);
 			result.add(columns);
 
 			if (result.size() >= maxRows) {
@@ -77,6 +71,28 @@ public class AbstractExcelConverterHighLevel {
 		return result;
 	}
 
+	private List<String> getColumns(Row row) {
+		List<String> columns = new ArrayList<>();
+		short firstCellNum = row.getFirstCellNum();
+		short lastCellNum = row.getLastCellNum();
+		for (int colIndex = firstCellNum; colIndex < lastCellNum; colIndex++) {
+			String cellValue = getCellValueAsString(row, colIndex);
+			columns.add(cellValue);
+		}
+		return columns;
+	}
+
+	public Optional<List<String>> readSingleRow(final Sheet sheet, int rowIndex) {
+
+		Row row = sheet.getRow(rowIndex);
+		if (row == null) {
+			return Optional.absent();
+		}
+
+		List<String> columns = getColumns(row);
+		return Optional.of(columns);
+	}
+
 	/**
 	 * Parses each excel row and assigns each participant an ascending participant-number.
 	 * 
@@ -85,7 +101,9 @@ public class AbstractExcelConverterHighLevel {
 	 * @throws ConversionException
 	 */
 	public List<Participant> parseParticipants(Sheet sheet) throws ConversionException {
-		int startRow = parsingConfiguration.getStartRow();
+
+		int firstRowNum = sheet.getFirstRowNum();
+		int startRow = firstRowNum + parsingConfiguration.getStartRow(); // We consider only real rows (no whitespace rows)
 
 		Set<Participant> tmpResult = new LinkedHashSet<Participant>();
 
@@ -121,7 +139,7 @@ public class AbstractExcelConverterHighLevel {
 			participant.setGender(gender);
 
 			if (!tmpResult.add(participant)) {
-				handleDuplicateError(participant, rowIndex);
+				handleDuplicateError(participant, row);
 			}
 
 			LOGGER.debug("Participant {} has been parsed", participant);
@@ -129,7 +147,7 @@ public class AbstractExcelConverterHighLevel {
 
 		if (tmpResult.size() > FileConverter.MAX_PARTICIPANTS) {
 			// Not quite clever to first parse all particiapants and then throw exception, but actually this should never happen
-			throw new ConversionException().setErrorInformation(-1, CONVERSION_ERROR.TOO_MUCH_PARTICIPANTS);
+			throw new ConversionException().setClientErrorInformation(CONVERSION_ERROR.TOO_MUCH_PARTICIPANTS);
 		}
 
 		return new ArrayList<Participant>(tmpResult);
@@ -174,14 +192,13 @@ public class AbstractExcelConverterHighLevel {
 			}
 		}
 		catch (IllegalArgumentException ex) {
-			throw new ConversionException("Could not parse name at row " + (row.getRowNum() + 1), ex).setErrorInformation(
-					row.getRowNum() + 1, CONVERSION_ERROR.NAME);
+			throw toConversionException(row, CONVERSION_ERROR.NAME, ex);
 		}
 	}
 
-	private void handleDuplicateError(final Participant participant, final int rowIndex) throws ConversionException {
-		throw new ConversionException("Could not add new participant " + participant + " in row " + (rowIndex + 1)
-				+ " because there existed alread another participant with the same sequence number!").setErrorInformation(rowIndex + 1,
+	private void handleDuplicateError(final Participant participant, final Row row) throws ConversionException {
+		LOGGER.error("Detected duplicate participant {} in row-number {}", participant, row.getRowNum());
+		throw new ConversionException().setClientErrorInformation(row.getRowNum(), parsingConfiguration.getStartRow(),
 				CONVERSION_ERROR.PARTICIPANT_NR);
 	}
 
@@ -238,8 +255,7 @@ public class AbstractExcelConverterHighLevel {
 
 		}
 		catch (IllegalArgumentException ex) {
-			throw new ConversionException("Could not parse address at row " + row.getRowNum() + 1, ex).setErrorInformation(
-					row.getRowNum() + 1, CONVERSION_ERROR.ADDRESS);
+			throw toConversionException(row, CONVERSION_ERROR.ADDRESS, ex);
 		}
 	}
 
@@ -280,8 +296,7 @@ public class AbstractExcelConverterHighLevel {
 			return Participant.UNDEFINED_SEATS;
 		}
 		catch (IllegalArgumentException ex) {
-			throw new ConversionException("Could not parse number of seats at row " + row.getRowNum() + 1, ex).setErrorInformation(
-					row.getRowNum() + 1, CONVERSION_ERROR.NUMBER_OF_SEATS);
+			throw toConversionException(row, CONVERSION_ERROR.NUMBER_OF_SEATS, ex);
 		}
 	}
 
@@ -372,5 +387,15 @@ public class AbstractExcelConverterHighLevel {
 			}
 		}
 		return result;
+	}
+
+	private ConversionException toConversionException(Row row, CONVERSION_ERROR conversionError, IllegalArgumentException ex) {
+
+		int startRowNumber = parsingConfiguration.getStartRow();
+		int absoluteRowNumber = row.getRowNum();
+
+		LOGGER.error("Conversion error ({}) while trying to parse row number {}", conversionError, (absoluteRowNumber + 1));
+
+		return new ConversionException(ex).setClientErrorInformation(absoluteRowNumber, startRowNumber, conversionError);
 	}
 }

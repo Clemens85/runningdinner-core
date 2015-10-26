@@ -2,10 +2,8 @@ package org.runningdinner.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Simple helper object for saving information about combining teams

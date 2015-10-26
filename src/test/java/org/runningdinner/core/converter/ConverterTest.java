@@ -174,7 +174,7 @@ public class ConverterTest {
 		catch (ConversionException e) {
 			e.printStackTrace();
 			assertEquals(CONVERSION_ERROR.NAME, e.getConversionError());
-			assertEquals(2, e.getRowNumber());
+			assertEquals(2, e.getAbsoluteRowIndex());
 		}
 	}
 

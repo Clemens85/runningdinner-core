@@ -13,6 +13,8 @@ import org.runningdinner.core.converter.FileConverter;
 import org.runningdinner.core.converter.config.ParsingConfiguration;
 import org.runningdinner.core.util.CoreUtil;
 
+import com.google.common.base.Optional;
+
 /**
  * Entry point for parsing "old" XLS excel files
  * 
@@ -36,6 +38,12 @@ public class HssfConverter extends AbstractExcelConverterHighLevel implements Fi
 		HSSFSheet sheet = openSheet(inputStream);
 		return readRows(sheet, maxRows);
 	}
+	
+	@Override
+	public Optional<List<String>> readSingleRow(InputStream inputStream, int rowIndex) throws IOException {
+		HSSFSheet sheet = openSheet(inputStream);
+		return readSingleRow(sheet, rowIndex);
+	}
 
 	private HSSFSheet openSheet(InputStream inputStream) throws IOException {
 		CoreUtil.assertNotNull(inputStream, "Passed InputStream must not be null!");
@@ -44,4 +52,5 @@ public class HssfConverter extends AbstractExcelConverterHighLevel implements Fi
 		HSSFSheet sheet = workbook.getSheetAt(0);
 		return sheet;
 	}
+
 }

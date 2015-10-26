@@ -14,7 +14,10 @@ public class ConversionException extends Exception {
 		NAME, ADDRESS, PARTICIPANT_NR, NUMBER_OF_SEATS, TOO_MUCH_PARTICIPANTS, UNKNOWN
 	}
 
-	private int rowNumber = -1;
+	public static final int NO_ROW_NUMBER_AVAILABLE = -1;
+
+	private int absoluteRowIndex = NO_ROW_NUMBER_AVAILABLE;
+	private int startRowNumberOffset = NO_ROW_NUMBER_AVAILABLE;
 	private CONVERSION_ERROR conversionError;
 
 	public ConversionException() {
@@ -36,23 +39,50 @@ public class ConversionException extends Exception {
 	/**
 	 * Adds details error information to this exception for displaying it in UI.<br>
 	 * 
-	 * @param rowNumber
+	 * @param absoluteRowNumber the absolute row-number on which the error occured (0-based)
+	 * @param startRowNumberOffset the row-number at which the user wanted the parsing to be started (0-based)
 	 * @param errorType
 	 * @return This exception instance for being able to call this method in a fluent way
 	 */
-	public ConversionException setErrorInformation(int rowNumber, CONVERSION_ERROR errorType) {
-		this.rowNumber = rowNumber;
+	public ConversionException setClientErrorInformation(int absoluteRowNumber, int startRowNumberOffset, CONVERSION_ERROR errorType) {
+		this.absoluteRowIndex = absoluteRowNumber;
+		this.startRowNumberOffset = startRowNumberOffset;
 		this.conversionError = errorType;
 		return this;
 	}
 
 	/**
-	 * Retrieves the number of the row in which the error occurred (or -1 if the row-number is not known)
+	 * Adds details error information to this exception for displaying it in UI.<br>
+	 * 
+	 * @param rowNumber
+	 * @param errorType
+	 * @return This exception instance for being able to call this method in a fluent way
+	 */
+	public ConversionException setClientErrorInformation(CONVERSION_ERROR errorType) {
+		return setClientErrorInformation(NO_ROW_NUMBER_AVAILABLE, NO_ROW_NUMBER_AVAILABLE, errorType);
+	}
+
+	/**
+	 * Retrieves the (0-based) absolute number of the row in which the error occurred (or -1 if the row-number is not known)
 	 * 
 	 * @return
 	 */
-	public int getRowNumber() {
-		return rowNumber;
+	public int getAbsoluteRowIndex() {
+		return absoluteRowIndex;
+	}
+
+	/**
+	 * Retrieves the (0-based) row-number at which the user wanted the parsing to be started (or-1 if the row-number is not known on which
+	 * an error occurred)
+	 * 
+	 * @return
+	 */
+	public int getStartRowNumberOffset() {
+		return startRowNumberOffset;
+	}
+
+	public boolean isRowNumberAvailable() {
+		return absoluteRowIndex != NO_ROW_NUMBER_AVAILABLE;
 	}
 
 	/**

@@ -18,7 +18,7 @@ import javax.persistence.OrderBy;
  * 
  */
 @Embeddable
-public class RunningDinnerConfig {
+public class RunningDinnerConfig implements BasicRunningDinnerConfiguration {
 
 	@OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
 	@JoinColumn(name = "dinner_id")
@@ -37,12 +37,13 @@ public class RunningDinnerConfig {
 		// Needed for JPA
 	}
 
-	protected RunningDinnerConfig(ConfigBuilder builder) {
-		this.considerShortestPaths = builder.considerShortestPaths;
-		this.forceEqualDistributedCapacityTeams = builder.forceEqualDistributedCapacityTeams;
-		this.mealClasses = builder.mealClasses;
-		this.teamSize = builder.teamSize;
-		this.genderAspects = builder.genderAspects;
+	protected RunningDinnerConfig(Set<MealClass> mealClasses, int teamSize, boolean considerShortestPaths, GenderAspect genderAspects,
+			boolean forceEqualDistributedCapacityTeams) {
+		this.considerShortestPaths = considerShortestPaths;
+		this.forceEqualDistributedCapacityTeams = forceEqualDistributedCapacityTeams;
+		this.mealClasses = mealClasses;
+		this.teamSize = teamSize;
+		this.genderAspects = genderAspects;
 	}
 
 	/**
@@ -79,6 +80,7 @@ public class RunningDinnerConfig {
 	 * 
 	 * @return
 	 */
+	@Override
 	public Set<MealClass> getMealClasses() {
 		return mealClasses;
 	}
@@ -88,8 +90,14 @@ public class RunningDinnerConfig {
 	 * 
 	 * @return
 	 */
+	@Override
 	public int getTeamSize() {
 		return teamSize;
+	}
+
+	@Override
+	public int getNumberOfMealClasses() {
+		return mealClasses != null ? mealClasses.size() : 0;
 	}
 
 	/**
@@ -99,10 +107,9 @@ public class RunningDinnerConfig {
 	 * @return
 	 * @throws NoPossibleRunningDinnerException
 	 */
+	@Override
 	public TeamCombinationInfo generateTeamCombinationInfo(final int numberOfTeams) throws NoPossibleRunningDinnerException {
-		Set<MealClass> mealClasses = getMealClasses();
-		int numMeals = mealClasses.size();
-		return new TeamCombinationInfo(numberOfTeams, numMeals);
+		return new TeamCombinationInfo(numberOfTeams, getNumberOfMealClasses());
 	}
 
 	/**
@@ -127,6 +134,15 @@ public class RunningDinnerConfig {
 	 */
 	public static ConfigBuilder newConfigurer() {
 		return new ConfigBuilder();
+	}
+
+	/**
+	 * Create a new running dinner configuration instance containing only the basic infos
+	 * 
+	 * @return
+	 */
+	public static BasicConfigBuilder newBasicConfigurer() {
+		return new BasicConfigBuilder();
 	}
 
 	public static class ConfigBuilder {
@@ -176,8 +192,52 @@ public class RunningDinnerConfig {
 				mealClasses.add(MealClass.MAINCOURSE());
 				mealClasses.add(MealClass.DESSERT());
 			}
+			return new RunningDinnerConfig(mealClasses, teamSize, considerShortestPaths, genderAspects, forceEqualDistributedCapacityTeams);
+		}
+	}
 
-			return new RunningDinnerConfig(this);
+	public static class BasicConfigBuilder {
+
+		private Set<MealClass> mealClasses = null;
+		private int teamSize = 2;
+
+		public BasicConfigBuilder() {
+		}
+
+		public BasicConfigBuilder withTeamSize(final int teamSize) {
+			this.teamSize = teamSize;
+			return this;
+		}
+
+		public BasicConfigBuilder havingMeals(final Collection<MealClass> meals) {
+			if (this.mealClasses == null) {
+				this.mealClasses = new HashSet<MealClass>(meals);
+			}
+			else {
+				this.mealClasses.clear();
+				this.mealClasses.addAll(meals);
+			}
+
+			return this;
+		}
+
+		public BasicConfigBuilder havingNumberOfDummyMeals(int numberOfMeals) {
+			Set<MealClass> dummyMeals = new HashSet<>();
+			for (int i = 0; i < numberOfMeals; i++) {
+				dummyMeals.add(new MealClass("Meal " + (i + 1)));
+			}
+			return havingMeals(dummyMeals);
+		}
+
+		public BasicRunningDinnerConfiguration build() {
+			if (mealClasses == null) {
+				// Add standard courses:
+				mealClasses = new HashSet<MealClass>(3);
+				mealClasses.add(MealClass.APPETIZER());
+				mealClasses.add(MealClass.MAINCOURSE());
+				mealClasses.add(MealClass.DESSERT());
+			}
+			return new RunningDinnerConfig(mealClasses, teamSize, false, GenderAspect.IGNORE_GENDER, true);
 		}
 	}
 }

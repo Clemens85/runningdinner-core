@@ -80,7 +80,7 @@ public class RunningDinnerCalculator {
 	 * @param participants
 	 * @return
 	 */
-	public List<Participant> calculateNotAssignableParticipants(final RunningDinnerConfig runningDinnerConfig,
+	public List<Participant> calculateNotAssignableParticipants(final BasicRunningDinnerConfiguration runningDinnerConfig,
 			final List<Participant> participants) {
 		try {
 			TeamCombinationInfo teamCombinationInfo = generateTeamCombinationInfo(participants, runningDinnerConfig);
@@ -141,7 +141,7 @@ public class RunningDinnerCalculator {
 	}
 
 	protected TeamCombinationInfo generateTeamCombinationInfo(final List<Participant> allParticipants,
-			final RunningDinnerConfig runningDinnerConfig) throws NoPossibleRunningDinnerException {
+			final BasicRunningDinnerConfiguration runningDinnerConfig) throws NoPossibleRunningDinnerException {
 
 		int numberOfTeams = allParticipants.size() / runningDinnerConfig.getTeamSize();
 		TeamCombinationInfo teamCombinationInfo = runningDinnerConfig.generateTeamCombinationInfo(numberOfTeams);
@@ -149,7 +149,7 @@ public class RunningDinnerCalculator {
 	}
 
 	protected int calculateNumberOfNotAssignableParticipants(final List<Participant> allParticipants,
-			final TeamCombinationInfo teamCombinationInfo, final RunningDinnerConfig runningDinnerConfig) {
+			final TeamCombinationInfo teamCombinationInfo, final BasicRunningDinnerConfiguration runningDinnerConfig) {
 
 		// This will be the count of participants that cannot be assigned and must therefore be substracted from the participant-list before
 		// building teams:
