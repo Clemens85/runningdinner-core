@@ -1,6 +1,5 @@
 package org.runningdinner.core;
 
-import java.util.Comparator;
 import java.util.Date;
 
 import javax.persistence.Access;

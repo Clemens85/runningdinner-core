@@ -6,7 +6,6 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -27,12 +26,9 @@ import org.runningdinner.core.Team;
 import org.runningdinner.core.VisitationPlan;
 import org.runningdinner.core.converter.ConversionException.CONVERSION_ERROR;
 import org.runningdinner.core.converter.ConverterFactory.INPUT_FILE_TYPE;
-import org.runningdinner.core.converter.config.AddressColumnConfig;
 import org.runningdinner.core.converter.config.EmailColumnConfig;
 import org.runningdinner.core.converter.config.GenderColumnConfig;
 import org.runningdinner.core.converter.config.MobileNumberColumnConfig;
-import org.runningdinner.core.converter.config.NameColumnConfig;
-import org.runningdinner.core.converter.config.NumberOfSeatsColumnConfig;
 import org.runningdinner.core.converter.config.ParsingConfiguration;
 import org.runningdinner.core.test.helper.GenderPredicate;
 import org.runningdinner.core.util.CoreUtil;

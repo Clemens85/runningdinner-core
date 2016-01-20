@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.runningdinner.core.util.CoreUtil;
 import org.runningdinner.core.util.RandomNumberGenerator;
 
 public class ParticipantGenerator {
