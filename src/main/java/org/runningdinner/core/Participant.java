@@ -2,6 +2,7 @@ package org.runningdinner.core;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
+import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -56,6 +57,10 @@ public class Participant extends AbstractEntity implements Comparable<Participan
 	private int numSeats;
 
 	private boolean host;
+
+	@Embedded
+	@AttributeOverride(name = "notes", column = @Column(name = "mealspecificsnote"))
+	private MealSpecifics mealSpecifics;
 
 	protected Participant() {
 		// JPA
@@ -170,9 +175,27 @@ public class Participant extends AbstractEntity implements Comparable<Participan
 		this.host = host;
 	}
 
+	public MealSpecifics getMealSpecifics() {
+		if (mealSpecifics == null) {
+			return MealSpecifics.NONE;
+		}
+		return mealSpecifics;
+	}
+
+	public boolean hasMealSpecifics() {
+		if (mealSpecifics == null || MealSpecifics.NONE.equals(getMealSpecifics())) {
+			return false;
+		}
+		return true;
+	}
+
+	public void setMealSpecifics(MealSpecifics mealSpecifics) {
+		this.mealSpecifics = mealSpecifics;
+	}
+
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(17, 7).append(getParticipantNumber()).hashCode();
+		return new HashCodeBuilder(17, 7).append(getParticipantNumber()).toHashCode();
 	}
 
 	@Override
