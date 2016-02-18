@@ -59,7 +59,7 @@ public class Participant extends AbstractEntity implements Comparable<Participan
 	private boolean host;
 
 	@Embedded
-	@AttributeOverride(name = "notes", column = @Column(name = "mealspecificsnote"))
+	@AttributeOverride(name = "note", column = @Column(name = "mealspecificsnote"))
 	private MealSpecifics mealSpecifics;
 
 	protected Participant() {
