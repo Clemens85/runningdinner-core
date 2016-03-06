@@ -32,12 +32,12 @@ public class RunningDinnerConfig implements BasicRunningDinnerConfiguration {
 	private GenderAspect genderAspects;
 
 	private boolean forceEqualDistributedCapacityTeams;
-
-	protected RunningDinnerConfig() {
+	
+	public RunningDinnerConfig() {
 		// Needed for JPA
 	}
 
-	protected RunningDinnerConfig(Set<MealClass> mealClasses, int teamSize, boolean considerShortestPaths, GenderAspect genderAspects,
+	public RunningDinnerConfig(Set<MealClass> mealClasses, int teamSize, boolean considerShortestPaths, GenderAspect genderAspects,
 			boolean forceEqualDistributedCapacityTeams) {
 		this.considerShortestPaths = considerShortestPaths;
 		this.forceEqualDistributedCapacityTeams = forceEqualDistributedCapacityTeams;
@@ -99,6 +99,27 @@ public class RunningDinnerConfig implements BasicRunningDinnerConfiguration {
 	public int getNumberOfMealClasses() {
 		return mealClasses != null ? mealClasses.size() : 0;
 	}
+	
+	
+	public void setMealClasses(Set<MealClass> mealClasses) {
+		this.mealClasses = mealClasses;
+	}
+
+	public void setTeamSize(int teamSize) {
+		this.teamSize = teamSize;
+	}
+
+	public void setConsiderShortestPaths(boolean considerShortestPaths) {
+		this.considerShortestPaths = considerShortestPaths;
+	}
+
+	public void setGenderAspects(GenderAspect genderAspects) {
+		this.genderAspects = genderAspects;
+	}
+
+	public void setForceEqualDistributedCapacityTeams(boolean forceEqualDistributedCapacityTeams) {
+		this.forceEqualDistributedCapacityTeams = forceEqualDistributedCapacityTeams;
+	}
 
 	/**
 	 * Generates the TeamCombinationInfo object for the passed number of teams.
@@ -153,7 +174,7 @@ public class RunningDinnerConfig implements BasicRunningDinnerConfiguration {
 		private boolean considerShortestPaths = true;
 		private Set<MealClass> mealClasses = null;
 		private int teamSize = 2;
-
+		
 		public ConfigBuilder() {
 		}
 
@@ -173,7 +194,7 @@ public class RunningDinnerConfig implements BasicRunningDinnerConfiguration {
 
 			return this;
 		}
-
+		
 		public ConfigBuilder withEqualDistributedCapacityTeams(boolean forceEqualDistributedCapacityTeams) {
 			this.forceEqualDistributedCapacityTeams = forceEqualDistributedCapacityTeams;
 			return this;
