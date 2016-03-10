@@ -143,7 +143,7 @@ public class Participant extends AbstractEntity implements Comparable<Participan
 	}
 
 	public void setEmail(String email) {
-		this.email = email;
+		this.email = StringUtils.trim(email);
 	}
 
 	public String getMobileNumber() {
@@ -154,7 +154,7 @@ public class Participant extends AbstractEntity implements Comparable<Participan
 	}
 
 	public void setMobileNumber(String mobileNumber) {
-		this.mobileNumber = mobileNumber;
+		this.mobileNumber = StringUtils.trim(mobileNumber);
 	}
 
 	public int getParticipantNumber() {

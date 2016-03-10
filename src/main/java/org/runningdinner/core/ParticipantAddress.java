@@ -191,7 +191,7 @@ public class ParticipantAddress {
 	}
 
 	public void setStreet(String street) {
-		this.street = street;
+		this.street = StringUtils.trim(street);
 	}
 
 	public String getStreetNr() {
@@ -199,7 +199,7 @@ public class ParticipantAddress {
 	}
 
 	public void setStreetNr(String streetNr) {
-		this.streetNr = streetNr;
+		this.streetNr = StringUtils.trim(streetNr);
 	}
 
 	public int getZip() {
@@ -239,7 +239,7 @@ public class ParticipantAddress {
 	}
 
 	public void setCityName(String cityName) {
-		this.cityName = cityName;
+		this.cityName = StringUtils.trim(cityName);
 	}
 
 	public String getAddressName() {
@@ -255,7 +255,7 @@ public class ParticipantAddress {
 	}
 
 	public void setRemarks(String remarks) {
-		this.remarks = remarks;
+		this.remarks = StringUtils.trim(remarks);
 	}
 
 	@Override
