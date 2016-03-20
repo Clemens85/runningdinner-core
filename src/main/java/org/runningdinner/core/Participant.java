@@ -60,7 +60,10 @@ public class Participant extends AbstractEntity implements Comparable<Participan
 
 	@Embedded
 	@AttributeOverride(name = "note", column = @Column(name = "mealspecificsnote"))
-	private MealSpecifics mealSpecifics;
+	private MealSpecifics mealSpecifics = new MealSpecifics();
+
+	@Column(length = 512)
+	private String notes;
 
 	protected Participant() {
 		// JPA
@@ -191,6 +194,14 @@ public class Participant extends AbstractEntity implements Comparable<Participan
 
 	public void setMealSpecifics(MealSpecifics mealSpecifics) {
 		this.mealSpecifics = mealSpecifics;
+	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
 	}
 
 	@Override
