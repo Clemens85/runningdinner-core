@@ -5,6 +5,7 @@ import javax.persistence.Embeddable;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.runningdinner.core.InvalidAddressException.ADDRESS_ERROR;
 import org.runningdinner.core.util.CoreUtil;
 
 /**
@@ -54,7 +55,7 @@ public class ParticipantAddress {
 		String[] addressParts = completeAddressString.split("\\r?\\n");
 
 		if (addressParts.length != 2) {
-			throw new IllegalArgumentException("Address must be provided in format like MyStreet 12 NEWLINE 12345 MyCity");
+			throw new InvalidAddressException("Address must be provided in format like MyStreet 12 NEWLINE 12345 MyCity");
 		}
 
 		String streetWithNr = addressParts[0].trim();
@@ -100,7 +101,7 @@ public class ParticipantAddress {
 			return result;
 		}
 
-		throw new IllegalArgumentException("Address must be provided in format like MyStreet 12, 12345 MyCity");
+		throw new InvalidAddressException("Address must be provided in format like MyStreet 12, 12345 MyCity");
 
 	}
 
@@ -135,8 +136,8 @@ public class ParticipantAddress {
 			this.street = streetBuilder.toString();
 		}
 		else {
-			throw new IllegalArgumentException("StreetWithNumber parameter must be in format like 'MyStreet 55', but was "
-					+ streetWithNumber);
+			throw new InvalidAddressException("StreetWithNumber parameter must be in format like 'MyStreet 55', but was "
+					+ streetWithNumber, ADDRESS_ERROR.STREET_STREETNR_INVALID);
 		}
 	}
 
@@ -154,7 +155,8 @@ public class ParticipantAddress {
 		String[] parts = zipWithCity.split("\\s+");
 
 		if (parts.length < 1) {
-			throw new IllegalArgumentException("zipWithCity parameter must be in format like '79100 Freiburg', but was " + zipWithCity);
+			throw new InvalidAddressException("zipWithCity parameter must be in format like '79100 Freiburg', but was " + zipWithCity,
+					ADDRESS_ERROR.STREET_STREETNR_INVALID);
 		}
 
 		String zipStr = parts[0];
@@ -177,7 +179,8 @@ public class ParticipantAddress {
 			this.cityName = cityNameBuilder.toString();
 		}
 		else {
-			throw new IllegalArgumentException("zipWithCity parameter must be in format like '79100 Freiburg', but was " + zipWithCity);
+			throw new InvalidAddressException("zipWithCity parameter must be in format like '79100 Freiburg', but was " + zipWithCity,
+					ADDRESS_ERROR.STREET_STREETNR_INVALID);
 		}
 
 	}
@@ -214,7 +217,7 @@ public class ParticipantAddress {
 	 */
 	public void setZip(int zip) {
 		if (!isValidZip(zip)) {
-			throw new IllegalArgumentException("Zip must be a positive number with exactly 5 digits");
+			throw new InvalidAddressException("Zip must be a positive number with exactly 5 digits", ADDRESS_ERROR.ZIP_CITY_INVALID);
 		}
 		this.zip = zip;
 	}
