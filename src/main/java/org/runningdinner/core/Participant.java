@@ -65,6 +65,8 @@ public class Participant extends AbstractEntity implements Comparable<Participan
 	@Column(length = 512)
 	private String notes;
 
+	private String teamPartnerWish;
+
 	protected Participant() {
 		// JPA
 	}
@@ -202,6 +204,14 @@ public class Participant extends AbstractEntity implements Comparable<Participan
 
 	public void setNotes(String notes) {
 		this.notes = notes;
+	}
+
+	public String getTeamPartnerWish() {
+		return teamPartnerWish;
+	}
+
+	public void setTeamPartnerWish(String teamPartnerWish) {
+		this.teamPartnerWish = teamPartnerWish;
 	}
 
 	@Override
