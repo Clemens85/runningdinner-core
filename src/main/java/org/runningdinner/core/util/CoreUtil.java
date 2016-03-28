@@ -36,6 +36,10 @@ public class CoreUtil {
 		return (collection == null || collection.isEmpty());
 	}
 
+	public static <T> boolean isNotEmpty(final Collection<T> collection) {
+		return !isEmpty(collection);
+	}
+
 	/**
 	 * Distributes all elements of the middle-collection equally to the left- and right-collection.<br>
 	 * Ideally the left-size equals to right-size after method invocation.
