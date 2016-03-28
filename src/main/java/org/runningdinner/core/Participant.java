@@ -58,6 +58,8 @@ public class Participant extends AbstractEntity implements Comparable<Participan
 
 	private boolean host;
 
+	private String teamPartnerWish;
+
 	@Embedded
 	@AttributeOverride(name = "note", column = @Column(name = "mealspecificsnote"))
 	private MealSpecifics mealSpecifics = new MealSpecifics();
@@ -230,7 +232,7 @@ public class Participant extends AbstractEntity implements Comparable<Participan
 		if (obj.getClass() != getClass()) {
 			return false;
 		}
-		Participant other = (Participant)obj;
+		Participant other = (Participant) obj;
 		return new EqualsBuilder().append(getParticipantNumber(), other.getParticipantNumber()).isEquals();
 	}
 
