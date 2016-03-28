@@ -58,8 +58,6 @@ public class Participant extends AbstractEntity implements Comparable<Participan
 
 	private boolean host;
 
-	private String teamPartnerWish;
-
 	@Embedded
 	@AttributeOverride(name = "note", column = @Column(name = "mealspecificsnote"))
 	private MealSpecifics mealSpecifics = new MealSpecifics();
