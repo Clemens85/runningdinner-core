@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +38,14 @@ public class CoreUtil {
 	}
 
 	public static <T> boolean isNotEmpty(final Collection<T> collection) {
+		return !isEmpty(collection);
+	}
+
+	public static <K, V> boolean isEmpty(final Map<K, V> collection) {
+		return (collection == null || collection.isEmpty());
+	}
+
+	public static <K, V> boolean isNotEmpty(final Map<K, V> collection) {
 		return !isEmpty(collection);
 	}
 
