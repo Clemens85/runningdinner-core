@@ -143,7 +143,7 @@ public abstract class AbstractEntity implements Serializable {
 		setModifiedAt(date);
 	}
 
-	protected void setNaturalKey(String naturalKey) {
+	public void setNaturalKey(String naturalKey) {
 		this.naturalKey = naturalKey;
 	}
 

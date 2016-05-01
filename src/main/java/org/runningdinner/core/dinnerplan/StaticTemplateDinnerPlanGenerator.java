@@ -2,13 +2,13 @@ package org.runningdinner.core.dinnerplan;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
-import java.util.Set;
 
 import org.runningdinner.core.GeneratedTeamsResult;
 import org.runningdinner.core.MealClass;
@@ -24,7 +24,7 @@ public class StaticTemplateDinnerPlanGenerator implements DinnerPlanGenerator {
 
 		final List<Team> teams = generatedTeams.getRegularTeams();
 		final TeamCombinationInfo teamCombinationInfo = generatedTeams.getTeamCombinationInfo();
-		final Set<MealClass> mealClasses = runningDinnerConfig.getMealClasses();
+		final Collection<MealClass> mealClasses = runningDinnerConfig.getMealClasses();
 
 		final Map<Integer, Integer> teamSizeFactorizations = teamCombinationInfo.getTeamSizeFactorizations();
 

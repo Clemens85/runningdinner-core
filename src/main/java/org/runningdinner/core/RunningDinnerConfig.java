@@ -1,7 +1,10 @@
 package org.runningdinner.core;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -22,7 +25,7 @@ public class RunningDinnerConfig implements BasicRunningDinnerConfiguration {
 
 	@OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
 	@JoinColumn(name = "dinner_id")
-	@OrderBy(value = "time")
+	@OrderBy("time ASC")
 	private Set<MealClass> mealClasses;
 
 	private int teamSize;
@@ -81,8 +84,8 @@ public class RunningDinnerConfig implements BasicRunningDinnerConfiguration {
 	 * @return
 	 */
 	@Override
-	public Set<MealClass> getMealClasses() {
-		return mealClasses;
+	public List<MealClass> getMealClasses() {
+		return new ArrayList<>(mealClasses);
 	}
 
 	/**
@@ -101,8 +104,8 @@ public class RunningDinnerConfig implements BasicRunningDinnerConfiguration {
 	}
 	
 	
-	public void setMealClasses(Set<MealClass> mealClasses) {
-		this.mealClasses = mealClasses;
+	public void setMealClasses(List<MealClass> mealClasses) {
+		this.mealClasses = new LinkedHashSet<>(mealClasses);
 	}
 
 	public void setTeamSize(int teamSize) {
@@ -185,7 +188,7 @@ public class RunningDinnerConfig implements BasicRunningDinnerConfiguration {
 
 		public ConfigBuilder havingMeals(final Collection<MealClass> meals) {
 			if (this.mealClasses == null) {
-				this.mealClasses = new HashSet<MealClass>(meals);
+				this.mealClasses = new LinkedHashSet<MealClass>(meals);
 			}
 			else {
 				this.mealClasses.clear();
@@ -208,7 +211,7 @@ public class RunningDinnerConfig implements BasicRunningDinnerConfiguration {
 		public RunningDinnerConfig build() {
 			if (mealClasses == null) {
 				// Add standard courses:
-				mealClasses = new HashSet<MealClass>(3);
+				mealClasses = new LinkedHashSet<MealClass>(3);
 				mealClasses.add(MealClass.APPETIZER());
 				mealClasses.add(MealClass.MAINCOURSE());
 				mealClasses.add(MealClass.DESSERT());
@@ -232,7 +235,7 @@ public class RunningDinnerConfig implements BasicRunningDinnerConfiguration {
 
 		public BasicConfigBuilder havingMeals(final Collection<MealClass> meals) {
 			if (this.mealClasses == null) {
-				this.mealClasses = new HashSet<MealClass>(meals);
+				this.mealClasses = new LinkedHashSet<MealClass>(meals);
 			}
 			else {
 				this.mealClasses.clear();
@@ -253,7 +256,7 @@ public class RunningDinnerConfig implements BasicRunningDinnerConfiguration {
 		public BasicRunningDinnerConfiguration build() {
 			if (mealClasses == null) {
 				// Add standard courses:
-				mealClasses = new HashSet<MealClass>(3);
+				mealClasses = new LinkedHashSet<MealClass>(3);
 				mealClasses.add(MealClass.APPETIZER());
 				mealClasses.add(MealClass.MAINCOURSE());
 				mealClasses.add(MealClass.DESSERT());

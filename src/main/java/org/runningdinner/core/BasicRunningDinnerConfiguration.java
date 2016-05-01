@@ -1,6 +1,6 @@
 package org.runningdinner.core;
 
-import java.util.Set;
+import java.util.List;
 
 public interface BasicRunningDinnerConfiguration {
 	
@@ -9,7 +9,7 @@ public interface BasicRunningDinnerConfiguration {
 	 * 
 	 * @return
 	 */
-	Set<MealClass> getMealClasses();
+	List<MealClass> getMealClasses();
 	
 	/**
 	 * Number of all meals to cook for a running dinner

@@ -38,8 +38,12 @@ public final class MealClass extends AbstractEntity {
 	}
 
 	public MealClass(String label) {
-		super();
 		this.label = label;
+	}
+
+	public MealClass(String label, Date time) {
+		this.label = label;
+		this.time = time;
 	}
 
 	/**

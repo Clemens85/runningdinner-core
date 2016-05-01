@@ -1,15 +1,15 @@
 package org.runningdinner.core.dinnerplan;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.runningdinner.core.MealClass;
 import org.runningdinner.core.util.RandomNumberGenerator;
 
 public class TeamSegmentTemplateMatrix {
 
-	private Set<MealClass> meals;
+	private Collection<MealClass> meals;
 
 	private RandomNumberGenerator randomNumberGenerator;
 		
@@ -162,7 +162,7 @@ public class TeamSegmentTemplateMatrix {
 		matrix6List.add(matrix6);
 	}
 
-	public TeamSegmentTemplateMatrix(Set<MealClass> meals) {
+	public TeamSegmentTemplateMatrix(Collection<MealClass> meals) {
 		this.meals = meals;
 		this.randomNumberGenerator = new RandomNumberGenerator();
 	}

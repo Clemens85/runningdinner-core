@@ -27,6 +27,12 @@ public final class DateTimeUtil {
 		return Date.from(localDateTime.plusDays(days).atZone(getGermanTimeZone()).toInstant());
 	}
 
+	public static Date setTime(Date date, int hour, int minute) {
+		Instant timestamp = date.toInstant();
+		LocalDateTime localDateTime = LocalDateTime.ofInstant(timestamp, getGermanTimeZone());
+		return Date.from(localDateTime.withHour(hour).withMinute(minute).atZone(getGermanTimeZone()).toInstant());
+	}
+
 	public static Date createDate(int year, int month, int dayOfMonth, int hour, int minute) {
 		LocalDateTime result = LocalDateTime.of(year, month, dayOfMonth, hour, minute);
 		return Date.from(result.atZone(getGermanTimeZone()).toInstant());

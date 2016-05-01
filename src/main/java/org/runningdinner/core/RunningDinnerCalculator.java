@@ -1,6 +1,7 @@
 package org.runningdinner.core;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -179,7 +180,7 @@ public class RunningDinnerCalculator {
 	 * @param mealClasses The Meals to be assigned
 	 * @throws NoPossibleRunningDinnerException Thrown if number of meals and number of teams are incompatible
 	 */
-	public void assignRandomMealClasses(final GeneratedTeamsResult generatedTeams, final Set<MealClass> mealClasses)
+	public void assignRandomMealClasses(final GeneratedTeamsResult generatedTeams, final Collection<MealClass> mealClasses)
 			throws NoPossibleRunningDinnerException {
 
 		List<Team> regularTeams = generatedTeams.getRegularTeams();
