@@ -67,8 +67,8 @@ public class Participant extends AbstractEntity implements Comparable<Participan
 
 	private String teamPartnerWish;
 
-	protected Participant() {
-		// JPA
+	public Participant() {
+		this.numSeats = UNDEFINED_SEATS;
 	}
 
 	/**
@@ -77,8 +77,8 @@ public class Participant extends AbstractEntity implements Comparable<Participan
 	 * @param participantNumber
 	 */
 	public Participant(final int participantNumber) {
+		this();
 		this.participantNumber = participantNumber;
-		this.numSeats = UNDEFINED_SEATS;
 	}
 
 	/**
@@ -166,6 +166,10 @@ public class Participant extends AbstractEntity implements Comparable<Participan
 		return participantNumber;
 	}
 
+	public void setParticipantNumber(int participantNumber) {
+		this.participantNumber = participantNumber;
+	}
+
 	/**
 	 * If true a participant is marked as the host within a team.<br>
 	 * There exist only one host inside one team.
@@ -230,7 +234,7 @@ public class Participant extends AbstractEntity implements Comparable<Participan
 		if (obj.getClass() != getClass()) {
 			return false;
 		}
-		Participant other = (Participant) obj;
+		Participant other = (Participant)obj;
 		return new EqualsBuilder().append(getParticipantNumber(), other.getParticipantNumber()).isEquals();
 	}
 
