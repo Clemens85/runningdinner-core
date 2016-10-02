@@ -287,7 +287,15 @@ public class RunningDinnerCalculator {
 		return result;
 	}
 
-	private void setHostingParticipant(Team team, RunningDinnerConfig runningDinnerConfig) {
+	/**
+	 * Sets one participant in the team as the hosting participant.
+	 * This is done with some intelligence so it is firstly tried to set a participant as hosting participant if he has enough seats.<br>
+	 * As a fallback the first participant is just taken.
+	 * 
+	 * @param team
+	 * @param runningDinnerConfig
+	 */
+	public void setHostingParticipant(Team team, RunningDinnerConfig runningDinnerConfig) {
 		Participant participantWithUnknownHostingStatus = null;
 
 		for (Participant teamMember : team.getTeamMembers()) {

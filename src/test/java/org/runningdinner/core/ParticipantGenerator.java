@@ -21,6 +21,7 @@ public class ParticipantGenerator {
 			Participant participant = new Participant(participantNr);
 			participant.setName(ParticipantName.newName().withFirstname("first" + participantNr).andLastname("last" + participantNr));
 			participant.setEmail("participant_" + participantNr + "@mail.de");
+			participant.setAddress(ParticipantAddress.parseFromString("MyStreet 1\n12345 MyCity"));
 			result.add(participant);
 		}
 		return result;

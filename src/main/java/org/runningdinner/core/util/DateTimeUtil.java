@@ -1,6 +1,7 @@
 package org.runningdinner.core.util;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -41,4 +42,9 @@ public final class DateTimeUtil {
 	static ZoneId getGermanTimeZone() {
 		return ZoneId.of("Europe/Berlin");
 	}
+
+	public static Date asDate(LocalDate localDate) {
+		return Date.from(localDate.atStartOfDay().atZone(getGermanTimeZone()).toInstant());
+	}
+
 }

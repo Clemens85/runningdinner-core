@@ -1,13 +1,17 @@
 package org.runningdinner.core;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -37,7 +41,7 @@ public class Team extends AbstractEntity implements Comparable<Team> {
 	@OneToMany(fetch = FetchType.LAZY)
 	@JoinColumn(name = "team_id")
 	@BatchSize(size = 30)
-	protected Set<Participant> teamMembers;
+	protected Set<Participant> teamMembers = new HashSet<>();
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@BatchSize(size = 30)
@@ -45,6 +49,10 @@ public class Team extends AbstractEntity implements Comparable<Team> {
 
 	@Embedded
 	protected VisitationPlan visitationPlan;
+
+	@Enumerated(EnumType.STRING)
+	@Column(length = 32)
+	protected TeamStatus status = TeamStatus.OK;
 
 	protected Team() {
 		// JPA
@@ -65,11 +73,15 @@ public class Team extends AbstractEntity implements Comparable<Team> {
 	 * @return
 	 */
 	public Set<Participant> getTeamMembers() {
-		return teamMembers;
+
+		return new HashSet<>(teamMembers);
 	}
 
 	public void setTeamMembers(Set<Participant> teamMembers) {
-		this.teamMembers = teamMembers;
+
+		CoreUtil.assertNotNull(teamMembers, "Passed teamMembers must not be empty");
+		this.teamMembers.clear();
+		this.teamMembers.addAll(teamMembers);
 	}
 
 	/**
@@ -110,6 +122,14 @@ public class Team extends AbstractEntity implements Comparable<Team> {
 
 	void setVisitationPlan(VisitationPlan visitationPlan) {
 		this.visitationPlan = visitationPlan;
+	}
+
+	public TeamStatus getStatus() {
+		return status;
+	}
+
+	public void setStatus(TeamStatus status) {
+		this.status = status;
 	}
 
 	/**
