@@ -21,4 +21,4 @@ Voll funktionsfähige Anwendung unter folgender URL:
 Überblick über alle Features:
 <a href="https://runyourdinner.eu/create-running-dinner/" target="_blank">https://runyourdinner.eu/create-running-dinner/</a>
 
-**The code in this repo is out-of-date. The latest version is currently hosted in a private repo in Bitbucket.** 
+**The code in this repo is out-of-date. The code was merged into the runningdinner repository.** 
